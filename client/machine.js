@@ -35,6 +35,11 @@ function createMachineView() {
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+  var tip = d3.select("body").append("div")
+    .style("position", "absolute")
+    .style("visibility", "hidden");
+  tip.append("p").html("hello world");
+
   for (i=0; i<3; i++) {
     // var r = mira_rows.slice(i*16, i*16+16);
     var row = svg.append("g")
@@ -75,6 +80,7 @@ function createMachineView() {
               .attr("transform", "translate(" + q*nodeW + "," + p*nodeH + ")");
             node.append("rect")
               .attr("class", "nodeBox")
+              .attr("id", nodeID2str(rackID, k, nodeID))
               .attr("width", nodeW)
               .attr("height", nodeH);
           }
@@ -82,6 +88,14 @@ function createMachineView() {
       }
     }
   }
+
+  $(".nodeBox").hover(function(evt) {
+    tip.style("visibility", "visible");
+    tip.select("p").html($(this).attr("id"));
+  });
+  $(".nodeBox").mouseleave(function() {
+    tip.style("visibility", "hidden");
+  })
 }
 
 createMachineView();
