@@ -1,0 +1,21 @@
+#machineView .rackBox {
+  fill: none;
+  stroke: black;
+}
+
+#machineView .rackID {
+  text-anchor: middle;
+  font-family: Verdana;
+  font-size: 10pt;
+}
+
+#machineView .cabinBox {
+  fill: none;
+  stroke: steelblue;
+}
+
+#machineView .nodeBox {
+  fill: none;
+  stroke-width: 0.5;
+  stroke: steelblue;
+}
