@@ -25,8 +25,13 @@ function createMachineView() {
         width = W - margin.left - margin.right,
         height = H - margin.top - margin.bottom;
   const rackW = 54, rackH = 121, rackPadding = 3;
-  const cabinW = 50, cabinH = 50, cabinTop = 15, cabinPadding = 2;
-  const nodeW = cabinW/4, nodeH = cabinH/4;
+  const midplaneW = 50, midplaneH = 50, midplaneTop = 15, midplanePadding = 2;
+  const nodeW = midplaneW/4, nodeH = midplaneH/4;
+
+  var tip = d3.select("body").append("div")
+    .style("position", "absolute")
+    .style("visibility", "hidden");
+  tip.append("p").html("hello world");
 
   var svg = d3.select("body").append("svg")
     .attr("id", "machineView")
@@ -34,11 +39,6 @@ function createMachineView() {
     .attr("height", H)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-  var tip = d3.select("body").append("div")
-    .style("position", "absolute")
-    .style("visibility", "hidden");
-  tip.append("p").html("hello world");
 
   for (i=0; i<3; i++) {
     // var r = mira_rows.slice(i*16, i*16+16);
@@ -58,23 +58,23 @@ function createMachineView() {
       rack.append("text")
         .attr("class", "rackID")
         .attr("x", rackW/2)
-        .attr("y", cabinTop-cabinPadding)
+        .attr("y", midplaneTop-midplanePadding)
         .text(rackID2str(rackID));
 
       for (k=0; k<2; k++) {
-        var cabin = rack.append("g")
-          .attr("class", "cabin")
+        var midplane = rack.append("g")
+          .attr("class", "midplane")
           .attr("id", planeID2str(rackID, k))
-          .attr("transform", "translate(" + cabinPadding + "," + (cabinTop+(cabinH+cabinPadding*2)*k) + ")");
-        cabin.append("rect")
-          .attr("class", "cabinBox")
-          .attr("width", cabinW)
-          .attr("height", cabinH);
+          .attr("transform", "translate(" + midplanePadding + "," + (midplaneTop+(midplaneH+midplanePadding*2)*k) + ")");
+        midplane.append("rect")
+          .attr("class", "midplaneBox")
+          .attr("width", midplaneW)
+          .attr("height", midplaneH);
 
         for (p=0; p<4; p++) {
           for (q=0; q<4; q++) {
             var nodeID = p*4+q;
-            var node = cabin.append("g")
+            var node = midplane.append("g")
               .attr("class", "node")
               .attr("id", nodeID2str(rackID, k, nodeID))
               .attr("transform", "translate(" + q*nodeW + "," + p*nodeH + ")");
