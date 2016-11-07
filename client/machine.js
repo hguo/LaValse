@@ -1,22 +1,19 @@
-//var mira_rows = [];
-//var mira_planes = ["M0", "M1"];
-
 function pad(number, radix, length) {
   var str = number.toString(radix).toUpperCase();
   while (str.length < length) str = '0' + str;
   return str;
 }
 
-function rackID2str(rack) {
-  return "R" + pad(rack, 16, 2);
+function rackID2str(row, column) {
+  return "R" + row.toString(16) + column.toString(16);
 }
 
-function planeID2str(rack, plane) { // plane is either 0 or 1
-  return rackID2str(rack) + "-M" + plane
+function midPlaneID2str(row, column, midplane) { // midplane is either 0 or 1
+  return rackID2str(row, column) + "-M" + midplane;
 }
 
-function nodeBoardID2str(rack, plane, nodeBoard) {
-  return planeID2str(rack, plane) + "-N" + pad(nodeBoard, 10, 2);
+function nodeBoardID2str(row, column, midplane, nodeBoard) {
+  return midPlaneID2str(row, column, midplane) + "-N" + pad(nodeBoard, 10, 2);
 }
 
 function createMachineView() {
@@ -46,10 +43,9 @@ function createMachineView() {
       .attr("class", "row")
       .attr("transform", "translate(0," + (rackH+rackPadding*2)*i + ")")
     for (j=0; j<16; j++) {
-      var rackID = i * 16 + j;
       var rack = row.append("g")
         .attr("class", "rack")
-        .attr("id", rackID2str(rackID))
+        .attr("id", rackID2str(i, j))
         .attr("transform", "translate(" + ((rackW+rackPadding*2)*j + rackPadding) + "," + rackPadding + ")");
       rack.append("rect")
         .attr("class", "rackBox")
@@ -59,12 +55,12 @@ function createMachineView() {
         .attr("class", "rackID")
         .attr("x", rackW/2)
         .attr("y", midplaneTop-midplanePadding)
-        .text(rackID2str(rackID));
+        .text(rackID2str(i, j));
 
       for (k=0; k<2; k++) {
         var midplane = rack.append("g")
           .attr("class", "midplane")
-          .attr("id", planeID2str(rackID, k))
+          .attr("id", midPlaneID2str(i, j, k))
           .attr("transform", "translate(" + midplanePadding + "," + (midplaneTop+(midplaneH+midplanePadding*2)*k) + ")");
         midplane.append("rect")
           .attr("class", "midplaneBox")
@@ -76,11 +72,11 @@ function createMachineView() {
             var nodeBoardID = p*4+q;
             var nodeBoard = midplane.append("g")
               .attr("class", "nodeBoard")
-              .attr("id", nodeBoardID2str(rackID, k, nodeBoardID))
+              .attr("id", nodeBoardID2str(i, j, k, nodeBoardID))
               .attr("transform", "translate(" + q*nodeBoardW + "," + p*nodeBoardH + ")");
             nodeBoard.append("rect")
               .attr("class", "nodeBoardBox")
-              .attr("id", nodeBoardID2str(rackID, k, nodeBoardID))
+              .attr("id", nodeBoardID2str(i, j, k, nodeBoardID))
               .attr("width", nodeBoardW)
               .attr("height", nodeBoardH);
           }

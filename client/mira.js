@@ -26,8 +26,11 @@ function computeLocationBasedOnBlock(code) {
   }
 
   var secondMidplaneCode = s[2];
-  mp = computeMidplainLocationFromCode(secondMidplaneCode);
-  console.log(mp);
+  var cc = secondMidplaneCode.split("");
+  var x2 = parseInt(cc[0], 16), 
+      y2 = parseInt(cc[1], 16),
+      x2_mod = x2 % 4, 
+      y2_mod = y2 % 4;
 
   // console.log(s);
 
