@@ -15,8 +15,8 @@ function planeID2str(rack, plane) { // plane is either 0 or 1
   return rackID2str(rack) + "-M" + plane
 }
 
-function nodeID2str(rack, plane, node) {
-  return planeID2str(rack, plane) + "-N" + pad(node, 10, 2);
+function nodeBoardID2str(rack, plane, nodeBoard) {
+  return planeID2str(rack, plane) + "-N" + pad(nodeBoard, 10, 2);
 }
 
 function createMachineView() {
@@ -26,7 +26,7 @@ function createMachineView() {
         height = H - margin.top - margin.bottom;
   const rackW = 54, rackH = 121, rackPadding = 3;
   const midplaneW = 50, midplaneH = 50, midplaneTop = 15, midplanePadding = 2;
-  const nodeW = midplaneW/4, nodeH = midplaneH/4;
+  const nodeBoardW = midplaneW/4, nodeBoardH = midplaneH/4;
 
   var tip = d3.select("body").append("div")
     .style("position", "absolute")
@@ -73,27 +73,27 @@ function createMachineView() {
 
         for (p=0; p<4; p++) {
           for (q=0; q<4; q++) {
-            var nodeID = p*4+q;
-            var node = midplane.append("g")
-              .attr("class", "node")
-              .attr("id", nodeID2str(rackID, k, nodeID))
-              .attr("transform", "translate(" + q*nodeW + "," + p*nodeH + ")");
-            node.append("rect")
-              .attr("class", "nodeBox")
-              .attr("id", nodeID2str(rackID, k, nodeID))
-              .attr("width", nodeW)
-              .attr("height", nodeH);
+            var nodeBoardID = p*4+q;
+            var nodeBoard = midplane.append("g")
+              .attr("class", "nodeBoard")
+              .attr("id", nodeBoardID2str(rackID, k, nodeBoardID))
+              .attr("transform", "translate(" + q*nodeBoardW + "," + p*nodeBoardH + ")");
+            nodeBoard.append("rect")
+              .attr("class", "nodeBoardBox")
+              .attr("id", nodeBoardID2str(rackID, k, nodeBoardID))
+              .attr("width", nodeBoardW)
+              .attr("height", nodeBoardH);
           }
         }
       }
     }
   }
 
-  $(".nodeBox").hover(function(evt) {
+  $(".nodeBoardBox").hover(function(evt) {
     tip.style("visibility", "visible");
     tip.select("p").html($(this).attr("id"));
   });
-  $(".nodeBox").mouseleave(function() {
+  $(".nodeBoardBox").mouseleave(function() {
     tip.style("visibility", "hidden");
   })
 }

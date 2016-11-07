@@ -15,12 +15,12 @@ body {
   text-anchor: middle;
 }
 
-#machineView .cabinBox {
+#machineView .midplaneBox {
   fill: none;
   stroke: steelblue;
 }
 
-#machineView .nodeBox {
+#machineView .nodeBoardBox {
   fill: white;
   stroke-width: 0.5;
   stroke: steelblue;
