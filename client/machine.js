@@ -1,21 +1,3 @@
-function pad(number, radix, length) {
-  var str = number.toString(radix).toUpperCase();
-  while (str.length < length) str = '0' + str;
-  return str;
-}
-
-function rackID2str(row, column) {
-  return "R" + row.toString(16) + column.toString(16);
-}
-
-function midPlaneID2str(row, column, midplane) { // midplane is either 0 or 1
-  return rackID2str(row, column) + "-M" + midplane;
-}
-
-function nodeBoardID2str(row, column, midplane, nodeBoard) {
-  return midPlaneID2str(row, column, midplane) + "-N" + pad(nodeBoard, 10, 2);
-}
-
 function createMachineView() {
   const W = 1000, H = 400;
   const margin = {top: 10, right: 10, bottom: 10, left: 10},
@@ -45,7 +27,7 @@ function createMachineView() {
     for (j=0; j<16; j++) {
       var rack = row.append("g")
         .attr("class", "rack")
-        .attr("id", rackID2str(i, j))
+        .attr("id", rack2str(i, j))
         .attr("transform", "translate(" + ((rackW+rackPadding*2)*j + rackPadding) + "," + rackPadding + ")");
       rack.append("rect")
         .attr("class", "rackBox")
@@ -55,12 +37,12 @@ function createMachineView() {
         .attr("class", "rackID")
         .attr("x", rackW/2)
         .attr("y", midplaneTop-midplanePadding)
-        .text(rackID2str(i, j));
+        .text(rack2str(i, j));
 
       for (k=0; k<2; k++) {
         var midplane = rack.append("g")
           .attr("class", "midplane")
-          .attr("id", midPlaneID2str(i, j, k))
+          .attr("id", midplane2str(i, j, k))
           .attr("transform", "translate(" + midplanePadding + "," + (midplaneTop+(midplaneH+midplanePadding*2)*k) + ")");
         midplane.append("rect")
           .attr("class", "midplaneBox")
@@ -72,11 +54,11 @@ function createMachineView() {
             var nodeBoardID = p*4+q;
             var nodeBoard = midplane.append("g")
               .attr("class", "nodeBoard")
-              .attr("id", nodeBoardID2str(i, j, k, nodeBoardID))
+              .attr("id", nodeBoard2str(i, j, k, nodeBoardID))
               .attr("transform", "translate(" + q*nodeBoardW + "," + p*nodeBoardH + ")");
             nodeBoard.append("rect")
               .attr("class", "nodeBoardBox")
-              .attr("id", nodeBoardID2str(i, j, k, nodeBoardID))
+              .attr("id", nodeBoard2str(i, j, k, nodeBoardID))
               .attr("width", nodeBoardW)
               .attr("height", nodeBoardH);
           }
@@ -91,7 +73,17 @@ function createMachineView() {
   });
   $(".nodeBoardBox").mouseleave(function() {
     tip.style("visibility", "hidden");
-  })
+  });
+}
+
+function highlightBlock(str) {
+  console.log(str);
+  var set = parseComputeBlock(str);
+  $(".nodeBoardBox").css("fill", "white");
+  $(".nodeBoardBox").filter(function() {
+    var mpStr = $(this).attr("id").slice(0, 6);
+    return set.has(mpStr);
+  }).css("fill", "darkblue");
 }
 
 createMachineView();

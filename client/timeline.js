@@ -49,7 +49,10 @@ function createTimelineView() {
   	  .attr("r", 3.5)
       .style("fill", "steelblue")
   	  .attr("cx", function(d) {return x(d.EVENT_TIME);})
-  	  .attr("cy", function(d) {return y(d.CPU);});
+  	  .attr("cy", function(d) {return y(d.CPU);})
+      .on("click", function(d) {
+        highlightBlock(d.BLOCK);
+      })
   });
 }
 
