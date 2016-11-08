@@ -77,13 +77,23 @@ function createMachineView() {
 }
 
 function highlightBlock(str) {
-  console.log(str);
+  // console.log(str);
   var set = parseComputeBlock(str);
   $(".nodeBoardBox").css("fill", "white");
   $(".nodeBoardBox").filter(function() {
     var mpStr = $(this).attr("id").slice(0, 6);
     return set.has(mpStr);
   }).css("fill", "darkblue");
+}
+
+function highlightNodeBoard(str) {
+  var loc = parseLocation(str);
+  $(".nodeBoardBox").filter(function() {
+    var mpStr = $(this).attr("id").slice(0, 6);
+    var mp = parseMidplane(mpStr);
+    var nb = parseInt($(this).attr("id").slice(8, 10));
+    return mp.row == loc.row && mp.column == loc.column && mp.midplane == loc.midplane && nb == loc.nodeBoard;
+  }).css("fill", "red");
 }
 
 createMachineView();

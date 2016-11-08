@@ -52,6 +52,7 @@ function createTimelineView() {
   	  .attr("cy", function(d) {return y(d.CPU);})
       .on("click", function(d) {
         highlightBlock(d.BLOCK);
+        highlightNodeBoard(d.LOCATION);
       })
   });
 }

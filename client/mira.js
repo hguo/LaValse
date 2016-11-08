@@ -20,7 +20,17 @@ function parseMidplane(str) { // input: Rxx-Mx
   return {
     row: parseInt(str[1], 16), 
     column: parseInt(str[2], 16),
-    midplane: parseInt(str[5], 16)
+    midplane: parseInt(str[5])
+  }
+}
+
+function parseLocation(str) { // input: R07-M0-N11-J25
+  return {
+    row: parseInt(str[1], 16),
+    column: parseInt(str[2], 16),
+    midplane: parseInt(str[5]),
+    nodeBoard: parseInt(str.slice(8, 10)), 
+    node: parseInt(str.slice(12, 14))
   }
 }
 
@@ -63,7 +73,7 @@ function parseComputeBlock(str) {
     for (b=s.b; b<=t.b; b++) {
       for (c=s.c; c<=t.c; c++) {
         for (d=s.d; d<=t.d; d++) {
-          var mp = torusCoordsToMidplane(b, a, c, d);
+          var mp = torusCoordsToMidplane(a, b, c, d);
           // midplaneDict[midplane2str(mp.row, mp.column, mp.midplane)] = 1;
           set.add(midplane2str(mp.row, mp.column, mp.midplane));
         }
