@@ -97,3 +97,4 @@ function highlightNodeBoard(str) {
 }
 
 createMachineView();
+// highlightBlock("MIR-00000-73FF1-16384");
