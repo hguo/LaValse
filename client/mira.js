@@ -138,7 +138,7 @@ function parseLocation(str) {
     for (var attrname in attrs) {L[attrname] = attrs[attrname];}
   });
 
-  console.log(L);
+  // console.log(L);
   return L;
 }
 
@@ -163,10 +163,6 @@ function torusCoordsToMidplane(x, y, z, w) {
   function H(z_4) {const table = [0, 4, 6, 2]; return table[z_4];}
   function Q(w_4) {return w_4<=1 ? 0 : 1;}
   function C(w_4) {const table = [0, 1, 1, 0]; return table[w_4];}
-}
-
-function midplaneToStr(row, column, midplane) {
-  return "R" + rackRow + "," + rackCol + "),M" + midplane;
 }
 
 function parseComputeBlock(str) {
