@@ -88,6 +88,7 @@ function highlightBlock(str) {
 
 function highlightNodeBoard(str) {
   var loc = parseLocation(str);
+  console.log(loc);
   $(".nodeBoardBox").filter(function() {
     var mpStr = $(this).attr("id").slice(0, 6);
     var mp = parseMidplane(mpStr);
