@@ -53,6 +53,8 @@ function createTimelineView() {
       .on("click", function(d) {
         highlightBlock(d.BLOCK);
         highlightNodeBoard(d.LOCATION);
+        console.log(d);
+        console.log(parseRASMessageID(d.MSG_ID));
       })
   });
 }

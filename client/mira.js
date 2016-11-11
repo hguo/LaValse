@@ -142,6 +142,10 @@ function parseLocation(str) {
   return L;
 }
 
+function parseRASMessageID(str) {
+  return rasbook[str];
+}
+
 function parseTorusCoords(str) {
   return {
     a: parseInt(str[0], 16), 
