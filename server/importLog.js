@@ -26,9 +26,12 @@ MongoClient.connect(url, function(err, db) {
   stream.pipe(csvStream);
 
   function writeRASLog(collection, data) {
-    var messageID = data.MSG_ID;
-    var details = new rasParser.parse(data.MSG_ID, data.MESSAGE);
-    console.log(details);
-    // collection.insertOne(ras);
+    // var messageID = data.MSG_ID;
+    // var details = new rasParser.parse(data.MSG_ID, data.MESSAGE);
+    // console.log(details);
+    var date = new Date(data.EVENT_TIME + " GMT");
+    data.EVENT_TIME = date;
+    // console.log(data.EVENT_TIME);
+    collection.insertOne(data);
   }
 });
