@@ -7,10 +7,9 @@ MongoClient.connect(url, function(err, db) {
   assert.equal(null, err);
   console.log("connected.");
 
-  aggregateDocument(db, function() {
+  findDocument(db, function() {
     db.close();
   });
-  db.close();
 });
 
 var insertDocuments = function(db, callback) {
@@ -24,9 +23,8 @@ var insertDocuments = function(db, callback) {
       });
 }
 
-var findDocuments = function(db, callback) {
-  var collection = db.collection("mydoc");
-  collection.find({a: 3}).toArray(function(err, docs) {
+var findDocument = function(db, callback) {
+  db.collection("mira").find({EVENT_TIME: {$gte: new Date(2015, 10, 20), $lt: new Date(2015, 10, 25)}}).toArray(function(err, docs) {
     assert.equal(err, null);
     console.log(docs);
     callback(docs);

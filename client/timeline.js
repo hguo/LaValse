@@ -1,8 +1,13 @@
-function createTimelineView() {
+function updateTimelineView(data) {
   const W = 1000, H = 100;
   const margin = {top: 10, right: 20, bottom: 25, left: 25},
         width = W - margin.left - margin.right,
         height = H - margin.top - margin.bottom;
+
+  var parseTime = d3.utcParse("%Y-%m-%dT%H:%M:%S.%LZ");
+  data.forEach(function(e) {
+    e.EVENT_TIME = parseTime(e.EVENT_TIME); 
+  });
 
   var svg = d3.select("body").append("svg")
     .attr("id", "timelineView")
@@ -21,42 +26,40 @@ function createTimelineView() {
   var yAxis = d3.axisLeft()
       .scale(y)
       .ticks(8);
+  	
+  x.domain(d3.extent(data, function(d) {return d.EVENT_TIME;}));
+  y.domain(d3.extent(data, function(d) {return d.CPU;}));
 
-  var parseTime = d3.utcParse("%Y-%m-%d %H:%M:%S.%L%L"); // FIXME: cannot parse milliseconds
-  d3.csv("ras_event_mira_2015_08.fat.csv", function(d) {
-  	d.EVENT_TIME = parseTime(d.EVENT_TIME);
-  	return d;
+  svg.append("g")
+    .attr("class", "axis x")
+    .attr("transform", "translate(0," + height +")")
+    .call(xAxis);
+
+  svg.append("g")
+    .attr("class", "axys y")
+    .call(yAxis);
+
+  svg.selectAll(".dot")
+    .data(data)
+    .enter()
+    .append("circle")
+    .attr("class", "dot")
+    .attr("r", 3.5)
+    .style("fill", "steelblue")
+    .attr("cx", function(d) {return x(d.EVENT_TIME);})
+    .attr("cy", function(d) {return y(d.CPU);})
+    .on("click", function(d) {
+      highlightBlock(d.BLOCK);
+      highlightNodeBoard(d.LOCATION);
+      console.log(d);
+      // console.log(parseRASMessageID(d.MSG_ID));
+    });
+
+  /*
   }, function(error, data) {
     console.log(data);
 
-  	x.domain(d3.extent(data, function(d) {return d.EVENT_TIME;}));
-  	y.domain(d3.extent(data, function(d) {return d.CPU;}));
-
-  	svg.append("g")
-  	  .attr("class", "axis x")
-  	  .attr("transform", "translate(0," + height +")")
-  	  .call(xAxis);
-
-  	svg.append("g")
-  	  .attr("class", "axys y")
-  	  .call(yAxis);
-
-  	svg.selectAll(".dot")
-  	  .data(data)
-  	  .enter()
-  	  .append("circle")
-  	  .attr("class", "dot")
-  	  .attr("r", 3.5)
-      .style("fill", "steelblue")
-  	  .attr("cx", function(d) {return x(d.EVENT_TIME);})
-  	  .attr("cy", function(d) {return y(d.CPU);})
-      .on("click", function(d) {
-        highlightBlock(d.BLOCK);
-        highlightNodeBoard(d.LOCATION);
-        console.log(d);
-        console.log(parseRASMessageID(d.MSG_ID));
-      })
-  });
+  */
 }
 
-createTimelineView();
+// createTimelineView();

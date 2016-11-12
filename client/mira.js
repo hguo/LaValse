@@ -170,6 +170,8 @@ function torusCoordsToMidplane(x, y, z, w) {
 }
 
 function parseComputeBlock(str) {
+  // if (str.slice( == "_DIAGS_")
+
   var substrings = str.split("-");
   if (substrings[0] != "MIR") return new Set(); // empty set
 
