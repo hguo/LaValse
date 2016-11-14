@@ -15,8 +15,27 @@ MongoClient.connect(url, function(err, db) {
   var collection = db.collection("mira");
 
   var csvStream = csv({headers: true})
-    .on("data", function(ras) {
-      writeRASLog(collection, ras);
+    .on("data", function(d) {
+      // rasParser.parse(d.MSG_ID, d.MESSAGE);
+      var rasData = {
+        _id: d.RECID,
+        messageID: d.MSG_ID,
+        component: d.COMPONENT,
+        severity: d.SEVERITY,
+        eventTime: new Date(d.EVENT_TIME + " GMT"),
+        jobID: d.JOBID,
+        block: d.BLOCK,
+        location: d.LOCATION,
+        serialNumber: d.SERIALNUMBER,
+        CPU: parseInt(d.CPU),
+        count: parseInt(d.COUNT),
+        controlActions: d.CTLACTION.split(","),
+        message: d.MESSAGE,
+        diagnosis: d.DIAGS,
+        qualifier: d.QUALIFIER,
+        machineName: d.MACHINE_NAME
+      };
+      collection.insertOne(rasData);
     })
     .on("end", function() {
       db.close();
@@ -24,14 +43,4 @@ MongoClient.connect(url, function(err, db) {
     });
 
   stream.pipe(csvStream);
-
-  function writeRASLog(collection, data) {
-    // var messageID = data.MSG_ID;
-    // var details = new rasParser.parse(data.MSG_ID, data.MESSAGE);
-    // console.log(details);
-    var date = new Date(data.EVENT_TIME + " GMT");
-    data.EVENT_TIME = date;
-    // console.log(data.EVENT_TIME);
-    collection.insertOne(data);
-  }
 });

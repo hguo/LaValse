@@ -6,7 +6,7 @@ function updateTimelineView(data) {
 
   var parseTime = d3.utcParse("%Y-%m-%dT%H:%M:%S.%LZ");
   data.forEach(function(e) {
-    e.EVENT_TIME = parseTime(e.EVENT_TIME); 
+    e.eventTime = parseTime(e.eventTime); 
   });
 
   var svg = d3.select("body").append("svg")
@@ -27,7 +27,7 @@ function updateTimelineView(data) {
       .scale(y)
       .ticks(8);
   	
-  x.domain(d3.extent(data, function(d) {return d.EVENT_TIME;}));
+  x.domain(d3.extent(data, function(d) {return d.eventTime;}));
   y.domain(d3.extent(data, function(d) {return d.CPU;}));
 
   svg.append("g")
@@ -46,11 +46,11 @@ function updateTimelineView(data) {
     .attr("class", "dot")
     .attr("r", 3.5)
     .style("fill", "steelblue")
-    .attr("cx", function(d) {return x(d.EVENT_TIME);})
+    .attr("cx", function(d) {return x(d.eventTime);})
     .attr("cy", function(d) {return y(d.CPU);})
     .on("click", function(d) {
-      highlightBlock(d.BLOCK);
-      highlightNodeBoard(d.LOCATION);
+      highlightBlock(d.block);
+      highlightNodeBoard(d.location);
       console.log(d);
       // console.log(parseRASMessageID(d.MSG_ID));
     });

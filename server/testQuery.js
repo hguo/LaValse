@@ -7,7 +7,8 @@ MongoClient.connect(url, function(err, db) {
   assert.equal(null, err);
   console.log("connected.");
 
-  findDocument(db, function() {
+  // findDocument(db, function() {
+  aggregateDocument(db, function() {
     db.close();
   });
 });
@@ -24,7 +25,10 @@ var insertDocuments = function(db, callback) {
 }
 
 var findDocument = function(db, callback) {
-  db.collection("mira").find({EVENT_TIME: {$gte: new Date(2015, 10, 20), $lt: new Date(2015, 10, 25)}}).toArray(function(err, docs) {
+  db.collection("mira").find({
+      severity: "FATAL",
+      eventTime: {$gte: new Date("8/20/2015"), $lt: new Date("8/30/2015")}
+    }).toArray(function(err, docs) {
     assert.equal(err, null);
     console.log(docs);
     callback(docs);
@@ -55,8 +59,8 @@ var removeDocument = function(db) {
 var aggregateDocument = function(db, callback) {
   var collection = db.collection("mira");
   collection.aggregate([
-      {$match: {"SEVERITY": "FATAL"}}, 
-      {$group: {_id: "$MSG_ID", "count": {$sum: 1}}}
+      {$match: {"severity": "FATAL"}}, 
+      {$group: {_id: "$messageID", "count": {$sum: 1}}}
   ], function(err, result) {
     console.log(result);
     callback(result)

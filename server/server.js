@@ -37,8 +37,8 @@ function sendRASLog(ws, severity, date0, date1) {
     if (err != null) return;
     db.collection("mira")
       .find({
-        EVENT_TIME: {$gte: new Date(date0), $lt: new Date(date1)}, 
-        SEVERITY: severity
+        severity: severity,
+        eventTime: {$gte: new Date(date0), $lt: new Date(date1)}, 
       })
       .toArray(function(err, docs) {
         assert.equal(err, null);
