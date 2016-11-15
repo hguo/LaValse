@@ -18,7 +18,8 @@ wss.on("connection", function(ws) {
     console.log(msg);
     if (msg.type == "requestRASLog") {
       sendRASLog(ws, msg.severity, msg.date0, msg.date1);
-    } else if (msg.type == "requestFrame") {
+    } else if (msg.type == "requestRASHistogram") {
+      sendRASHistogram(ws, msg.severity, msg.granularity, msg.date0, msg.date1);
     }
   });
 
@@ -53,6 +54,41 @@ function sendRASLog(ws, severity, date0, date1) {
         if (ws.readyState == 1) {
           ws.send(JSON.stringify(msg));
           console.log("sent ras log", date0, date1);
+        }
+      });
+  });
+}
+
+function sendRASHistogram(ws, severity, granularity, date0, date1) {
+  MongoClient.connect(uri, function(err, db) {
+    if (err != null) return;
+    db.collection("mira")
+      .aggregate([
+        {"$match": {"severity": severity, "eventTime": {$gte: new Date(date0), $lt: new Date(date1)} }},
+        {"$project": {
+          "y": {"$year": "$eventTime"},
+          "m": {"$month": "$eventTime"},
+          "d": {"$dayOfMonth": "$eventTime"},
+          "messageID": 1, 
+          "message": 1}},
+        {"$group": {
+          "_id": {"year": "$y", "month": "$m", "day": "$d", "hour": "$h"},
+          "count": {"$sum": 1}}}
+      ])
+      .toArray(function(err, docs) {
+        assert.equal(err, null);
+        console.log(docs);
+        var msg = {
+          type: "RASHistogram",
+          severity: severity,
+          granularit: granularity,
+          date0: date0,
+          date1: date1,
+          RASHistogram: docs
+        };
+        if (ws.readyState == 1) {
+          ws.send(JSON.stringify(msg));
+          console.log("sent ras histogram", date0, date1);
         }
       });
   });

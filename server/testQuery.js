@@ -58,11 +58,51 @@ var removeDocument = function(db) {
 
 var aggregateDocument = function(db, callback) {
   var collection = db.collection("mira");
-  collection.aggregate([
+  /* 
+  collection.aggregate([ // aggregate by messageID
       {$match: {"severity": "FATAL"}}, 
       {$group: {_id: "$messageID", "count": {$sum: 1}}}
   ], function(err, result) {
     console.log(result);
     callback(result)
+  });
+  */ 
+  /*
+  collection.aggregate([ // aggregate by time, different granularities
+      {$match: {"severity": "FATAL"}}, 
+      // {$group: {_id: {"day": {"$dayOfYear": "$eventTime"}}, count: {$sum: 1}}}
+      // {$group: {_id: {"day": {"$dayOfYear": "$eventTime"}, "hour": {"$hour": "$eventTime"}}, count: {$sum: 1}}}
+      {$group: {_id: {"day": {"$dayOfYear": "$eventTime"}, "hour": {"$hour": "$eventTime"}, "minute": {"$minute": "$eventTime"}}, count: {$sum: 1}}}
+  ], 
+  function(err, result) {
+    console.log(result);
+    callback(result);
+  });
+  */
+  /*
+  collection.aggregate([ // projection
+      {$match: {"severity": "FATAL"}},
+      {$project: {messageID: 1, eventTime: 1}}
+  ], 
+  function(err, result) {
+    console.log(result);
+    callback(result);
+  });
+  */
+  collection.aggregate([
+      {"$match": {"severity": "FATAL"}},
+      {"$project": {
+          "y": {"$year": "$eventTime"},
+          "m": {"$month": "$eventTime"},
+          "d": {"$dayOfMonth": "$eventTime"},
+          "h": {"$hour": "$eventTime"},
+          "messageID": 1}},
+      {"$group": {
+          "_id": {"year": "$y", "month": "$m", "day": "$d", "hour": "$h"},
+          "count": {"$sum": 1}}}
+  ], 
+  function(err, result) {
+    console.log(result);
+    callback(result);
   });
 }

@@ -16,7 +16,7 @@ MongoClient.connect(url, function(err, db) {
 
   var csvStream = csv({headers: true})
     .on("data", function(d) {
-      // rasParser.parse(d.MSG_ID, d.MESSAGE);
+      rasParser.parse(d.MSG_ID, d.MESSAGE);
       var rasData = {
         _id: d.RECID,
         messageID: d.MSG_ID,
@@ -35,7 +35,7 @@ MongoClient.connect(url, function(err, db) {
         qualifier: d.QUALIFIER,
         machineName: d.MACHINE_NAME
       };
-      collection.insertOne(rasData);
+      // collection.insertOne(rasData);
     })
     .on("end", function() {
       db.close();

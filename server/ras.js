@@ -449,7 +449,8 @@ const rasbook = {
 "00040107": {	component: "MC",	category: "BQC",	severity: "INFO",	message: "CFAM Special Attention. $(ARG)",	description: "Compute's CFAM_Status register has the special attention indicator set.  This is an unused communication mechanism between the compute and control system.",	serviceAction: "This condition may have been caused by a software error. Check the software levels and make sure the system fix level is up to date. ,Run diagnostics. The relevant diagnostic bucket(s) to run are: nodeboard,ioboard. ",	relevantDiagnosticSuites: "nodeboard,ioboard",	sourceFile: "/bgsys/source/srcV1R2M2.3650/control/include/mc/mc_ras.h",	lineNumber: "3027"},
 "00040108": {	component: "MC",	category: "BQC",	severity: "WARN",	message: "CFAM Recoverable Error. $(ARG)",	description: "Compute's CFAM_Status register signals a recoverable error.",	serviceAction: "Run diagnostics. The relevant diagnostic bucket(s) to run are: nodeboard,ioboard. ",	relevantDiagnosticSuites: "nodeboard,ioboard",	sourceFile: "/bgsys/source/srcV1R2M2.3650/control/include/mc/mc_ras.h",	lineNumber: "3040"},
 "00040109": {	component: "MC",	category: "BQC",	severity: "FATAL",	message: "CFAM alert. $(ARG)",	description: "Compute's CFAM_Status register signaled an alert.  That can be caused by an error in the on-chip communications in the CFAM/PCB-tree/PUnits:  SCOM error, invalid instruction, invalid address, instruction parity error.",	serviceAction: "Run diagnostics. The relevant diagnostic bucket(s) to run are: nodeboard,ioboard. ",	controlAction: "COMPUTE_IN_ERROR,END_JOB,FREE_COMPUTE_BLOCK",	relevantDiagnosticSuites: "nodeboard,ioboard",	sourceFile: "/bgsys/source/srcV1R2M2.3650/control/include/mc/mc_ras.h",	lineNumber: "3052"},
-"0004010A": {	component: "MC",	category: "Card",	severity: "FATAL",	message: "An attempt was made to execute a boot step on a board that is not initialized/usable, since the board is unavailable we are failing this boot step. : $(ARG)",	description: "The check to ensure that the board is ready failed, the board can not currently be used.",	serviceAction: "The part at this location has threshold count policy of 1 or more errors.  Determine why the board is not usable and fix that situation. Check RAS log for other events relating to this failing hardware.",	controlAction: "FREE_COMPUTE_BLOCK,BOARD_IN_ERROR",	thresholdCount: "1",	sourceFile: "/bgsys/source/srcV1R2M2.3650/control/include/mc/mc_ras.h",	lineNumber: "3064"},
+// "0004010A": {	component: "MC",	category: "Card",	severity: "FATAL",	message: "An attempt was made to execute a boot step on a board that is not initialized/usable, since the board is unavailable we are failing this boot step. : $(ARG)",	description: "The check to ensure that the board is ready failed, the board can not currently be used.",	serviceAction: "The part at this location has threshold count policy of 1 or more errors.  Determine why the board is not usable and fix that situation. Check RAS log for other events relating to this failing hardware.",	controlAction: "FREE_COMPUTE_BLOCK,BOARD_IN_ERROR",	thresholdCount: "1",	sourceFile: "/bgsys/source/srcV1R2M2.3650/control/include/mc/mc_ras.h",	lineNumber: "3064"},
+"0004010A": {	component: "MC",	category: "Card",	severity: "FATAL",	message: "An attempt was made to execute a boot step on a board that is not initialized, since the board is unavailable we are failing this boot step. : $(ARG)",	description: "The check to ensure that the board is ready failed, the board can not currently be used.",	serviceAction: "The part at this location has threshold count policy of 1 or more errors.  Determine why the board is not usable and fix that situation. Check RAS log for other events relating to this failing hardware.",	controlAction: "FREE_COMPUTE_BLOCK,BOARD_IN_ERROR",	thresholdCount: "1",	sourceFile: "/bgsys/source/srcV1R2M2.3650/control/include/mc/mc_ras.h",	lineNumber: "3064"},
 "0004010B": {	component: "MC",	category: "Software_Error",	severity: "FATAL",	message: "The PrimaryMc has detected that this SubnetMc process has terminated. : $(ARG)",	description: "",	serviceAction: "A service action is not required for this event.",	sourceFile: "/bgsys/source/srcV1R2M2.3650/control/include/mc/mc_ras.h",	lineNumber: "3076"},
 "0004010C": {	component: "MC",	category: "Coolant_Monitor",	severity: "FATAL",	message: "Unable to bring up Coolant Monitor : $(ARG)",	description: "Failure while attempting to bring up this Coolant Monitor.",	serviceAction: "Check communication cables between Coolant Monitor and Service card. The part at this location has threshold count policy of 1 or more errors.  Run diagnostics. The relevant diagnostic bucket(s) to run are: servicecard. ",	controlAction: "RACK_IN_ERROR",	thresholdCount: "1",	relevantDiagnosticSuites: "servicecard",	sourceFile: "/bgsys/source/srcV1R2M2.3650/control/include/mc/mc_ras.h",	lineNumber: "3088"},
 "0004010D": {	component: "MC",	category: "Card",	severity: "WARN",	message: "Unable to bring up the Coolant Monitor for this rack.",	description: "Unable to find any Coolant Monitor hung off this card.",	serviceAction: "Check communication cables between Coolant Monitor and Service card. The part at this location has threshold count policy of 1 or more errors.  Run diagnostics. The relevant diagnostic bucket(s) to run are: servicecard. ",	thresholdCount: "1",	relevantDiagnosticSuites: "servicecard",	sourceFile: "/bgsys/source/srcV1R2M2.3650/control/include/mc/mc_ras.h",	lineNumber: "3100"},
@@ -560,7 +561,8 @@ const rasbook = {
 "00061014": {	component: "MMCS",	category: "Coolant_Monitor",	severity: "FATAL",	message: "Health Check detected the coolant monitor connected to the service card at location $(BG_LOC) has been shut-off: $(COND)",	description: "The Health Check analyzed the coolant monitor at the specified location, and received an indication that its shut-off register has latched.",	serviceAction: "Repair the coolant water problem, recover the rack using a Service Action.",	thresholdCount: "1",	sourceFile: "/bgsys/source/srcV1R2M2.3650/hlcs/src/mmcs/server/env/ras.h",	lineNumber: "216"},
 "00061015": {	component: "MMCS",	category: "BQC",	severity: "WARN",	message: "Health Check detected an overtemp condition on the compute node at location $(BG_LOC).  The temperature $(ACTUAL) is above the expected maximum temperature of $(EXP). ",	description: "The Health Check analyzed the node at the specified location, and found a temperature that was outside the expected range.",	serviceAction: "It's possible the compute is not properly seated, the thermal interface material (TIM) is missing or was not properly applied, the TIM needs replacement, or the clear plastic TIM protector was not removed prior to installing the compute. Inspect the compute node and if no obvious reason for the high temperatures is noted, replace the compute node.",	relevantDiagnosticSuites: "nodeboard",	sourceFile: "/bgsys/source/srcV1R2M2.3650/hlcs/src/mmcs/server/env/ras.h",	lineNumber: "227"},
 "00062000": {	component: "MMCS",	category: "Job",	severity: "INFO",	message: "killing job $(JOB) timed out after $(TIMEOUT) seconds. $(NODE_COUNT) nodes are now unavailable.",	description: "delivering a SIGKILL to a job timed out",	serviceAction: "Reboot the block.",	sourceFile: "/bgsys/source/srcV1R2M2.3650/hlcs/src/runjob/server/job/KillTimer.cc",	lineNumber: "49"},
-"00062001": {	component: "MMCS",	category: "Block",	severity: "FATAL",	message: "Failed to authenticate with the CIOS $(DAEMON) daemon running on I/O node $(BG_LOC).",	description: "A challenge/response handshake failed between the Control System and a daemon running on an I/O node.",	serviceAction: "Check I/O node log for possible causes of this failure. Verify the I/O node's IP address is correct in the database and the block security key has not been modified, then reboot the I/O block.",	controlAction: "SOFTWARE_IN_ERROR",	sourceFile: "/bgsys/source/srcV1R2M2.3650/hlcs/src/runjob/server/cios/Authenticate.cc",	lineNumber: "49"},
+// "00062001": {	component: "MMCS",	category: "Block",	severity: "FATAL",	message: "Failed to authenticate with the CIOS $(DAEMON) daemon running on I/O node $(BG_LOC).",	description: "A challenge/response handshake failed between the Control System and a daemon running on an I/O node.",	serviceAction: "Check I/O node log for possible causes of this failure. Verify the I/O node's IP address is correct in the database and the block security key has not been modified, then reboot the I/O block.",	controlAction: "SOFTWARE_IN_ERROR",	sourceFile: "/bgsys/source/srcV1R2M2.3650/hlcs/src/runjob/server/cios/Authenticate.cc",	lineNumber: "49"},
+"00062001": {	component: "MMCS",	category: "Block",	severity: "FATAL",	message: "Failed to authenticate with the CIOS $(DAEMON) daemon running on I node $(BG_LOC).",	description: "A challenge/response handshake failed between the Control System and a daemon running on an I/O node.",	serviceAction: "Check I/O node log for possible causes of this failure. Verify the I/O node's IP address is correct in the database and the block security key has not been modified, then reboot the I/O block.",	controlAction: "SOFTWARE_IN_ERROR",	sourceFile: "/bgsys/source/srcV1R2M2.3650/hlcs/src/runjob/server/cios/Authenticate.cc",	lineNumber: "49"},
 "00062002": {	component: "MMCS",	category: "Job",	severity: "INFO",	message: "The prolog program failed with error $(ERROR) on I/O node $(BG_LOC).",	description: "The prolog program is run after all the compute nodes have successfully loaded the executable. A non-zero return code prevents the job from starting.",	serviceAction: "Check the configuration of the prolog program in the [cios.jobctld] section of bg.properties",	sourceFile: "/bgsys/source/srcV1R2M2.3650/hlcs/src/runjob/server/job/IoNode.cc",	lineNumber: "64"},
 "00062003": {	component: "MMCS",	category: "Job",	severity: "INFO",	message: "The epilog program failed with error $(ERROR) on I/O node $(BG_LOC).",	description: "The epilog program is run after all of the compute nodes have terminated.",	serviceAction: "Check the configuration of the epilog program in the [cios.jobctld] section of bg.properties",	sourceFile: "/bgsys/source/srcV1R2M2.3650/hlcs/src/runjob/server/job/IoNode.cc",	lineNumber: "74"},
 "00062004": {	component: "MMCS",	category: "Block",	severity: "WARN",	message: "A job was submitted to block $(BG_BLOCKID) that is not ready to run jobs.",	description: "A job was submitted to a block that is not ready to run jobs.",	serviceAction: "This condition may have been caused by a software error. Check the software levels and make sure the system fix level is up to date. ",	sourceFile: "/bgsys/source/srcV1R2M2.3650/hlcs/src/runjob/server/mux/InsertJob.cc",	lineNumber: "137"},
@@ -766,7 +768,8 @@ const rasbook = {
 "000A0004": {	component: "LINUX",	category: "Software_Error",	severity: "FATAL",	message: "[GPFS] GPFS failed to start:  $(DETAILS)",	description: "The node was unable to start GPFS because it is not a member of bgio cluster.",	serviceAction: "Use 'mmaddnode <failing node=\"\" hostname=\"\">' on the service node to add this node to the GPFS bgio cluster.</failing>",	controlAction: "SOFTWARE_IN_ERROR",	sourceFile: "/bgsys/drivers/V1R2M2/ppc64/linux/usr/src/kernels/2.6.32-431.1.1.bgq.el6.ppc64/arch/powerpc/include/asm/bluegene_ras.h",	lineNumber: "80"},
 "000A0005": {	component: "LINUX",	category: "Software_Error",	severity: "FATAL",	message: "[BOOT] No network interface was defined for the node:  $(DETAILS)",	description: "The control system must indicate at least one network interface (ib0, eth0 or eth1) to configure in order for the node to successfully boot.",	serviceAction: "The system administrator needs to properly configure networking for the failing node.",	controlAction: "SOFTWARE_IN_ERROR",	sourceFile: "/bgsys/drivers/V1R2M2/ppc64/linux/usr/src/kernels/2.6.32-431.1.1.bgq.el6.ppc64/arch/powerpc/include/asm/bluegene_ras.h",	lineNumber: "92"},
 "000A0006": {	component: "LINUX",	category: "Software_Error",	severity: "WARN",	message: "[LINUX] An init script has encountered an error or failed to properly execute:  $(DETAILS)",	description: "The init process was not able to fully execute one of the init script. ",	serviceAction: "Consult the node logs for further information regarding this failure and correct the indicated problem.",	sourceFile: "/bgsys/drivers/V1R2M2/ppc64/linux/usr/src/kernels/2.6.32-431.1.1.bgq.el6.ppc64/arch/powerpc/include/asm/bluegene_ras.h",	lineNumber: "103"},
-"000A0007": {	component: "LINUX",	category: "Software_Error",	severity: "FATAL",	message: "[BOOT] The specified BG/Q Linux Distribution path is missing or invalid:  $(DETAILS)",	description: "In order for boot of the node to complete successfully the path to a valid BG/Q Linux Distribution must be specified. The default path is /bgsys/linux/ionfloor.",	serviceAction: "Ensure that the path specified in the error message exists and is accessible.  If using a custom built ramdisk you may need to rebuild your ramdisk using a valid --runos <dir> specified.</dir>",	controlAction: "SOFTWARE_IN_ERROR",	sourceFile: "/bgsys/drivers/V1R2M2/ppc64/linux/usr/src/kernels/2.6.32-431.1.1.bgq.el6.ppc64/arch/powerpc/include/asm/bluegene_ras.h",	lineNumber: "113"},
+// "000A0007": {	component: "LINUX",	category: "Software_Error",	severity: "FATAL",	message: "[BOOT] The specified BG/Q Linux Distribution path is missing or invalid:  $(DETAILS)",	description: "In order for boot of the node to complete successfully the path to a valid BG/Q Linux Distribution must be specified. The default path is /bgsys/linux/ionfloor.",	serviceAction: "Ensure that the path specified in the error message exists and is accessible.  If using a custom built ramdisk you may need to rebuild your ramdisk using a valid --runos <dir> specified.</dir>",	controlAction: "SOFTWARE_IN_ERROR",	sourceFile: "/bgsys/drivers/V1R2M2/ppc64/linux/usr/src/kernels/2.6.32-431.1.1.bgq.el6.ppc64/arch/powerpc/include/asm/bluegene_ras.h",	lineNumber: "113"},
+"000A0007": {	component: "LINUX",	category: "Software_Error",	severity: "FATAL",	message: "[BOOT] The specified BG Linux Distribution path is missing or invalid:  $(DETAILS)",	description: "In order for boot of the node to complete successfully the path to a valid BG/Q Linux Distribution must be specified. The default path is /bgsys/linux/ionfloor.",	serviceAction: "Ensure that the path specified in the error message exists and is accessible.  If using a custom built ramdisk you may need to rebuild your ramdisk using a valid --runos <dir> specified.</dir>",	controlAction: "SOFTWARE_IN_ERROR",	sourceFile: "/bgsys/drivers/V1R2M2/ppc64/linux/usr/src/kernels/2.6.32-431.1.1.bgq.el6.ppc64/arch/powerpc/include/asm/bluegene_ras.h",	lineNumber: "113"},
 "000A0008": {	component: "LINUX",	category: "Software_Error",	severity: "FATAL",	message: "[GPFS] GPFS on the specified cluster node failed to initialize:  $(DETAILS}",	description: "GPFS failed to initialize on the specified node due to an error.",	serviceAction: "Consult the I/O Node and GPFS logs for the specified node for further information and/or send this information to support for further analysis.",	controlAction: "SOFTWARE_IN_ERROR",	sourceFile: "/bgsys/drivers/V1R2M2/ppc64/linux/usr/src/kernels/2.6.32-431.1.1.bgq.el6.ppc64/arch/powerpc/include/asm/bluegene_ras.h",	lineNumber: "124"},
 "000A0009": {	component: "LINUX",	category: "PCI",	severity: "WARN",	message: "[PCIe] The PCIe adapter is running in a suboptimal configuration.  $(DETAILS)",	description: "The PCIe link speed and/or width is not set at its maximum capability.  The maximum bus speed is 5.0 GT/s.  The maximum width is x8.",	serviceAction: "Please verify your PCIe adapter configuration.  The event details describe the current PCIe link speed and width.",	sourceFile: "/bgsys/drivers/V1R2M2/ppc64/linux/usr/src/kernels/2.6.32-431.1.1.bgq.el6.ppc64/arch/powerpc/include/asm/bluegene_ras.h",	lineNumber: "135"},
 "000A000A": {	component: "LINUX",	category: "Software_Error",	severity: "FATAL",	message: "[BOOT] Network configuration failed for the indicated node:  $(DETAILS)",	description: "One of ib0, eth0 or eth1 must be configured in order for the node to successfully boot.",	serviceAction: "Please check the logs for the I/O node for additional information on the network failure. Also ensure that the system administrator has properly configured networking for the failing node. ",	controlAction: "SOFTWARE_IN_ERROR",	sourceFile: "/bgsys/drivers/V1R2M2/ppc64/linux/usr/src/kernels/2.6.32-431.1.1.bgq.el6.ppc64/arch/powerpc/include/asm/bluegene_ras.h",	lineNumber: "145"},
@@ -836,6 +839,7 @@ var Parser = function(pattern) {
     's': 'STRING',
     'f': 'FLOAT'
   };
+  if (_keys == undefined) _keys = [];
   for (var i in _keys) {
     var typeIndex = _keys[i].indexOf('%');
     var type;
@@ -850,18 +854,17 @@ var Parser = function(pattern) {
     }
     _types.push(type);
   }
-  var _regex = new RegExp(_pattern.replace(_keyRegex, '(.*)'));
-  // var _regex = new RegExp(_pattern.replace(_keyRegex, '(.+)'));
-  // var _regex = new RegExp(_pattern.replace(_keyRegex, '([A-Za-z0-9_\.:\'"=()-]+)'));
-  // var _regex = new RegExp(_pattern.replace(_keyRegex, '([A-Za-z0-9_\.-]+)'));
+
+  var tmp = _pattern.replace(_keyRegex, '________');
+  tmp = tmp.replace(/\(/g, '\\(');
+  tmp = tmp.replace(/\)/g, '\\)');
+  var _regex = new RegExp(tmp.replace(/________/g, '(.*)'));
 
   return {
     parse: function(str) {
       if (_regex.test(str) === false) {
         console.log('Parse fail: wrong input pattern');
-        console.log(_pattern);
-        console.log(str);
-        return {};
+        return;
       }
       var obj = {};
       var i;
@@ -891,38 +894,109 @@ var Parser = function(pattern) {
   };
 }
 
+function isEquivalent(a, b) {
+    // Create arrays of property names
+    var aProps = Object.getOwnPropertyNames(a);
+    var bProps = Object.getOwnPropertyNames(b);
 
-// Example 1
-// var p1 = new Parser('Cable from $(FROMPORT) to $(TOPORT) on $(CARD_TYPE) $(BG_LOC) contains bad wires. $(ERROR_DATA)');
-// console.log(p1.parse('Cable from R2E-M0-N10-T04 to R26-M0-N10-T06 on NodeBoard R2E-M0-N10 contains bad wires. Cable is bad with 4 broken wires (0x000000704000)'));
-// Return: 
-// { 
-//   BG_LOC: "R2E-M0-N10",
-//   CARD_TYPE: "NodeBoard",
-//   ERROR_DATA: "Cable is bad with 4 broken wires (0x000000704000)",
-//   FROMPORT: "R2E-M0-N10-T04",
-//   TOPORT: "R26-M0-N10-T06"
-// }
+    // If number of properties is different,
+    // objects are not equivalent
+    if (aProps.length != bProps.length) {
+      console.log('isEquivalent: wrong length');
+        return false;
+    }
+
+    for (var key in a) {
+        // If values of same property are not equal,
+        // objects are not equivalent
+        if (a[key] !== b[key]) {
+          console.log('isEquivalent: propname = ' + key);
+          console.log('isEquivalent: a = ' + a[key]);
+          console.log('isEquivalent: b = ' + b[key]);
+            return false;
+        }
+    }
+
+    // If we made it this far, objects
+    // are considered equivalent
+    return true;
+}
+
+function outputResult(result, expected, testTitle) {
+  if (isEquivalent(result, expected) === false) {
+    console.error('test ' + testTitle +' fail');
+    console.info('expected: ');
+    console.log(expected);
+    console.info('output: ');
+    console.log(result);
+  }
+  else console.info('test ' + testTitle + ' passed');
+}
+
+function test() {
+  var result;
+  var expected;
+
+  // Test 1
+  var p1 = new Parser('Cable from $(FROMPORT) to $(TOPORT) on $(CARD_TYPE) $(BG_LOC) contains bad wires. $(ERROR_DATA)');
+  result = p1.parse('Cable from R2E-M0-N10-T04 to R26-M0-N10-T06 on NodeBoard R2E-M0-N10 contains bad wires. Cable is bad with 4 broken wires (0x000000704000)');
+  expected = { 
+    BG_LOC: "R2E-M0-N10",
+    CARD_TYPE: "NodeBoard",
+    ERROR_DATA: "Cable is bad with 4 broken wires (0x000000704000)",
+    FROMPORT: "R2E-M0-N10-T04",
+    TOPORT: "R26-M0-N10-T06"
+  };
+  outputResult(result, expected, 1);
+
+  // Test 2
+  var p2 = new Parser('There were $(%d, COUNT) similar events. Elapsed time = $(%f, SEC) seconds. Error message: $(%s, MSG).');
+  result = p2.parse('There were 102 similar events. Elapsed time = 0.0018 seconds. Error message: abracadabra.');
+  expected = {
+    COUNT: 102,
+    MSG: "abracadabra",
+    SEC: 0.0018
+  };
+  outputResult(result, expected, 2);
 
 
-// Example 2
-// var p2 = new Parser('There were $(%d, COUNT) similar events. Elapsed time = $(%f, SEC) seconds. Error message: $(%s, MSG).');
-// console.log(p2.parse('There were 102 similar events. Elapsed time = 0.0018 seconds. Error message: abracadabra.'));
-// Return: {
-//   COUNT: 102,
-//   MSG: "abracadabra",
-//   SEC: 0.0018,
-// }
+  // Test 3
+  var p3 = new Parser('Some messages: $(MSG)');
+  outputResult(p3.parse('Some messages: "here are some messages"'), {MSG: '"here are some messages"'}, 3.1);
+  outputResult(p3.parse('Some messages: (here are some messages)'), {MSG: "(here are some messages)"}, 3.2);
+  outputResult(p3.parse('Some messages: apple: poison'), {MSG: "apple: poison"}, 3.3);
+  outputResult(p3.parse('Some messages: 2014-01-01'), {MSG: "2014-01-01"}, 3.4);
+  outputResult(p3.parse('Some messages: [some words]'), {MSG: "[some words]"}, 3.5);
 
-// var p4 = new Parser('ND Sender Retransmission Correctable Error : $(LINK) count=$(%d,COUNT) $(DETAILS)');
-// p4.parse('ND Sender Retransmission Correctable Error : link count=3 ');  // {COUNT: 3, LINK: "link", DETAILS: ""}
+  // Test 4
+  var p4 = new Parser('ND Sender Retransmission Correctable Error : $(LINK) count=$(%d,COUNT) $(DETAILS)');
+  result = p4.parse('ND Sender Retransmission Correctable Error : link count=3 '); 
+  expected = {COUNT: 3, LINK: "link", DETAILS: ""};
+  outputResult(result, expected, 4);
 
+  // Test 5
+  var p5 = new Parser('DDR Maintenance Correctable Error Summary : $(DETAILS)');
+  result = p5.parse('DDR Maintenance Correctable Error Summary : count=10000 MCFIR error status:  [ECC_ERROR_COUNTER_THRESHOLD_REACHED] ;');
+  expected = {DETAILS: "count=10000 MCFIR error status:  [ECC_ERROR_COUNTER_THRESHOLD_REACHED] ;"};
+  outputResult(result, expected, 5);
+
+  // Test 6
+  var p6 = new Parser('A link chip did not bit align along the receiver C port: $(STATUS). The control system will attempt to replace the failing lane(s) with spare(s).');
+  result = p6.parse('A link chip did not bit align along the receiver C port:  Expected: 0xffffff0000000000 Actual: 0xf7ffff0000000000. The control system will attempt to replace the failing lane(s) with spare(s).');
+  expected = {STATUS: " Expected: 0xffffff0000000000 Actual: 0xf7ffff0000000000"};
+  outputResult(result, expected, 6);
+}
 
 module.exports = {
   parse: function(messageID, message) {
     var pattern = rasbook[messageID].message;
     var p = new Parser(pattern);
-    return p.parse(message);
+    var results = p.parse(message);
+    if (results == undefined) {
+      console.log(pattern);
+      console.log(message);
+    }
+    return results; // p.parse(message);
   }
 }
 
