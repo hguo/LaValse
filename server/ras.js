@@ -764,7 +764,8 @@ const rasbook = {
 "00090217": {	component: "CTRLNET",	category: "BQC",	severity: "FATAL",	message: "Serdes link failure.",	description: "A link failure has been isolated based on ras event history and part movements.",	serviceAction: "See the recommended actions in the event Raw Data field.  Run diagnostics. The relevant diagnostic bucket(s) to run are: nodeboard,ioboard,torus. ",	thresholdCount: "1",	relevantDiagnosticSuites: "nodeboard,ioboard,torus",	sourceFile: "/bgsys/source/srcV1R2M2.3650/ctrlnet/include/boot/boot_ras.xml",	lineNumber: "879"},
 "000A0001": {	component: "LINUX",	category: "PCI",	severity: "WARN",	message: "[PCIe] An unsupported PCIe adapter was detected:  $(DETAILS)",	description: "Unsupported PCIe adapters may cause unpredictable behavior.  Supported adapter part numbers may be seen in /bgsys/linux/ionfloor/etc/sysconfig/bgqadapters.",	serviceAction: "Please see the event details for a description of the unsupported adapter.",	sourceFile: "/bgsys/drivers/V1R2M2/ppc64/linux/usr/src/kernels/2.6.32-431.1.1.bgq.el6.ppc64/arch/powerpc/include/asm/bluegene_ras.h",	lineNumber: "48"},
 "000A0002": {	component: "LINUX",	category: "PCI",	severity: "FATAL",	message: "[PCIe] No PCIe adapter VPD detected.",	description: "The node configuration indicates PCIe enablement but the adapter VPD cannot be located.",	serviceAction: "Please correct the node configuration or verify that a supported PCI adapter is installed.  If a PCI adapter is installed it may require replacement.",	controlAction: "COMPUTE_IN_ERROR",	sourceFile: "/bgsys/drivers/V1R2M2/ppc64/linux/usr/src/kernels/2.6.32-431.1.1.bgq.el6.ppc64/arch/powerpc/include/asm/bluegene_ras.h",	lineNumber: "58"},
-"000A0003": {	component: "LINUX",	category: "Software_Error",	severity: "FATAL",	message: "[BOOT] All attempts to mount /bgsys failed:  $(DETAILS)",	description: "All attempts to mount the export directory from the server specified in the database have failed.",	serviceAction: "Please review the mount errors reported in the node's log.  Ensure that the appropriate server IP address and export directory have been specified.  Also ensure that the specified server is active, is exporting the specified directory and is configured to allow the subnet being used by the nodes to mount the export.",	controlAction: "SOFTWARE_IN_ERROR",	sourceFile: "/bgsys/drivers/V1R2M2/ppc64/linux/usr/src/kernels/2.6.32-431.1.1.bgq.el6.ppc64/arch/powerpc/include/asm/bluegene_ras.h",	lineNumber: "69"},
+// "000A0003": {	component: "LINUX",	category: "Software_Error",	severity: "FATAL",	message: "[BOOT] All attempts to mount /bgsys failed:  $(DETAILS)",	description: "All attempts to mount the export directory from the server specified in the database have failed.",	serviceAction: "Please review the mount errors reported in the node's log.  Ensure that the appropriate server IP address and export directory have been specified.  Also ensure that the specified server is active, is exporting the specified directory and is configured to allow the subnet being used by the nodes to mount the export.",	controlAction: "SOFTWARE_IN_ERROR",	sourceFile: "/bgsys/drivers/V1R2M2/ppc64/linux/usr/src/kernels/2.6.32-431.1.1.bgq.el6.ppc64/arch/powerpc/include/asm/bluegene_ras.h",	lineNumber: "69"},
+"000A0003": {	component: "LINUX",	category: "Software_Error",	severity: "FATAL",	message: "[BOOT] All attempts to mount $(PATH) failed:  $(DETAILS)",	description: "All attempts to mount the export directory from the server specified in the database have failed.",	serviceAction: "Please review the mount errors reported in the node's log.  Ensure that the appropriate server IP address and export directory have been specified.  Also ensure that the specified server is active, is exporting the specified directory and is configured to allow the subnet being used by the nodes to mount the export.",	controlAction: "SOFTWARE_IN_ERROR",	sourceFile: "/bgsys/drivers/V1R2M2/ppc64/linux/usr/src/kernels/2.6.32-431.1.1.bgq.el6.ppc64/arch/powerpc/include/asm/bluegene_ras.h",	lineNumber: "69"},
 "000A0004": {	component: "LINUX",	category: "Software_Error",	severity: "FATAL",	message: "[GPFS] GPFS failed to start:  $(DETAILS)",	description: "The node was unable to start GPFS because it is not a member of bgio cluster.",	serviceAction: "Use 'mmaddnode <failing node=\"\" hostname=\"\">' on the service node to add this node to the GPFS bgio cluster.</failing>",	controlAction: "SOFTWARE_IN_ERROR",	sourceFile: "/bgsys/drivers/V1R2M2/ppc64/linux/usr/src/kernels/2.6.32-431.1.1.bgq.el6.ppc64/arch/powerpc/include/asm/bluegene_ras.h",	lineNumber: "80"},
 "000A0005": {	component: "LINUX",	category: "Software_Error",	severity: "FATAL",	message: "[BOOT] No network interface was defined for the node:  $(DETAILS)",	description: "The control system must indicate at least one network interface (ib0, eth0 or eth1) to configure in order for the node to successfully boot.",	serviceAction: "The system administrator needs to properly configure networking for the failing node.",	controlAction: "SOFTWARE_IN_ERROR",	sourceFile: "/bgsys/drivers/V1R2M2/ppc64/linux/usr/src/kernels/2.6.32-431.1.1.bgq.el6.ppc64/arch/powerpc/include/asm/bluegene_ras.h",	lineNumber: "92"},
 "000A0006": {	component: "LINUX",	category: "Software_Error",	severity: "WARN",	message: "[LINUX] An init script has encountered an error or failed to properly execute:  $(DETAILS)",	description: "The init process was not able to fully execute one of the init script. ",	serviceAction: "Consult the node logs for further information regarding this failure and correct the indicated problem.",	sourceFile: "/bgsys/drivers/V1R2M2/ppc64/linux/usr/src/kernels/2.6.32-431.1.1.bgq.el6.ppc64/arch/powerpc/include/asm/bluegene_ras.h",	lineNumber: "103"},
@@ -828,9 +829,23 @@ const rasbook = {
 "FFFE0017": {	component: "TEST",	category: "BQC",	severity: "FATAL",	message: "This is a test ras message.",	description: "This RAS is used for testing purpose only.",	serviceAction: "None",	controlAction: "END_JOB",	thresholdCount: "1",	thresholdPeriod: "1 HOUR",	sourceFile: "/bgsys/source/srcV1R2M2.3650/ras/include/test_ras.h",	lineNumber: "218"}
 };
 
-var Parser = function(pattern) {
+module.exports = {
+  parse: function(messageID, message) {
+    var pattern = rasbook[messageID].message;
+    var p = new Parser(pattern);
+    var results = p.parse(message);
+    if (results == undefined) {
+      console.log(pattern);
+      console.log(message);
+    }
+    return results; // p.parse(message);
+  }
+}
+
+//// sqy
+function Parser(pattern) {
   var _pattern = pattern;
-  var _keyRegex = /\$\([A-Za-z_% ,]+\)/g;
+  var _keyRegex = /\$\([A-Za-z_% ,0-9]+\)/g;
   var _keys = _pattern.match(_keyRegex);
   var _types = [];
 
@@ -839,18 +854,17 @@ var Parser = function(pattern) {
     's': 'STRING',
     'f': 'FLOAT'
   };
-  if (_keys == undefined) _keys = [];
   for (var i in _keys) {
     var typeIndex = _keys[i].indexOf('%');
     var type;
     if (typeIndex === -1) { // no given type
-      _keys[i] = _keys[i].match(/[A-Za-z_]+/g)[0];
+      _keys[i] = _keys[i].match(/[A-Za-z_0-9]+/g)[0];
       type = 'string';
     }
     else {
       var typeChar = _keys[i][typeIndex+1];
       type = typeMap[typeChar];
-      _keys[i] = _keys[i].substr(typeIndex+2).match(/[A-Za-z_]+/g)[0];
+      _keys[i] = _keys[i].substr(typeIndex+2).match(/[A-Za-z_0-9]+/g)[0];
     }
     _types.push(type);
   }
@@ -858,6 +872,8 @@ var Parser = function(pattern) {
   var tmp = _pattern.replace(_keyRegex, '________');
   tmp = tmp.replace(/\(/g, '\\(');
   tmp = tmp.replace(/\)/g, '\\)');
+  tmp = tmp.replace(/\[/g, '\\[');
+  tmp = tmp.replace(/\]/g, '\\]');
   var _regex = new RegExp(tmp.replace(/________/g, '(.*)'));
 
   return {
@@ -869,6 +885,7 @@ var Parser = function(pattern) {
       var obj = {};
       var i;
       var matchString = '';
+      if (_keys === null || _keys === undefined || _keys.length === 0) _keys = [];
       for (i = 1; i <= _keys.length; i ++) {
         matchString += '$' + i;
         if (i !== _keys.length) matchString += '/';
@@ -894,7 +911,8 @@ var Parser = function(pattern) {
   };
 }
 
-function isEquivalent(a, b) {
+function test() {
+  function isEquivalent(a, b) {
     // Create arrays of property names
     var aProps = Object.getOwnPropertyNames(a);
     var bProps = Object.getOwnPropertyNames(b);
@@ -920,20 +938,19 @@ function isEquivalent(a, b) {
     // If we made it this far, objects
     // are considered equivalent
     return true;
-}
-
-function outputResult(result, expected, testTitle) {
-  if (isEquivalent(result, expected) === false) {
-    console.error('test ' + testTitle +' fail');
-    console.info('expected: ');
-    console.log(expected);
-    console.info('output: ');
-    console.log(result);
   }
-  else console.info('test ' + testTitle + ' passed');
-}
 
-function test() {
+  function outputResult(result, expected, testTitle) {
+    if (isEquivalent(result, expected) === false) {
+      console.error('test ' + testTitle +' fail');
+      console.info('expected: ');
+      console.log(expected);
+      console.info('output: ');
+      console.log(result);
+    }
+    else console.info('test ' + testTitle + ' passed');
+  }
+
   var result;
   var expected;
 
@@ -985,18 +1002,18 @@ function test() {
   result = p6.parse('A link chip did not bit align along the receiver C port:  Expected: 0xffffff0000000000 Actual: 0xf7ffff0000000000. The control system will attempt to replace the failing lane(s) with spare(s).');
   expected = {STATUS: " Expected: 0xffffff0000000000 Actual: 0xf7ffff0000000000"};
   outputResult(result, expected, 6);
+
+  // Test 7
+  var p7 = new Parser('[BOOT] The specified BG Linux Distribution path is missing or invalid:  $(DETAILS)');
+  result = p7.parse('[BOOT] The specified BG Linux Distribution path is missing or invalid:  Unable to access the specified BG Linux Distribution .5_V1R2M2-6 due to previous errors.');
+  expected = {DETAILS: 'Unable to access the specified BG Linux Distribution .5_V1R2M2-6 due to previous errors.'};
+  outputResult(result, expected, 7);
+
+  // Test 8 
+  var p8 = new Parser('A2 TLB Parity Error : MMUCR1=$(MMUCR1) MCSR=$(MCSR) : $(MCSR_DETAILS)');
+  result = p8.parse('A2 TLB Parity Error : MMUCR1=0x000000000C0503ED MCSR=0x0000000000000002 : (TLBPE) TLB Parity Error');
+  expected = {MMUCR1: '0x000000000C0503ED', MCSR: '0x0000000000000002', MCSR_DETAILS: '(TLBPE) TLB Parity Error'};
+  outputResult(result, expected, 8);
 }
 
-module.exports = {
-  parse: function(messageID, message) {
-    var pattern = rasbook[messageID].message;
-    var p = new Parser(pattern);
-    var results = p.parse(message);
-    if (results == undefined) {
-      console.log(pattern);
-      console.log(message);
-    }
-    return results; // p.parse(message);
-  }
-}
-
+// test();

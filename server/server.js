@@ -77,7 +77,10 @@ function sendRASHistogram(ws, severity, granularity, date0, date1) {
       ])
       .toArray(function(err, docs) {
         assert.equal(err, null);
-        console.log(docs);
+        docs.forEach(function(d) {
+          d.eventTime = new Date(d._id.year, d._id.month, d._id.day);
+          delete d["_id"];
+        });
         var msg = {
           type: "RASHistogram",
           severity: severity,

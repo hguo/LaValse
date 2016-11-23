@@ -13,7 +13,8 @@ function connectToServer() {
     if (msg.type == "RASLog") {
       updateRASLog(msg.RASLog);
     } if (msg.type == "RASHistogram") {
-      console.log(msg);
+      updateRASHistogram(msg.RASHistogram);
+      // console.log(msg);
     }
   };
 }
@@ -41,6 +42,10 @@ function requestRASHistogram(severity, granularity, date0, date1) {
 
 function updateRASLog(data) {
   updateTimelineView(data);
+}
+
+function updateRASHistogram(data) {
+  updateHistogramView(data);
 }
 
 connectToServer();
