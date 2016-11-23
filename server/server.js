@@ -17,7 +17,7 @@ wss.on("connection", function(ws) {
     var msg = JSON.parse(data);
     console.log(msg);
     if (msg.type == "requestRASLog") {
-      sendRASLog(ws, msg.severity, msg.date0, msg.date1);
+      sendRASLog(ws, msg.query, msg.date0, msg.date1);
     } else if (msg.type == "requestRASHistogram") {
       sendRASHistogram(ws, msg.severity, msg.granularity, msg.date0, msg.date1);
     }
@@ -33,27 +33,27 @@ wss.on("close", function(ws) {
 });
 
 ///// 
-function sendRASLog(ws, severity, date0, date1) {
+function sendRASLog(ws, query, date0, date1) {
   MongoClient.connect(uri, function(err, db) {
     if (err != null) return;
+
+    query.eventTime = {
+      "$gte": new Date(date0), 
+      "$lt":  new Date(date1)
+    };
+
     db.collection("mira")
-      .find({
-        severity: severity,
-        eventTime: {$gte: new Date(date0), $lt: new Date(date1)}, 
-      })
+      .find(query)
       .toArray(function(err, docs) {
         assert.equal(err, null);
         
         var msg = {
           type: "RASLog",
-          severity: severity, 
-          date0: date0,
-          date1: date1,
           RASLog: docs
         };
         if (ws.readyState == 1) {
           ws.send(JSON.stringify(msg));
-          console.log("sent ras log", date0, date1);
+          console.log("sent ras log", docs.length);
         }
       });
   });

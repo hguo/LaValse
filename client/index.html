@@ -11,11 +11,34 @@
     <script src="js/dc.min.js"><script>
     <script scr="js/bootstrap.min.js"></script>
   </head>
+
   <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-2" id="severityChart">
+          <h4>Severity</h4>
+        </div>
+        <div class="col-md-2" id="messageIdChart">
+          <h4>MessageID</h4>
+        </div>
+        <div class="col-md-2" id="componentChart">
+          <h4>Component</h4>
+        </div>
+      </div>
+
+      <div class="row" id="timelineChart">
+      </div>
+
+      <div class="row">
+        <div class="col-md-12" id="machineView">
+        </div>
+      </div>
+    </div>
+
     <script src="charts.js"></script>
     <script src="mira.js"></script>
     <script src="machine.js"></script>
-    <!--<script src="timeline.js"></script>
-    <script src="client.js"></script>-->
+    <!--<script src="timeline.js"></script>-->
+    <script src="client.js"></script>
   </body>
 </html>

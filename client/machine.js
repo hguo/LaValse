@@ -7,12 +7,12 @@ function createMachineView() {
   const midplaneW = 50, midplaneH = 50, midplaneTop = 15, midplanePadding = 2;
   const nodeBoardW = midplaneW/4, nodeBoardH = midplaneH/4;
 
-  var tip = d3.select("body").append("div")
+  var tip = d3.select("#machineView").append("div")
     .style("position", "absolute")
     .style("visibility", "hidden");
   tip.append("p").html("hello world");
 
-  var svg = d3.select("body").append("svg")
+  var svg = d3.select("#machineView").append("svg")
     .attr("id", "machineView")
     .attr("width", W)
     .attr("height", H)
