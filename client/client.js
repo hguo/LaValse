@@ -29,6 +29,14 @@ function requestRASLog(severity, date0, date1) {
   ws.send(JSON.stringify(msg));
 }
 
+function requestHistogram(query) {
+  var msg = {
+    type: "requestHistogram", 
+    query: query
+  };
+  ws.send(JSON.stringify(msg));
+}
+
 function requestRASHistogram(severity, granularity, date0, date1) {
   var msg = {
     type: "requestRASHistogram",

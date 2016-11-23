@@ -89,6 +89,7 @@ var aggregateDocument = function(db, callback) {
     callback(result);
   });
   */
+  /* 
   collection.aggregate([
       {"$match": {"severity": "FATAL"}},
       {"$project": {
@@ -105,4 +106,15 @@ var aggregateDocument = function(db, callback) {
     console.log(result);
     callback(result);
   });
+  */
+  var query = {"$match": {"severity": "FATAL"}};
+  var group = {"$group": {"_id": "$messageID", "count": {$sum: 1}}};
+
+  var a1 = collection.aggregate([query, group]).toArray();
+  // function(err, docs) {
+  //   console.log(docs);
+  // });
+  console.log(a1);
+
+  callback();
 }

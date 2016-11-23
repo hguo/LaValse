@@ -59,6 +59,10 @@ function sendRASLog(ws, severity, date0, date1) {
   });
 }
 
+function sendHistogram(ws, query) {
+
+}
+
 function sendRASHistogram(ws, severity, granularity, date0, date1) {
   MongoClient.connect(uri, function(err, db) {
     if (err != null) return;
