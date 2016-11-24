@@ -1,10 +1,10 @@
 function createMachineView() {
-  const W = 1000, H = 400;
-  const margin = {top: 10, right: 10, bottom: 10, left: 10},
+  const W = 612, H = 258;
+  const margin = {top: 2, right: 2, bottom: 2, left: 2},
         width = W - margin.left - margin.right,
         height = H - margin.top - margin.bottom;
-  const rackW = 54, rackH = 121, rackPadding = 3;
-  const midplaneW = 50, midplaneH = 50, midplaneTop = 15, midplanePadding = 2;
+  const rackW = 34, rackH = 81, rackPadding = 2;
+  const midplaneW = 30, midplaneH = 30, midplaneTop = 15, midplanePadding = 2;
   const nodeBoardW = midplaneW/4, nodeBoardH = midplaneH/4;
 
   var tip = d3.select("#machineView").append("div")
@@ -74,6 +74,11 @@ function createMachineView() {
   $(".nodeBoardBox").mouseleave(function() {
     tip.style("visibility", "hidden");
   });
+}
+
+function highlightBlockAndLocation(block, location) {
+  highlightBlock(block);
+  highlightNodeBoard(location);
 }
 
 function highlightBlock(str) {

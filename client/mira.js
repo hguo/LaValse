@@ -120,6 +120,13 @@ function parseMidplane(str) { // input: Rxx-Mx
   }
 }
 
+function parseLocationType(str) {
+  var substrings = str.split("-");
+  var pattern = "";
+  substrings.forEach(function(s) {pattern += s[0];});
+  return pattern;
+}
+
 function parseLocation(str) {
   var L = {}; // return value
   

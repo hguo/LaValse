@@ -13,26 +13,49 @@
   </head>
 
   <body>
-    <div class="container">
+    <div class="container-full">
       <div class="row">
-        <div class="col-md-2" id="severityChart">
-          <h4>Severity</h4>
+        <div class="dc-chart col-md-2" id="severityChart">
+          <p>Severity</p>
         </div>
-        <div class="col-md-2" id="messageIdChart">
-          <h4>MessageID</h4>
+        <div class="dc-chart col-md-2" id="messageIdChart">
+          <p>MessageID</p>
         </div>
-        <div class="col-md-2" id="componentChart">
-          <h4>Component</h4>
+        <div class="dc-chart col-md-2" id="componentChart">
+          <p>Component</p>
+        </div>
+        <div class="dc-chart col-md-2" id="locationTypeChart">
+          <p>Location Type</p>
         </div>
       </div>
 
-      <div class="row" id="timelineChart">
+      <div class="dc-chart row" id="timelineChart">
       </div>
 
       <div class="row">
-        <div class="col-md-12" id="machineView">
+        <div class="col-md-5" id="machineView">
+        </div>
+
+        <div class="col-md-7">
+          <table class="dc-chart" id="tableView">
+            <thead>
+              <tr class="header">
+                <th>recordID</th>
+                <th>messageID</th>
+                <th>severity</th>
+                <th>eventTime</th>
+                <th>jobID</th>
+                <th>block</th>
+                <th>location</th>
+                <th>serialNumber</th>
+                <th>CPU</th>
+                <th>message</th>
+              </tr>
+            </thead>
+          </table>
         </div>
       </div>
+
     </div>
 
     <script src="charts.js"></script>
