@@ -1,9 +1,11 @@
 const WebSocketServer = require("ws").Server;
 const MongoClient = require("mongodb").MongoClient;
+const bson = require('bson');
 const assert = require("assert");
 
 const uri = "mongodb://localhost:27017/catalog";
 const collectionName = "mira";
+var BSON = new bson.BSONPure.BSON()
 
 var wss = new WebSocketServer({
   port : 8082, 
@@ -53,6 +55,7 @@ function sendRASLog(ws, query, date0, date1) {
         };
         if (ws.readyState == 1) {
           ws.send(JSON.stringify(msg));
+          // ws.send(BSON.serialize(msg));
           console.log("sent ras log", docs.length);
         }
       });

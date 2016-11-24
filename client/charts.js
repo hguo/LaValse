@@ -44,6 +44,7 @@ function createCharts(data) {
     .group(messageIdGroup)
     .transitionDuration(500);
 
+  /*
   timelineChart.width(960)
     .height(100)
     .margins({top: 10, right: 10, bottom: 20, left: 40})
@@ -51,7 +52,21 @@ function createCharts(data) {
     .group(volumeByHourGroup)
     .transitionDuration(500)
     .elasticY(true)
-    .x(d3.time.scale().domain([new Date("1/5/2015"), new Date("1/10/2015")]))
+    .x(d3.time.scale().domain(d3.extent(data, function(d) {return d.eventTime;})))
+    .xAxis();
+  */
+  timelineChart
+    .renderArea(true)
+    .width(960)
+    .height(100)
+    .margins({top: 10, right: 10, bottom: 20, left: 40})
+    .dimension(volumeByHour)
+    .group(volumeByHourGroup)
+    .transitionDuration(500)
+    .elasticY(true)
+    .mouseZoomable(true)
+    .renderHorizontalGridLines(true)
+    .x(d3.time.scale().domain(d3.extent(data, function(d) {return d.eventTime;})))
     .xAxis();
 
   dc.renderAll();
