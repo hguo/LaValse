@@ -82,7 +82,6 @@ function highlightBlockAndLocation(block, location) {
 }
 
 function highlightBlock(str) {
-  // console.log(str);
   var set = parseComputeBlock(str);
   $(".nodeBoardBox").css("fill", "white");
   $(".nodeBoardBox").filter(function() {
@@ -92,14 +91,8 @@ function highlightBlock(str) {
 }
 
 function highlightNodeBoard(str) {
-  var loc = parseLocation(str);
-  console.log(loc);
-  $(".nodeBoardBox").filter(function() {
-    var mpStr = $(this).attr("id").slice(0, 6);
-    var mp = parseMidplane(mpStr);
-    var nb = parseInt($(this).attr("id").slice(8, 10));
-    return mp.row == loc.row && mp.column == loc.column && mp.midplane == loc.midplane && nb == loc.nodeBoard;
-  }).css("fill", "red");
+  var nodeBoardStr = locationStrToNodeBoardStr(str);
+  $(".nodeBoardBox#" + nodeBoardStr).css("fill", "red");
 }
 
 createMachineView();

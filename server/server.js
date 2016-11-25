@@ -44,8 +44,22 @@ function sendRASLog(ws, query, date0, date1) {
       "$lt":  new Date(date1)
     };
 
+    var fields = {
+      block: 1,
+      component: 1, 
+      count: 1,
+      CPU: 1,
+      eventTime: 1,
+      jobID: 1,
+      location: 1,
+      message: 1, 
+      messageID: 1,
+      serialNumber: 1,
+      severity: 1
+    };
+
     db.collection("mira")
-      .find(query)
+      .find(query, fields)
       .toArray(function(err, docs) {
         assert.equal(err, null);
         

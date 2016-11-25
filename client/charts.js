@@ -2,6 +2,7 @@ function createCharts(data) {
   var severityChart = dc.pieChart("#severityChart");
   var componentChart = dc.pieChart("#componentChart");
   var messageIdChart = dc.pieChart("#messageIdChart");
+  var categoryChart = dc.pieChart("#categoryChart");
   var locationTypeChart = dc.pieChart("#locationTypeChart");
   var timelineChart = dc.lineChart("#timelineChart");
   var dataTable = dc.dataTable("#tableView");
@@ -13,14 +14,17 @@ function createCharts(data) {
   });
 
   var facts = crossfilter(data);
-  var severityValue = facts.dimension(function(d) {return d.severity;});
+  var severityValue = facts.dimension(function(d) {return rasbook[d.messageID].severity;});
   var severityGroup = severityValue.group();
 
-  var componentValue = facts.dimension(function(d) {return d.component;});
+  var componentValue = facts.dimension(function(d) {return rasbook[d.messageID].component;});
   var componentGroup = componentValue.group();
   
   var messageIdValue = facts.dimension(function(d) {return d.messageID;});
   var messageIdGroup = messageIdValue.group();
+
+  var categoryValue = facts.dimension(function(d) {return rasbook[d.messageID].category;});
+  var categoryGroup = categoryValue.group();
 
   var locationTypeValue = facts.dimension(function(d) {return d.locationType;});
   var locationTypeGroup = locationTypeValue.group();
@@ -28,6 +32,8 @@ function createCharts(data) {
   var volumeByHour = facts.dimension(function(d) {return d3.time.hour(d.eventTime);});
   var volumeByHourGroup = volumeByHour.group()
     .reduceCount(function(d) {return d.eventTime;});
+
+  var volumeByLocation = facts.dimension(function(d) {return d.location;});
 
   var timeDimension = facts.dimension(function(d) {return d.eventTime;});
 
@@ -51,7 +57,14 @@ function createCharts(data) {
     .dimension(messageIdValue)
     .group(messageIdGroup)
     .transitionDuration(500);
-  
+
+  categoryChart.width(120)
+    .height(120)
+    .radius(50)
+    .dimension(categoryValue)
+    .group(categoryGroup)
+    .transitionDuration(500);
+
   locationTypeChart.width(120)
     .height(120)
     .radius(50)

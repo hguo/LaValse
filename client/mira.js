@@ -149,6 +149,14 @@ function parseLocation(str) {
   return L;
 }
 
+function locationStrToNodeBoardStr(str) {
+  var L = parseLocation(str);
+  if ((typeof L.pattern) == "string" && L.pattern.slice(0, 3) == "RMN") 
+    return nodeBoard2str(L.row, L.column, L.midplane, L.nodeBoard);
+  else 
+    return undefined;
+}
+
 function parseRASMessageID(str) {
   return rasbook[str];
 }
