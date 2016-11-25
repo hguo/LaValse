@@ -6,6 +6,31 @@ function createCharts(data) {
   var locationTypeChart = dc.pieChart("#locationTypeChart");
   var timelineChart = dc.lineChart("#timelineChart");
   var dataTable = dc.dataTable("#tableView");
+  
+  var messageIdTip = d3.tip()
+    .attr("class", "d3-tip")
+    .html(function(d) {
+      // return d.data.key + " (" + rasbook[d.data.key].description + "): " + d.data.value;
+      return d.data.key + ": " + d.data.value;
+    });
+
+  var componentTip = d3.tip()
+    .attr("class", "d3-tip")
+    .html(function(d) {
+      return d.data.key + " (" + rascomp[d.data.key] + "): " + d.data.value;
+    });
+  
+  var categoryTip = d3.tip()
+    .attr("class", "d3-tip")
+    .html(function(d) {
+      return d.data.key + " (" + rascat[d.data.key] + "): " + d.data.value;
+    });
+  
+  var locationTypeTip = d3.tip()
+    .attr("class", "d3-tip")
+    .html(function(d) {
+      return d.data.key + " (" + locationNarratives[d.data.key] + "): " + d.data.value;
+    });
 
   var format = d3.time.format("%Y-%m-%dT%H:%M:%S.%LZ");
   data.forEach(function(e) {
@@ -64,6 +89,9 @@ function createCharts(data) {
   categoryChart.width(120)
     .height(120)
     .radius(50)
+    // .externalLabels(10)
+    // .externalRadiusPadding(10)
+    // .drawPaths(true)
     .dimension(categoryValue)
     .group(categoryGroup)
     .transitionDuration(500);
@@ -74,7 +102,7 @@ function createCharts(data) {
     .dimension(locationTypeValue)
     .group(locationTypeGroup)
     .transitionDuration(500);
-
+ 
   /*
   timelineChart.width(960)
     .height(100)
@@ -123,4 +151,24 @@ function createCharts(data) {
     .order(d3.ascending);
 
   dc.renderAll();
+  
+  d3.selectAll("#messageIdChart .pie-slice")
+    .call(messageIdTip)
+    .on("mouseover", messageIdTip.show)
+    .on("mouseout", messageIdTip.hide);
+
+  d3.selectAll("#componentChart .pie-slice")
+    .call(componentTip)
+    .on("mouseover", componentTip.show)
+    .on("mouseout", componentTip.hide);
+  
+  d3.selectAll("#categoryChart .pie-slice")
+    .call(categoryTip)
+    .on("mouseover", categoryTip.show)
+    .on("mouseout", categoryTip.hide);
+  
+  d3.selectAll("#locationTypeChart .pie-slice")
+    .call(locationTypeTip)
+    .on("mouseover", locationTypeTip.show)
+    .on("mouseout", locationTypeTip.hide);
 }

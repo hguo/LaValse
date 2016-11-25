@@ -869,6 +869,7 @@ const rascomp = {
 "BGMASTER": "The process running on the service node that monitors control system processes",
 "MC": "The machine controller running on the sevice node",
 "MCSERVER": "The control system running on the sevice node",
+"MMCS": "The control system running on the sevice node",
 "BAREMETAL": "Service related facilities",
 "FIRMWARE": "Firmware",
 "CTRLNET": "Control Net",

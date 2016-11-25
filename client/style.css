@@ -65,8 +65,7 @@ body {
 }
 
 .dc-chart .pie-slice {
-    fill: white;
-    font-size: 12px;
+    fill: black;
     cursor: pointer;
 }
 
