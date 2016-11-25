@@ -29,6 +29,9 @@ function createCharts(data) {
   var locationTypeValue = facts.dimension(function(d) {return d.locationType;});
   var locationTypeGroup = locationTypeValue.group();
 
+  var nodeBoardValue = facts.dimension(function(d) {return locationStrToNodeBoardStr(d.location);});
+  var nodeBoardGroup = nodeBoardValue.group();
+
   var volumeByHour = facts.dimension(function(d) {return d3.time.hour(d.eventTime);});
   var volumeByHourGroup = volumeByHour.group()
     .reduceCount(function(d) {return d.eventTime;});
