@@ -1,17 +1,19 @@
 const WebSocketServer = require("ws").Server;
+const express = require("express");
+const http = require("http");
 const MongoClient = require("mongodb").MongoClient;
-const bson = require('bson');
 const assert = require("assert");
 
 const uri = "mongodb://localhost:27017/catalog";
 const collectionName = "mira";
-var BSON = new bson.BSONPure.BSON()
 
-var wss = new WebSocketServer({
-  port : 8082, 
-  perMessageDeflate : "false"
-});
+var app = express();
+app.use(express.static("public"));
 
+var server = http.createServer(app);
+server.listen(8081);
+
+var wss = new WebSocketServer({server: server, path: "/ws"});
 wss.on("connection", function(ws) {
   console.log("connected.");
 
@@ -33,6 +35,7 @@ wss.on("connection", function(ws) {
 wss.on("close", function(ws) {
   console.log("closed.");
 });
+
 
 ///// 
 function sendRASLog(ws, query, date0, date1) {

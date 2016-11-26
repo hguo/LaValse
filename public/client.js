@@ -1,7 +1,7 @@
 var ws;
 
 function connectToServer() {
-  ws = new WebSocket("ws://localhost:8082");
+  ws = new WebSocket("ws://localhost:8081/ws");
   ws.onopen = function(evt) {
     console.log("connected to server.");
     requestRASLog({}, new Date("2015-01-05"), new Date("2015-01-06"));
