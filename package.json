@@ -1,0 +1,25 @@
+{
+  "name": "catalogVis",
+  "version": "1.0.0",
+  "description": "",
+  "main": "importLog.js",
+  "dependencies": {
+    "assert": "^1.4.1",
+    "express": "^4.14.0",
+    "mongodb": "^2.2.11",
+    "ws": "^1.1.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/hanqiguo/catalogvis.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/hanqiguo/catalogvis#readme"
+}
