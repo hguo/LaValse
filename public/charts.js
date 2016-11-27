@@ -1,35 +1,41 @@
 function createCharts(data) {
-  var severityChart = dc.pieChart("#severityChart");
-  var componentChart = dc.pieChart("#componentChart");
-  var messageIdChart = dc.pieChart("#messageIdChart");
-  var categoryChart = dc.pieChart("#categoryChart");
-  var locationTypeChart = dc.pieChart("#locationTypeChart");
+  var severityChart = dc.rowChart("#severityChart");
+  var componentChart = dc.rowChart("#componentChart");
+  var messageIdChart = dc.rowChart("#messageIdChart");
+  var categoryChart = dc.rowChart("#categoryChart");
+  var locationTypeChart = dc.rowChart("#locationTypeChart");
   var timelineChart = dc.lineChart("#timelineChart");
   var dataTable = dc.dataTable("#tableView");
+  
+  var severityTip = d3.tip()
+    .attr("class", "d3-tip")
+    .html(function(d) {
+      return d.key + ": " + d.value;
+    });
   
   var messageIdTip = d3.tip()
     .attr("class", "d3-tip")
     .html(function(d) {
       // return d.data.key + " (" + rasbook[d.data.key].description + "): " + d.data.value;
-      return d.data.key + ": " + d.data.value;
+      return d.key + ": " + d.value;
     });
 
   var componentTip = d3.tip()
     .attr("class", "d3-tip")
     .html(function(d) {
-      return d.data.key + " (" + rascomp[d.data.key] + "): " + d.data.value;
+      return d.key + " (" + rascomp[d.key] + "): " + d.value;
     });
   
   var categoryTip = d3.tip()
     .attr("class", "d3-tip")
     .html(function(d) {
-      return d.data.key + " (" + rascat[d.data.key] + "): " + d.data.value;
+      return d.key + " (" + rascat[d.key] + "): " + d.value;
     });
   
   var locationTypeTip = d3.tip()
     .attr("class", "d3-tip")
     .html(function(d) {
-      return d.data.key + " (" + locationNarratives[d.data.key] + "): " + d.data.value;
+      return d.key + " (" + locationNarratives[d.key] + "): " + d.value;
     });
 
   var format = d3.time.format("%Y-%m-%dT%H:%M:%S.%LZ");
@@ -39,22 +45,40 @@ function createCharts(data) {
   });
 
   var facts = crossfilter(data);
-  var severityValue = facts.dimension(function(d) {return rasbook[d.messageID].severity;});
+  var severityValue = facts.dimension(function(d) {
+    var val = rasbook[d.messageID].severity;
+    return val == undefined ? "" : val;
+  });
   var severityGroup = severityValue.group();
 
-  var componentValue = facts.dimension(function(d) {return rasbook[d.messageID].component;});
+  var componentValue = facts.dimension(function(d) {
+    var val = rasbook[d.messageID].component;
+    return val == undefined ? "" : val;
+  });
   var componentGroup = componentValue.group();
   
-  var messageIdValue = facts.dimension(function(d) {return d.messageID;});
+  var messageIdValue = facts.dimension(function(d) {
+    var val = d.messageID;
+    return val == undefined ? "" : val;
+  });
   var messageIdGroup = messageIdValue.group();
 
-  var categoryValue = facts.dimension(function(d) {return rasbook[d.messageID].category;});
+  var categoryValue = facts.dimension(function(d) {
+    var val = rasbook[d.messageID].category;
+    return val == undefined ? "" : val;
+  });
   var categoryGroup = categoryValue.group();
 
-  var locationTypeValue = facts.dimension(function(d) {return d.locationType;});
+  var locationTypeValue = facts.dimension(function(d) {
+    var val = d.locationType;
+    return val == undefined ? "" : val;
+  });
   var locationTypeGroup = locationTypeValue.group();
 
-  var nodeBoardValue = facts.dimension(function(d) {return locationStrToNodeBoardStr(d.location);});
+  var nodeBoardValue = facts.dimension(function(d) {
+    var val = locationStrToNodeBoardStr(d.location);
+    return val == undefined ? "" : val;
+  });
   var nodeBoardGroup = nodeBoardValue.group();
 
   var volumeByHour = facts.dimension(function(d) {return d3.time.hour(d.eventTime);});
@@ -65,43 +89,45 @@ function createCharts(data) {
 
   var timeDimension = facts.dimension(function(d) {return d.eventTime;});
 
-  severityChart.width(120)
-    .height(120)
-    .radius(50)
+  severityChart.width(300)
+    .height(300)
     .dimension(severityValue)
     .group(severityGroup)
-    .transitionDuration(500);
+    .transitionDuration(500)
+    .x(d3.scale.linear().domain([6,20]))
+    .elasticX(true);
 
-  componentChart.width(120)
-    .height(120)
-    .radius(50)
+  componentChart.width(300)
+    .height(300)
     .dimension(componentValue)
     .group(componentGroup)
-    .transitionDuration(500);
+    .transitionDuration(500)
+    .x(d3.scale.linear().domain([6,20]))
+    .elasticX(true);
 
-  messageIdChart.width(120)
-    .height(120)
-    .radius(50)
+  messageIdChart.width(300)
+    .height(300)
     .dimension(messageIdValue)
     .group(messageIdGroup)
-    .transitionDuration(500);
+    .transitionDuration(500)
+    .x(d3.scale.linear().domain([6,20]))
+    .elasticX(true);
 
-  categoryChart.width(120)
-    .height(120)
-    .radius(50)
-    // .externalLabels(10)
-    // .externalRadiusPadding(10)
-    // .drawPaths(true)
+  categoryChart.width(300)
+    .height(300)
     .dimension(categoryValue)
     .group(categoryGroup)
-    .transitionDuration(500);
+    .transitionDuration(500)
+    .x(d3.scale.linear().domain([6,20]))
+    .elasticX(true);
 
-  locationTypeChart.width(120)
-    .height(120)
-    .radius(50)
+  locationTypeChart.width(300)
+    .height(300)
     .dimension(locationTypeValue)
     .group(locationTypeGroup)
-    .transitionDuration(500);
+    .transitionDuration(500)
+    .x(d3.scale.linear().domain([6,20]))
+    .elasticX(true);
  
   /*
   timelineChart.width(960)
@@ -152,22 +178,27 @@ function createCharts(data) {
 
   dc.renderAll();
   
-  d3.selectAll("#messageIdChart .pie-slice")
+  d3.selectAll("#severityChart .row")
+    .call(severityTip)
+    .on("mouseover", severityTip.show)
+    .on("mouseout", severityTip.hide);
+  
+  d3.selectAll("#messageIdChart .row")
     .call(messageIdTip)
     .on("mouseover", messageIdTip.show)
     .on("mouseout", messageIdTip.hide);
 
-  d3.selectAll("#componentChart .pie-slice")
+  d3.selectAll("#componentChart .row")
     .call(componentTip)
     .on("mouseover", componentTip.show)
     .on("mouseout", componentTip.hide);
   
-  d3.selectAll("#categoryChart .pie-slice")
+  d3.selectAll("#categoryChart .row")
     .call(categoryTip)
     .on("mouseover", categoryTip.show)
     .on("mouseout", categoryTip.hide);
   
-  d3.selectAll("#locationTypeChart .pie-slice")
+  d3.selectAll("#locationTypeChart .row")
     .call(locationTypeTip)
     .on("mouseover", locationTypeTip.show)
     .on("mouseout", locationTypeTip.hide);
