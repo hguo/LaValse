@@ -1,10 +1,15 @@
 var ws;
 
 function connectToServer() {
-  ws = new WebSocket("ws://localhost:8081/ws");
+  var host = window.location.host;
+  var uri = "ws://" + host + "/ws";
+  console.log(uri);
+  
+  // ws = new WebSocket("ws://localhost:8081/ws");
+  ws = new WebSocket(uri);
   ws.onopen = function(evt) {
     console.log("connected to server.");
-    requestRASLog({}, new Date("2015-01-10"), new Date("2015-01-20"));
+    requestRASLog({}, new Date("2015-01-04"), new Date("2015-01-06"));
   };
 
   ws.onmessage = function(evt) {
