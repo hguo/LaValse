@@ -4,6 +4,7 @@ function createCharts(data) {
   var messageIdChart = dc.rowChart("#messageIdChart");
   var categoryChart = dc.rowChart("#categoryChart");
   var locationTypeChart = dc.rowChart("#locationTypeChart");
+  // var dayOfWeekChart = dc.rowChart("#dayOfWeekChart");
   var timelineChart = dc.lineChart("#timelineChart");
   var dataTable = dc.dataTable("#tableView");
   
@@ -38,56 +39,64 @@ function createCharts(data) {
       return d.key + " (" + locationNarratives[d.key] + "): " + d.value;
     });
 
-  var format = d3.time.format("%Y-%m-%dT%H:%M:%S.%LZ");
+  // var format = d3.time.format("%Y-%m-%dT%H:%M:%S.%LZ");
   data.forEach(function(e) {
     e.locationType = parseLocationType(e.location);
-    e.eventTime = format.parse(e.eventTime); 
+    // e.eventTime = format.parse(e.eventTime); 
   });
 
-  var facts = crossfilter(data);
-  var severityValue = facts.dimension(function(d) {
+  var ndx = crossfilter(data);
+  var severityValue = ndx.dimension(function(d) {
     var val = rasbook[d.messageID].severity;
     return val == undefined ? "" : val;
   });
   var severityGroup = severityValue.group();
 
-  var componentValue = facts.dimension(function(d) {
+  var componentValue = ndx.dimension(function(d) {
     var val = rasbook[d.messageID].component;
     return val == undefined ? "" : val;
   });
   var componentGroup = componentValue.group();
   
-  var messageIdValue = facts.dimension(function(d) {
+  var messageIdValue = ndx.dimension(function(d) {
     var val = d.messageID;
     return val == undefined ? "" : val;
   });
   var messageIdGroup = messageIdValue.group();
 
-  var categoryValue = facts.dimension(function(d) {
+  var categoryValue = ndx.dimension(function(d) {
     var val = rasbook[d.messageID].category;
     return val == undefined ? "" : val;
   });
   var categoryGroup = categoryValue.group();
 
-  var locationTypeValue = facts.dimension(function(d) {
+  var locationTypeValue = ndx.dimension(function(d) {
     var val = d.locationType;
     return val == undefined ? "" : val;
   });
   var locationTypeGroup = locationTypeValue.group();
 
-  var nodeBoardValue = facts.dimension(function(d) {
+  var nodeBoardValue = ndx.dimension(function(d) {
     var val = locationStrToNodeBoardStr(d.location);
     return val == undefined ? "" : val;
   });
   var nodeBoardGroup = nodeBoardValue.group();
 
-  var volumeByHour = facts.dimension(function(d) {return d3.time.hour(d.eventTime);});
+  /*
+  var dayOfWeek = ndx.dimension(function(d) {
+    var day = d.eventTime.getDay();
+    var name = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    return day + '.' + name[day];
+  });
+  */
+
+  var volumeByHour = ndx.dimension(function(d) {return d3.time.hour(d.eventTime);});
   var volumeByHourGroup = volumeByHour.group()
     .reduceCount(function(d) {return d.eventTime;});
 
-  var volumeByLocation = facts.dimension(function(d) {return d.location;});
+  var volumeByLocation = ndx.dimension(function(d) {return d.location;});
 
-  var timeDimension = facts.dimension(function(d) {return d.eventTime;});
+  var timeDimension = ndx.dimension(function(d) {return d.eventTime;});
 
   severityChart.width(300)
     .height(300)
@@ -128,6 +137,16 @@ function createCharts(data) {
     .transitionDuration(500)
     .x(d3.scale.linear().domain([6,20]))
     .elasticX(true);
+ 
+  /*
+  dayOfWeekChart.width(300)
+    .height(300)
+    .dimension(dayOfWeek)
+    .group(dayOfWeek)
+    .transitionDuration(500)
+    .x(d3.scale.linear().domain([6,20]))
+    .elasticX(true);
+  */
  
   /*
   timelineChart.width(960)

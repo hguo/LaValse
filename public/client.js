@@ -7,13 +7,15 @@ function connectToServer() {
   
   // ws = new WebSocket("ws://localhost:8081/ws");
   ws = new WebSocket(uri);
+  ws.binaryType = "arraybuffer";
   ws.onopen = function(evt) {
     console.log("connected to server.");
-    requestRASLog({}, new Date("2015-01-04"), new Date("2015-01-06"));
+    requestRASLog({}, new Date("2015-01-03"), new Date("2015-01-07"));
   };
 
   ws.onmessage = function(evt) {
-    var msg = JSON.parse(evt.data);
+    // var msg = JSON.parse(evt.data);
+    var msg = msgpack.decode(new Uint8Array(evt.data));
     if (msg.type == "RASLog") {
       updateRASLog(msg.RASLog);
     } if (msg.type == "RASHistogram") {
@@ -31,7 +33,8 @@ function requestRASLog(query, date0, date1) {
     query: query
   };
   console.log(msg);
-  ws.send(JSON.stringify(msg));
+  // ws.send(JSON.stringify(msg));
+  ws.send(msgpack.encode(msg));
 }
 
 function requestHistogram(query) {
@@ -39,7 +42,8 @@ function requestHistogram(query) {
     type: "requestHistogram", 
     query: query
   };
-  ws.send(JSON.stringify(msg));
+  // ws.send(JSON.stringify(msg));
+  ws.send(msgpack.encode(msg));
 }
 
 function requestRASHistogram(severity, granularity, date0, date1) {
@@ -50,7 +54,8 @@ function requestRASHistogram(severity, granularity, date0, date1) {
     date0: date0, 
     date1: date1
   };
-  ws.send(JSON.stringify(msg));
+  // ws.send(JSON.stringify(msg));
+  ws.send(msgpack.encode(msg));
 }
 
 function updateRASLog(data) {

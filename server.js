@@ -3,6 +3,7 @@ const express = require("express");
 const http = require("http");
 const MongoClient = require("mongodb").MongoClient;
 const assert = require("assert");
+const msgpack = require("msgpack-lite");
 
 const uri = "mongodb://localhost:27017/catalog";
 const collectionName = "mira";
@@ -18,7 +19,8 @@ wss.on("connection", function(ws) {
   console.log("connected.");
 
   ws.on("message", function(data) {
-    var msg = JSON.parse(data);
+    // var msg = JSON.parse(data);
+    var msg = msgpack.decode(data);
     console.log(msg);
     if (msg.type == "requestRASLog") {
       sendRASLog(ws, msg.query, msg.date0, msg.date1);
@@ -71,7 +73,8 @@ function sendRASLog(ws, query, date0, date1) {
           RASLog: docs
         };
         if (ws.readyState == 1) {
-          ws.send(JSON.stringify(msg));
+          ws.send(msgpack.encode(msg), {binary: true});
+          // ws.send(JSON.stringify(msg));
           // ws.send(BSON.serialize(msg));
           console.log("sent ras log", docs.length);
         }
