@@ -14,8 +14,13 @@ app.use(express.static("public"));
 var server = http.createServer(app);
 server.listen(8081);
 
-var wss = new WebSocketServer({server: server, path: "/ws"});
+var wss = new WebSocketServer({
+  server: server, 
+  path: "/ws"
+});
+
 wss.on("connection", function(ws) {
+  ws.binaryType = "arraybuffer";
   console.log("connected.");
 
   ws.on("message", function(data) {
@@ -51,16 +56,16 @@ function sendRASLog(ws, query, date0, date1) {
 
     var fields = {
       block: 1,
-      component: 1, 
+      // component: 1, 
       count: 1,
       CPU: 1,
       eventTime: 1,
       jobID: 1,
       location: 1,
       message: 1, 
-      messageID: 1,
-      serialNumber: 1,
-      severity: 1
+      messageID: 1
+      // serialNumber: 1
+      // severity: 1
     };
 
     db.collection("mira")

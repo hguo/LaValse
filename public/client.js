@@ -5,7 +5,6 @@ function connectToServer() {
   var uri = "ws://" + host + "/ws";
   console.log(uri);
   
-  // ws = new WebSocket("ws://localhost:8081/ws");
   ws = new WebSocket(uri);
   ws.binaryType = "arraybuffer";
   ws.onopen = function(evt) {

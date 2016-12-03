@@ -188,7 +188,7 @@ function createCharts(data) {
         function(d) {
           return "<a href='javascript:highlightBlockAndLocation(\"" + d.block + "\",\"" + d.location 
             + "\")'>" + d.location + "</a>"},
-        function(d) {return d.serialNumber;},
+        // function(d) {return d.serialNumber;},
         function(d) {return d.CPU;},
         function(d) {return d.message;}
     ])
