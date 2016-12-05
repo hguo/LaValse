@@ -211,5 +211,9 @@ function parseComputeBlock(str) {
   return set;
 }
 
+// module.exports = {
+//   parseLocation: parseLocation
+// };
+
 // console.log(parseLocation("R1A-M1-N13"));
 // parseComputeBlock("MIR-00000-73FF1-16384");

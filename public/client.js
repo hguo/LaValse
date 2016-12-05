@@ -9,7 +9,7 @@ function connectToServer() {
   ws.binaryType = "arraybuffer";
   ws.onopen = function(evt) {
     console.log("connected to server.");
-    requestRASLog({}, new Date("2015-01-03"), new Date("2015-01-07"));
+    requestRASLog({}, new Date("2015-02-03"), new Date("2015-02-07"));
   };
 
   ws.onmessage = function(evt) {

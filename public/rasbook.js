@@ -832,6 +832,7 @@ const rasbook = {
 const rascat = {
 "BQC": "Blue Gene/Q compute card",
 "BGL": "Blue Gene/Q link module",
+"BQL": "BQL",
 "DDR": "Double Data Rate Memory",
 "PCI": "PCI adapter card",
 "Ethernet": "Ethernet adapter card",
@@ -876,5 +877,7 @@ const rascomp = {
 "LINUX": "Linux",
 "CIOS": "CIOS",
 "MUDM": "Memory Unit",
-"SPI": "SPI"
+"SPI": "SPI",
+"BGPM": "BGPM",
+"TEST": "TEST",
 };

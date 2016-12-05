@@ -7,6 +7,8 @@ function createCharts(data) {
   // var dayOfWeekChart = dc.rowChart("#dayOfWeekChart");
   var timelineChart = dc.lineChart("#timelineChart");
   var dataTable = dc.dataTable("#tableView");
+
+  const transitionDuration = 200;
   
   var severityTip = d3.tip()
     .attr("class", "d3-tip")
@@ -41,43 +43,43 @@ function createCharts(data) {
 
   // var format = d3.time.format("%Y-%m-%dT%H:%M:%S.%LZ");
   data.forEach(function(e) {
-    e.locationType = parseLocationType(e.location);
+    e.lt = parseLocationType(e.l);
     // e.eventTime = format.parse(e.eventTime); 
   });
 
   var ndx = crossfilter(data);
   var severityValue = ndx.dimension(function(d) {
-    var val = rasbook[d.messageID].severity;
+    var val = rasbook[d.i].severity;
     return val == undefined ? "" : val;
   });
   var severityGroup = severityValue.group();
 
   var componentValue = ndx.dimension(function(d) {
-    var val = rasbook[d.messageID].component;
+    var val = rasbook[d.i].component;
     return val == undefined ? "" : val;
   });
   var componentGroup = componentValue.group();
   
   var messageIdValue = ndx.dimension(function(d) {
-    var val = d.messageID;
+    var val = d.i;
     return val == undefined ? "" : val;
   });
   var messageIdGroup = messageIdValue.group();
 
   var categoryValue = ndx.dimension(function(d) {
-    var val = rasbook[d.messageID].category;
+    var val = rasbook[d.i].category;
     return val == undefined ? "" : val;
   });
   var categoryGroup = categoryValue.group();
 
   var locationTypeValue = ndx.dimension(function(d) {
-    var val = d.locationType;
+    var val = d.lt;
     return val == undefined ? "" : val;
   });
   var locationTypeGroup = locationTypeValue.group();
 
   var nodeBoardValue = ndx.dimension(function(d) {
-    var val = locationStrToNodeBoardStr(d.location);
+    var val = locationStrToNodeBoardStr(d.l);
     return val == undefined ? "" : val;
   });
   var nodeBoardGroup = nodeBoardValue.group();
@@ -90,19 +92,19 @@ function createCharts(data) {
   });
   */
 
-  var volumeByHour = ndx.dimension(function(d) {return d3.time.hour(d.eventTime);});
+  var volumeByHour = ndx.dimension(function(d) {return d3.time.hour(d.t);});
   var volumeByHourGroup = volumeByHour.group()
-    .reduceCount(function(d) {return d.eventTime;});
+    .reduceCount(function(d) {return d.t;});
 
-  var volumeByLocation = ndx.dimension(function(d) {return d.location;});
+  var volumeByLocation = ndx.dimension(function(d) {return d.l;});
 
-  var timeDimension = ndx.dimension(function(d) {return d.eventTime;});
+  var timeDimension = ndx.dimension(function(d) {return d.t;});
 
   severityChart.width(300)
     .height(300)
     .dimension(severityValue)
     .group(severityGroup)
-    .transitionDuration(500)
+    .transitionDuration(transitionDuration)
     .x(d3.scale.linear().domain([6,20]))
     .elasticX(true);
 
@@ -110,7 +112,7 @@ function createCharts(data) {
     .height(300)
     .dimension(componentValue)
     .group(componentGroup)
-    .transitionDuration(500)
+    .transitionDuration(transitionDuration)
     .x(d3.scale.linear().domain([6,20]))
     .elasticX(true);
 
@@ -118,7 +120,7 @@ function createCharts(data) {
     .height(300)
     .dimension(messageIdValue)
     .group(messageIdGroup)
-    .transitionDuration(500)
+    .transitionDuration(transitionDuration)
     .x(d3.scale.linear().domain([6,20]))
     .elasticX(true);
 
@@ -126,7 +128,7 @@ function createCharts(data) {
     .height(300)
     .dimension(categoryValue)
     .group(categoryGroup)
-    .transitionDuration(500)
+    .transitionDuration(transitionDuration)
     .x(d3.scale.linear().domain([6,20]))
     .elasticX(true);
 
@@ -134,7 +136,7 @@ function createCharts(data) {
     .height(300)
     .dimension(locationTypeValue)
     .group(locationTypeGroup)
-    .transitionDuration(500)
+    .transitionDuration(transitionDuration)
     .x(d3.scale.linear().domain([6,20]))
     .elasticX(true);
  
@@ -143,7 +145,7 @@ function createCharts(data) {
     .height(300)
     .dimension(dayOfWeek)
     .group(dayOfWeek)
-    .transitionDuration(500)
+    .transitionDuration(transitionDuration)
     .x(d3.scale.linear().domain([6,20]))
     .elasticX(true);
   */
@@ -154,7 +156,7 @@ function createCharts(data) {
     .margins({top: 10, right: 10, bottom: 20, left: 40})
     .dimension(volumeByHour)
     .group(volumeByHourGroup)
-    .transitionDuration(500)
+    .transitionDuration(transitionDuration)
     .elasticY(true)
     .x(d3.time.scale().domain(d3.extent(data, function(d) {return d.eventTime;})))
     .xAxis();
@@ -166,11 +168,11 @@ function createCharts(data) {
     .margins({top: 10, right: 10, bottom: 20, left: 40})
     .dimension(volumeByHour)
     .group(volumeByHourGroup)
-    .transitionDuration(500)
+    .transitionDuration(transitionDuration)
     .elasticY(true)
     // .mouseZoomable(true)
     .renderHorizontalGridLines(true)
-    .x(d3.time.scale().domain(d3.extent(data, function(d) {return d.eventTime;})))
+    .x(d3.time.scale().domain(d3.extent(data, function(d) {return d.t;})))
     .xAxis();
 
   dataTable.width(960).height(800)
@@ -179,20 +181,20 @@ function createCharts(data) {
     .showGroups(false)
     .size(10)
     .columns([
-        function(d) {return d._id;},
-        function(d) {return d.messageID;},
-        function(d) {return d.severity;},
-        function(d) {return d.eventTime;},
-        function(d) {return d.jobID;},
-        function(d) {return d.block;},
+        function(d) {return d.id;},
+        function(d) {return d.i;},
+        function(d) {return rasbook[d.i].severity;},
+        function(d) {return d.t;},
+        function(d) {return d.j;},
+        function(d) {return d.b;},
         function(d) {
-          return "<a href='javascript:highlightBlockAndLocation(\"" + d.block + "\",\"" + d.location 
-            + "\")'>" + d.location + "</a>"},
+          return "<a href='javascript:highlightBlockAndLocation(\"" + d.block + "\",\"" + d.l
+            + "\")'>" + d.l + "</a>"},
         // function(d) {return d.serialNumber;},
-        function(d) {return d.CPU;},
-        function(d) {return d.message;}
+        function(d) {return d.c;},
+        function(d) {return d.m;}
     ])
-    .sortBy(function(d) {return d.eventTime;})
+    .sortBy(function(d) {return d.t;})
     .order(d3.ascending);
 
   dc.renderAll();
