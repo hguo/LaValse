@@ -78,11 +78,13 @@ function createCharts(data) {
   });
   var locationTypeGroup = locationTypeValue.group();
 
+  /* 
   var nodeBoardValue = ndx.dimension(function(d) {
     var val = locationStrToNodeBoardStr(d.l);
     return val == undefined ? "" : val;
   });
   var nodeBoardGroup = nodeBoardValue.group();
+  */
 
   /*
   var dayOfWeek = ndx.dimension(function(d) {
@@ -184,7 +186,7 @@ function createCharts(data) {
         function(d) {return d.id;},
         function(d) {return d.i;},
         function(d) {return rasbook[d.i].severity;},
-        function(d) {return d.t;},
+        function(d) {return d.t.toISOString();},
         function(d) {return d.j;},
         function(d) {return d.b;},
         function(d) {

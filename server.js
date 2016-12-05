@@ -54,13 +54,13 @@ function sendRASLog(ws, query, date0, date1) {
       .aggregate([
         {"$match": query},
         {"$project": {
-          "id": "$_id",
-          "b": "$block",
-          "c": "$CPU",
+          // "id": "$_id",
+          // "b": "$block",
+          // "c": "$CPU",
           "t": "$eventTime",
-          "j": "$jobID",
+          // "j": "$jobID",
           "l": "$location",
-          "m": "$message",
+          // "m": "$message",
           "i": "$messageID"}}
       ])
       .toArray(function(err, docs) {
