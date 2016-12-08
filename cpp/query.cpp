@@ -1,5 +1,6 @@
 #include "rasQuery.h"
 #include <vector>
+#include <chrono>
 
 int main(int argc, char **argv) {
   FILE *fp = fopen("raslog", "rb");
@@ -24,9 +25,11 @@ int main(int argc, char **argv) {
   query.severities.insert(ras::SEV_FATAL);
   query.severities.insert(ras::SEV_WARN);
 
-  clock_t t0 = clock();
+  typedef std::chrono::high_resolution_clock clock;
+  auto t0 = clock::now();
   query.crossfilter(events, results);
-  clock_t t1 = clock();
+  auto t1 = clock::now();
+  float elapsed = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count() / 1000.0; 
 
   fprintf(stderr, "eventTime (hour)\n");
   for (const auto &kv : results.timeVolume) 
@@ -48,5 +51,5 @@ int main(int argc, char **argv) {
   for (const auto &kv : results.severities) 
     fprintf(stderr, " - %d: %d\n", kv.first, kv.second);
   
-  fprintf(stderr, "N=%d, TIME=%f\n", n, (float)(t1-t0)/CLOCKS_PER_SEC);
+  fprintf(stderr, "N=%d, TIME=%f ms\n", n, elapsed);
 }
