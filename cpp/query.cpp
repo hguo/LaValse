@@ -1,4 +1,4 @@
-#include "ras.h"
+#include "rasQuery.h"
 #include <vector>
 
 int main(int argc, char **argv) {
@@ -17,12 +17,12 @@ int main(int argc, char **argv) {
   ras::Query query;
   ras::QueryResults results;
 
-  // query.t0 = 1436184000000;
-  // query.t1 = 1436936400000;
   query.tg = ras::TIME_DAY;
-  // query.categories.insert(ras::CAT_BQC);
-  // query.severities.insert(ras::SEV_FATAL);
-  // query.severities.insert(ras::SEV_WARN);
+  query.t0 = 1436184000000;
+  query.t1 = 1436936400000;
+  query.categories.insert(ras::CAT_BQC);
+  query.severities.insert(ras::SEV_FATAL);
+  query.severities.insert(ras::SEV_WARN);
 
   clock_t t0 = clock();
   query.crossfilter(events, results);
