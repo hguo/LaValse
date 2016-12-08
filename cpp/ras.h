@@ -1,6 +1,9 @@
 #ifndef _RAS_H
 #define _RAS_H
 
+#include <map>
+#include <vector>
+#include <set>
 #include <stdint.h>
 
 namespace ras {
@@ -9,22 +12,96 @@ enum {CAT_BQC = 0, CAT_BGL, CAT_BQL, CAT_DDR, CAT_PCI, CAT_Ethernet, CAT_Infinib
 enum {COMP_CNK = 0, COMP_DIAGS, COMP_BGMASTER, COMP_MC, COMP_MCSERVER, COMP_MMCS, COMP_BAREMETAL, COMP_FIRMWARE, COMP_CTRLNET, COMP_LINUX, COMP_CIOS, COMP_MUDM, COMP_SPI, COMP_BGPM, COMP_TEST};
 enum {SEV_INFO = 0, SEV_WARN, SEV_FATAL};
 enum {LOC_R = 0, LOC_RB, LOC_RBP, LOC_RM, LOC_Q, LOC_QB, LOC_QBP, LOC_RMS, LOC_RK, LOC_RI, LOC_RMN, LOC_RMNJ, LOC_QK, LOC_QI, LOC_QIJ, LOC_RMNJC, LOC_RIJC, LOC_RMNU, LOC_DCA, LOC_QIJC, LOC_QIU, LOC_RIU, LOC_RID, LOC_RMNO, LOC_RIO, LOC_RIH, LOC_RIHF, LOC_QID, LOC_QIO, LOC_QIH, LOC_QIHF, LOC_RIA, LOC_RL, LOC_QIA};
+enum {TIME_SECOND = 1000L, TIME_MINUTE = 60000L, TIME_HOUR = 3600000L, TIME_DAY = 86400000L}; // granularity for time aggregation
 
 struct Event {
   uint32_t recID;
   uint64_t msgID;
   uint64_t eventTime;
-  uint64_t locationType;
-  unsigned char location[6];
+  uint8_t locationType;
+  uint8_t location[6];
 
-  unsigned char category() const;
-  unsigned char component() const;
-  unsigned char severity() const;
-  unsigned char controlActions() const;
+  uint8_t category() const;
+  uint8_t component() const;
+  uint8_t severity() const;
+  uint8_t controlActions() const;
+  uint64_t aggregateTime(uint64_t tg) const {
+    return eventTime - eventTime % tg;
+  }
 };
 
+struct QueryResults {
+  std::map<uint64_t, uint32_t> timeVolume;
+  std::map<uint64_t, uint32_t> msgIDs;
+  std::map<uint8_t, uint32_t> components;
+  std::map<uint8_t, uint32_t> locationTypes;
+  std::map<uint8_t, uint32_t> categories;
+  std::map<uint8_t, uint32_t> severities;
+};
+
+struct Query {
+  uint64_t t0 = 0, t1 = 0, tg = TIME_HOUR; // tg is time granularity
+  std::set<uint64_t> msgIDs; 
+  std::set<uint8_t> components;
+  std::set<uint8_t> locationTypes;
+  std::set<uint8_t> categories;
+  std::set<uint8_t> severities;
+
+  static bool checkTime(uint64_t t, uint64_t t0, uint64_t t1) {
+    if (t1 == 0) return true;
+    return (t >= t0 && t <= t1);
+  }
+
+  template <typename T>
+  bool check(const T& m, const std::set<T>& s) {
+    if (s.empty()) return true;
+    else return s.find(m) != s.end();
+  }
+
+  void crossfilter(const std::vector<Event>& events, QueryResults& results) {
+    const int ndims = 6;
+    bool b[ndims], c[ndims];
+
+    for (int i=0; i<events.size(); i++) {
+      const Event& e = events[i];
+      crossfilter(e, b, c);
+      if (c[0]) results.timeVolume[e.aggregateTime(tg)] ++;
+      if (c[1]) results.msgIDs[e.msgID] ++;
+      if (c[2]) results.components[e.component()] ++;
+      if (c[3]) results.locationTypes[e.locationType] ++;
+      if (c[4]) results.categories[e.category()] ++;
+      if (c[5]) results.severities[e.severity()] ++;
+    }
+  }
+
+  void crossfilter(const Event& e, bool b[], bool c[]) {
+    std::vector<bool>& c) {
+    const int ndims = 6; // FIXME
+    b[0] = checkTime(e.eventTime, t0, t1);
+    b[1] = check(e.msgID, msgIDs);
+    b[2] = check(e.component(), components);
+    b[3] = check(e.locationType, locationTypes);
+    b[4] = check(e.category(), categories);
+    b[5] = check(e.severity(), severities);
+
+    for (int i=0; i<ndims; i++) {
+      bool v = true;
+      for (int j=0; j<ndims; j++) {
+        if (i == j) continue;
+        else if (!b[j]) {
+          v = false;
+          break;
+        }
+      }
+      c[i] = v;
+    }
+  }
+};
+
+
+
 //////
-unsigned char Event::category() const {
+uint8_t Event::category() const {
   switch (msgID) {
   case 0x00010001: return CAT_Software_Error;
   case 0x00010002: return CAT_BQC;
@@ -852,7 +929,7 @@ unsigned char Event::category() const {
   }
 }
 
-unsigned char Event::component() const {
+uint8_t Event::component() const {
   switch (msgID) {
   case 0x00010001: return COMP_CNK;
   case 0x00010002: return COMP_CNK;
@@ -1680,7 +1757,7 @@ unsigned char Event::component() const {
   }
 }
 
-unsigned char Event::severity() const {
+uint8_t Event::severity() const {
   switch (msgID) {
   case 0x00010001: return SEV_FATAL;
   case 0x00010002: return SEV_FATAL;
