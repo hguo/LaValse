@@ -61,8 +61,7 @@ function query(q0) {
   return translateResults(r0);
 }
 
-var q = {}; 
-
+// var q = {}; 
 /*
 var q = {
   t0: 1436184000000,
@@ -71,6 +70,8 @@ var q = {
   component: ["CNK", "DIAGS"]
 }
 */
+// console.log(query(q));
 
-console.log(query(q));
-
+module.exports = {
+  query: query
+};
