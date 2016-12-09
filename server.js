@@ -11,7 +11,8 @@ var server = http.createServer(app);
 server.listen(8081);
 
 app.get("/cube", function(req, res, next) {
-  var results = mycube.query(JSON.parse("{}"));
+  var query = JSON.parse(req.query.query);
+  var results = mycube.query(query);
 
   res.writeHead(200, {"context-type": "application/json"});
   res.end(JSON.stringify(results));

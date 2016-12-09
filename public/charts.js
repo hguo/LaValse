@@ -1,228 +1,119 @@
-function createCharts(data) {
-  var severityChart = dc.rowChart("#severityChart");
-  var componentChart = dc.rowChart("#componentChart");
-  var messageIdChart = dc.rowChart("#messageIdChart");
-  var categoryChart = dc.rowChart("#categoryChart");
-  var locationTypeChart = dc.rowChart("#locationTypeChart");
-  // var dayOfWeekChart = dc.rowChart("#dayOfWeekChart");
-  var timelineChart = dc.lineChart("#timelineChart");
-  var dataTable = dc.dataTable("#tableView");
+d3.json("/cube?query={}", function (d) {
+  updateCharts(d);
+});
 
-  const transitionDuration = 200;
-  
-  var severityTip = d3.tip()
-    .attr("class", "d3-tip")
-    .html(function(d) {
-      return d.key + ": " + d.value;
+function histogramToArray(r) {
+  var array = []; 
+  for (var key in r) {
+    array.push({
+      k: key, 
+      v: r[key]
     });
-  
-  var messageIdTip = d3.tip()
-    .attr("class", "d3-tip")
-    .html(function(d) {
-      // return d.data.key + " (" + rasbook[d.data.key].description + "): " + d.data.value;
-      return d.key + ": " + d.value;
-    });
-
-  var componentTip = d3.tip()
-    .attr("class", "d3-tip")
-    .html(function(d) {
-      return d.key + " (" + rascomp[d.key] + "): " + d.value;
-    });
-  
-  var categoryTip = d3.tip()
-    .attr("class", "d3-tip")
-    .html(function(d) {
-      return d.key + " (" + rascat[d.key] + "): " + d.value;
-    });
-  
-  var locationTypeTip = d3.tip()
-    .attr("class", "d3-tip")
-    .html(function(d) {
-      return d.key + " (" + locationNarratives[d.key] + "): " + d.value;
-    });
-
-  // var format = d3.time.format("%Y-%m-%dT%H:%M:%S.%LZ");
-  data.forEach(function(e) {
-    e.lt = parseLocationType(e.l);
-    // e.eventTime = format.parse(e.eventTime); 
-  });
-
-  var ndx = crossfilter(data);
-  var severityValue = ndx.dimension(function(d) {
-    var val = rasbook[d.i].severity;
-    return val == undefined ? "" : val;
-  });
-  var severityGroup = severityValue.group();
-
-  var componentValue = ndx.dimension(function(d) {
-    var val = rasbook[d.i].component;
-    return val == undefined ? "" : val;
-  });
-  var componentGroup = componentValue.group();
-  
-  var messageIdValue = ndx.dimension(function(d) {
-    var val = d.i;
-    return val == undefined ? "" : val;
-  });
-  var messageIdGroup = messageIdValue.group();
-
-  var categoryValue = ndx.dimension(function(d) {
-    var val = rasbook[d.i].category;
-    return val == undefined ? "" : val;
-  });
-  var categoryGroup = categoryValue.group();
-
-  var locationTypeValue = ndx.dimension(function(d) {
-    var val = d.lt;
-    return val == undefined ? "" : val;
-  });
-  var locationTypeGroup = locationTypeValue.group();
-
-  /* 
-  var nodeBoardValue = ndx.dimension(function(d) {
-    var val = locationStrToNodeBoardStr(d.l);
-    return val == undefined ? "" : val;
-  });
-  var nodeBoardGroup = nodeBoardValue.group();
-  */
-
-  /*
-  var dayOfWeek = ndx.dimension(function(d) {
-    var day = d.eventTime.getDay();
-    var name = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    return day + '.' + name[day];
-  });
-  */
-
-  var volumeByHour = ndx.dimension(function(d) {return d3.time.hour(d.t);});
-  var volumeByHourGroup = volumeByHour.group()
-    .reduceCount(function(d) {return d.t;});
-
-  var volumeByLocation = ndx.dimension(function(d) {return d.l;});
-
-  var timeDimension = ndx.dimension(function(d) {return d.t;});
-
-  severityChart.width(300)
-    .height(300)
-    .dimension(severityValue)
-    .group(severityGroup)
-    .transitionDuration(transitionDuration)
-    .x(d3.scale.linear().domain([6,20]))
-    .elasticX(true);
-
-  componentChart.width(300)
-    .height(300)
-    .dimension(componentValue)
-    .group(componentGroup)
-    .transitionDuration(transitionDuration)
-    .x(d3.scale.linear().domain([6,20]))
-    .elasticX(true);
-
-  messageIdChart.width(300)
-    .height(300)
-    .dimension(messageIdValue)
-    .group(messageIdGroup)
-    .transitionDuration(transitionDuration)
-    .x(d3.scale.linear().domain([6,20]))
-    .elasticX(true);
-
-  categoryChart.width(300)
-    .height(300)
-    .dimension(categoryValue)
-    .group(categoryGroup)
-    .transitionDuration(transitionDuration)
-    .x(d3.scale.linear().domain([6,20]))
-    .elasticX(true);
-
-  locationTypeChart.width(300)
-    .height(300)
-    .dimension(locationTypeValue)
-    .group(locationTypeGroup)
-    .transitionDuration(transitionDuration)
-    .x(d3.scale.linear().domain([6,20]))
-    .elasticX(true);
- 
-  /*
-  dayOfWeekChart.width(300)
-    .height(300)
-    .dimension(dayOfWeek)
-    .group(dayOfWeek)
-    .transitionDuration(transitionDuration)
-    .x(d3.scale.linear().domain([6,20]))
-    .elasticX(true);
-  */
- 
-  /*
-  timelineChart.width(960)
-    .height(100)
-    .margins({top: 10, right: 10, bottom: 20, left: 40})
-    .dimension(volumeByHour)
-    .group(volumeByHourGroup)
-    .transitionDuration(transitionDuration)
-    .elasticY(true)
-    .x(d3.time.scale().domain(d3.extent(data, function(d) {return d.eventTime;})))
-    .xAxis();
-  */
-  timelineChart
-    .renderArea(true)
-    .width(960)
-    .height(100)
-    .margins({top: 10, right: 10, bottom: 20, left: 40})
-    .dimension(volumeByHour)
-    .group(volumeByHourGroup)
-    .transitionDuration(transitionDuration)
-    .elasticY(true)
-    // .mouseZoomable(true)
-    .renderHorizontalGridLines(true)
-    .x(d3.time.scale().domain(d3.extent(data, function(d) {return d.t;})))
-    .xAxis();
-
-  dataTable.width(960).height(800)
-    .dimension(timeDimension)
-    .group(function(d) {return "";})
-    .showGroups(false)
-    .size(10)
-    .columns([
-        function(d) {return d.id;},
-        function(d) {return d.i;},
-        function(d) {return rasbook[d.i].severity;},
-        function(d) {return d.t.toISOString();},
-        function(d) {return d.j;},
-        function(d) {return d.b;},
-        function(d) {
-          return "<a href='javascript:highlightBlockAndLocation(\"" + d.block + "\",\"" + d.l
-            + "\")'>" + d.l + "</a>"},
-        // function(d) {return d.serialNumber;},
-        function(d) {return d.c;},
-        function(d) {return d.m;}
-    ])
-    .sortBy(function(d) {return d.t;})
-    .order(d3.ascending);
-
-  dc.renderAll();
-  
-  d3.selectAll("#severityChart .row")
-    .call(severityTip)
-    .on("mouseover", severityTip.show)
-    .on("mouseout", severityTip.hide);
-  
-  d3.selectAll("#messageIdChart .row")
-    .call(messageIdTip)
-    .on("mouseover", messageIdTip.show)
-    .on("mouseout", messageIdTip.hide);
-
-  d3.selectAll("#componentChart .row")
-    .call(componentTip)
-    .on("mouseover", componentTip.show)
-    .on("mouseout", componentTip.hide);
-  
-  d3.selectAll("#categoryChart .row")
-    .call(categoryTip)
-    .on("mouseover", categoryTip.show)
-    .on("mouseout", categoryTip.hide);
-  
-  d3.selectAll("#locationTypeChart .row")
-    .call(locationTypeTip)
-    .on("mouseover", locationTypeTip.show)
-    .on("mouseout", locationTypeTip.hide);
+  }
+  return array;
 }
+
+function updateCharts(data) {
+  console.log(data);
+
+  updateBarChart("#severityChart", histogramToArray(data.severity));
+  updateBarChart("#componentChart", histogramToArray(data.component));
+  updateBarChart("#categoryChart", histogramToArray(data.category));
+  updateBarChart("#locationTypeChart", histogramToArray(data.category));
+  updateTimeVolumeChart("#timeVolumeChart", histogramToArray(data.timeVolume));
+}
+
+function updateBarChart(id, data) {
+  const W = 150, H = 150;
+  const margin = {top: 10, right: 20, bottom: 25, left: 50},
+        width = W - margin.left - margin.right,
+        height = H - margin.top - margin.bottom;
+
+  $(id).html("");
+  var svg = d3.select(id)
+    .append("svg")
+    .attr("class", "barchart")
+    .attr("width", W)
+    .attr("height", H)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var x = d3.scaleLinear()
+    .rangeRound([0, width])
+    .domain(d3.extent(data, function(d) {return d.v;}));
+  var y = d3.scaleBand()
+    .rangeRound([height, 0])
+    .padding(0.1)
+    .domain(data.map(function(d) {return d.k;}));
+
+  var xAxis = d3.axisBottom().scale(x).ticks(3), 
+      yAxis = d3.axisLeft().scale(y);
+
+  svg.append("g")
+    .attr("class", "axis axis-x")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+
+  svg.append("g")
+    .attr("class", "axis axis-y")
+    .call(yAxis);
+
+  svg.selectAll(".bar")
+    .data(data)
+    .enter().append("rect")
+    .attr("class", "bar")
+    .style("fill", "steelblue")
+    .attr("y", function(d) {return y(d.k);})
+    .attr("width", function(d) {return x(d.v);})
+    .attr("height", function(d) {return y.bandwidth();});
+}
+
+function updateTimeVolumeChart(id, data) {
+  const W = 600, H = 150;
+  const margin = {top: 10, right: 20, bottom: 25, left: 50},
+        width = W - margin.left - margin.right,
+        height = H - margin.top - margin.bottom;
+
+  // data.forEach(function(e) {e.k = new Date(e.k);});
+  console.log(data);
+
+  $(id).html("");
+  var svg = d3.select(id)
+    .append("svg")
+    .attr("class", "timelineChart")
+    .attr("width", W)
+    .attr("height", H)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var x = d3.scaleTime()
+    .rangeRound([0, width])
+    .domain(d3.extent(data, function(d) {return d.k;}));
+  var y = d3.scaleLinear()
+    .rangeRound([height, 0])
+    .domain(d3.extent(data, function(d) {return d.v;}));
+
+  var line = d3.line()
+    .x(function(d) {return x(d.k);})
+    .y(function(d) {return y(d.v);});
+
+  var xAxis = d3.axisBottom().scale(x), 
+      yAxis = d3.axisLeft().scale(y);
+
+  svg.append("g")
+    .attr("class", "axis axis-x")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+
+  svg.append("g")
+    .attr("class", "axis axis-y")
+    .call(yAxis);
+
+  svg.append("path")
+    .datum(data)
+    .attr("class", "line")
+    .style("fill", "none")
+    .style("stroke", "steelblue")
+    .attr("d", line);
+}
+
