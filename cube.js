@@ -1,9 +1,6 @@
 const catalogCube = require("./cpp/build/Release/catalogCube.node");
 const ras = require("./rasbook");
 
-var cube = new catalogCube.catalogCube();
-cube.loadRASLog("raslog");
-
 function translateQuery(q0) {
   var q = q0;
  
@@ -55,21 +52,34 @@ function translateResults(r0) {
   }
 }
 
-function query(q0) {
+function cube(filename) {
+  this.cc = new catalogCube.catalogCube();
+  this.cc.loadRASLog("raslog");
+}
+
+cube.prototype.query = function(q0) {
   q = translateQuery(q0);
-  var r0 = cube.query(q);
+  var r0 = this.cc.query(q);
   return translateResults(r0);
 }
 
-// var q = {}; 
-var q = {
-  t0: 1436184000000,
-  t1: 1436936400000,
-  severity: ["FATAL"],
-  component: ["CNK", "DIAGS"]
-}
-console.log(query(q));
-
 module.exports = {
-  query: query
+  cube: cube
 };
+
+function test() {
+  var mycube = new cube("raslog");
+
+  var q = {}; 
+  /*
+  var q = {
+    t0: 1436184000000,
+    t1: 1436936400000,
+    severity: ["FATAL"],
+    component: ["CNK", "DIAGS"]
+  }
+  */
+  console.log(mycube.query(q));
+}
+
+test();

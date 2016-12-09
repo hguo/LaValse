@@ -23,7 +23,7 @@ struct QueryResults {
 
 struct Query {
   uint64_t t0 = 0, t1 = 0, tg = TIME_HOUR; // tg is time granularity
-  uint8_t subvolume = VAR_NONE;
+  uint16_t subvolume = 0;
 
   std::set<uint64_t> msgID; 
   std::set<uint8_t> component;
@@ -52,11 +52,11 @@ struct Query {
       if (c[0]) {
         uint64_t t = e.aggregateTime(tg);
         results.timeVolume[t] ++;
-        if (subvolume == VAR_MSGID && b[1]) results.timeVolumeByMsgID[e.msgID][t] ++;
-        if (subvolume == VAR_COMPONENT && b[2]) results.timeVolumeByComponent[e.component()][t] ++;
-        if (subvolume == VAR_LOCATIONTYPE && b[3]) results.timeVolumeByLocationType[e.locationType][t] ++;
-        if (subvolume == VAR_CATEGORY && b[4]) results.timeVolumeByCategory[e.category()][t] ++;
-        if (subvolume == VAR_SEVERITY && b[5]) results.timeVolumeBySeverity[e.severity()][t] ++;
+        if (subvolume & VAR_MSGID && b[1]) results.timeVolumeByMsgID[e.msgID][t] ++;
+        if (subvolume & VAR_COMPONENT && b[2]) results.timeVolumeByComponent[e.component()][t] ++;
+        if (subvolume & VAR_LOCATIONTYPE && b[3]) results.timeVolumeByLocationType[e.locationType][t] ++;
+        if (subvolume & VAR_CATEGORY && b[4]) results.timeVolumeByCategory[e.category()][t] ++;
+        if (subvolume & VAR_SEVERITY && b[5]) results.timeVolumeBySeverity[e.severity()][t] ++;
       }
       if (c[1]) results.msgID[e.msgID] ++;
       if (c[2]) results.component[e.component()] ++;
