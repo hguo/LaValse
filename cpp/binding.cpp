@@ -6,9 +6,9 @@
 #include "ras.h"
 #include "rasQuery.h"
 
-Persistent<Function> CatalogServer::constructor;
+Persistent<Function> CatalogCube::constructor;
 
-void CatalogServer::LoadEvents(const std::string& filename)
+void CatalogCube::LoadEvents(const std::string& filename)
 {
   FILE *fp = fopen(filename.c_str(), "rb");
   fseek(fp, 0L, SEEK_END);
@@ -23,25 +23,25 @@ void CatalogServer::LoadEvents(const std::string& filename)
   fclose(fp);
 }
 
-void CatalogServer::Init(Local<Object> exports) {
+void CatalogCube::Init(Local<Object> exports) {
   Isolate *isolate = exports->GetIsolate();
   Local<FunctionTemplate> tpl = FunctionTemplate::New(isolate, New);
-  tpl->SetClassName(String::NewFromUtf8(isolate, "catalogServer"));
+  tpl->SetClassName(String::NewFromUtf8(isolate, "catalogCube"));
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
   NODE_SET_PROTOTYPE_METHOD(tpl, "query", Query);
   NODE_SET_PROTOTYPE_METHOD(tpl, "loadRASLog", LoadRASLog);
 
   constructor.Reset(isolate, tpl->GetFunction());
-  exports->Set(String::NewFromUtf8(isolate, "catalogServer"), 
+  exports->Set(String::NewFromUtf8(isolate, "catalogCube"), 
       tpl->GetFunction());
 }
 
-void CatalogServer::New(const FunctionCallbackInfo<Value>& args) {
+void CatalogCube::New(const FunctionCallbackInfo<Value>& args) {
   Isolate *isolate = args.GetIsolate();
 
   if (args.IsConstructCall()) {
-    CatalogServer *obj = new CatalogServer;
+    CatalogCube *obj = new CatalogCube;
     obj->Wrap(args.This());
     args.GetReturnValue().Set(args.This());
   } else {
@@ -55,9 +55,9 @@ void CatalogServer::New(const FunctionCallbackInfo<Value>& args) {
   }
 }
 
-void CatalogServer::LoadRASLog(const FunctionCallbackInfo<Value>& args) {
+void CatalogCube::LoadRASLog(const FunctionCallbackInfo<Value>& args) {
   Isolate *isolate = args.GetIsolate();
-  CatalogServer* obj = ObjectWrap::Unwrap<CatalogServer>(args.Holder());
+  CatalogCube* obj = ObjectWrap::Unwrap<CatalogCube>(args.Holder());
   
   if (args.Length() < 1) {
     isolate->ThrowException(Exception::TypeError(
@@ -76,9 +76,9 @@ void CatalogServer::LoadRASLog(const FunctionCallbackInfo<Value>& args) {
   obj->LoadEvents(filename);
 }
 
-void CatalogServer::Query(const FunctionCallbackInfo<Value>& args) {
+void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
   Isolate *isolate = args.GetIsolate();
-  CatalogServer* obj = ObjectWrap::Unwrap<CatalogServer>(args.Holder());
+  CatalogCube* obj = ObjectWrap::Unwrap<CatalogCube>(args.Holder());
  
   const std::vector<ras::Event>& events = obj->events;
   ras::Query query;
@@ -165,7 +165,7 @@ void CatalogServer::Query(const FunctionCallbackInfo<Value>& args) {
 }
 
 void Init(Local<Object> exports) {
-  CatalogServer::Init(exports);
+  CatalogCube::Init(exports);
 }
 
-NODE_MODULE(catalogServer, Init);
+NODE_MODULE(catalogCube, Init);

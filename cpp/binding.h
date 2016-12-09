@@ -4,13 +4,13 @@
 
 using namespace v8;
 
-class CatalogServer : public node::ObjectWrap {
+class CatalogCube : public node::ObjectWrap {
 public:
   static void Init(Local<Object> exports);
 
 private:
-  explicit CatalogServer() {};
-  ~CatalogServer() {};
+  explicit CatalogCube() {};
+  ~CatalogCube() {};
 
   static void New(const FunctionCallbackInfo<Value>& args);
   static void LoadRASLog(const FunctionCallbackInfo<Value>& args);

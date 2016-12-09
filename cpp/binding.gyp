@@ -1,7 +1,7 @@
 {
   "targets": [
     {
-      "target_name": "catalogServer", 
+      "target_name": "catalogCube", 
       "sources": [ "binding.cpp" ],
       "include_dirs": [],
       "libraries": [
