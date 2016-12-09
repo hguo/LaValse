@@ -1,4 +1,4 @@
-const rasbook = {
+const events = {
 "00010001": {	component: "CNK",	category: "Software_Error",	severity: "FATAL",	message: "Kernel unexpected operation.  IP=$(Address)  LR=$(LR)  ESR=$(ESR)  DEAR=$(DEAR)  MSR=$(MSR)  IntCode=$(CODE)",	description: "The kernel has performed an operation that was not permitted.  There are several triggers for these types of errors (bad memory reads or writes, branching to an invalid address).  These are typically software defects that should be understood and addressed.  On rare occasions, the trigger could be bad hardware but the initial debug assumption should always start with a software defect.",	serviceAction: "Please report these errors to IBM.  Logs, timestamps, and any other recreation material will be helpful.",	controlAction: "SOFTWARE_IN_ERROR,END_JOB,FREE_COMPUTE_BLOCK",	relevantDiagnosticSuites: "processor",	sourceFile: "/bgsys/source/srcV1R2M2.3650/cnk/src/ras.h",	lineNumber: "28"},
 "00010002": {	component: "CNK",	category: "BQC",	severity: "FATAL",	message: "Kernel invalid number of cores.  CoreMask=$(MASK)  Number=$(COUNT)",	description: "CNK requires that the number of cores starting CNK must be either 2, 3, 5, 9, or 17",	serviceAction: "In production environments, the BQC node likely has a bad core.  Run diagnostics to determine if core sparing is possible and follow diagnostics recommendations.  In development environments, suggest running coreprocessor to verify that there is not a software problem early in the boot sequence.",	controlAction: "SOFTWARE_IN_ERROR,END_JOB,FREE_COMPUTE_BLOCK",	relevantDiagnosticSuites: "checkup",	sourceFile: "/bgsys/source/srcV1R2M2.3650/cnk/src/ras.h",	lineNumber: "43"},"00010003": {	component: "CNK",	category: "BQC",	severity: "FATAL",	message: "Kernel invalid personality options were specified.  NodeConfig=$(Config)",	description: "Settings in the personality are incompatible with CNK.",	serviceAction: "The BQC node likely has a bad core, recommend running diagnostics and follow diagnostics recommendations.",	controlAction: "SOFTWARE_IN_ERROR,END_JOB,FREE_COMPUTE_BLOCK",	relevantDiagnosticSuites: "checkup",	sourceFile: "/bgsys/source/srcV1R2M2.3650/cnk/src/ras.h",	lineNumber: "58"},
 "00010004": {	component: "CNK",	category: "BQC",	severity: "FATAL",	message: "Kernel Network CRC Exchange failed. Link=$(LINK) Expected=$(%x,EXPECTED) Actual=$(%x,ACTUAL)",	description: "The exchange of network packet CRCs failed.",	serviceAction: "Check the torus network connections and review RAS correctable error thresholds.",	controlAction: "SOFTWARE_IN_ERROR,END_JOB,FREE_COMPUTE_BLOCK",	relevantDiagnosticSuites: "checkup",	sourceFile: "/bgsys/source/srcV1R2M2.3650/cnk/src/ras.h",	lineNumber: "72"},
@@ -830,7 +830,7 @@ const rasbook = {
 };
 
 // Category
-const rascat = {
+const categories = {
 "BQC": "Blue Gene/Q compute card",
 "BGL": "Blue Gene/Q link module",
 "BQL": "BQL",
@@ -864,8 +864,14 @@ const rascat = {
 "UPC": "UPC"
 };
 
+const severities = {
+"INFO": "INFO",
+"WARN": "WARN",
+"FATAL": "FATAL"
+};
+
 // RAS Component
-const rascomp = {
+const components = {
 "CNK": "Compute Node Kernel",
 "DIAGS": "Diagnostic functions running on a Compute or an I/O or the sevice node",
 "BGMASTER": "The process running on the service node that monitors control system processes",
@@ -883,7 +889,7 @@ const rascomp = {
 "TEST": "TEST",
 };
 
-const rasloc = {
+const locationTypes = {
 undefined: "undefined",
 "R": "Compute Rack",
 "RB": "Bulk Power Supply in Compute Rack",
@@ -923,8 +929,9 @@ undefined: "undefined",
 };
 
 module.exports = {
-  rasbook: rasbook, 
-  rascat: rascat,
-  rascomp: rascomp,
-  rasloc: rasloc
+  events: events,
+  categories: categories,
+  components: components,
+  locationTypes: locationTypes,
+  severities: severities
 };

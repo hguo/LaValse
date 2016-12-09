@@ -156,6 +156,11 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
     jLocationType->Set(Number::New(isolate, kv.first), Number::New(isolate, kv.second));
   jout->Set(String::NewFromUtf8(isolate, "locationType"), jLocationType);
   
+  Local<Object> jCategory = Object::New(isolate);
+  for (const auto &kv : results.category) 
+    jCategory->Set(Number::New(isolate, kv.first), Number::New(isolate, kv.second));
+  jout->Set(String::NewFromUtf8(isolate, "category"), jCategory);
+  
   Local<Object> jSeverity = Object::New(isolate);
   for (const auto &kv : results.severity) 
     jSeverity->Set(Number::New(isolate, kv.first), Number::New(isolate, kv.second));
