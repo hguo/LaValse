@@ -3,7 +3,7 @@ const ras = require("./rasbook");
 
 function translateQuery(q0) {
   var q = q0;
- 
+
   if ("msgID" in q) {
     var msgID = [];
     q0.msgID.forEach(function(e) { msgID.push(parseInt("0x" + e.toLowerCase(), 16)); });
@@ -27,12 +27,15 @@ function translateQuery(q0) {
   }
 }
 
-function translateResults(r0) {
-  var r = r0;
-
-  r.msgID = {};
-  for (var key in r0.msgID) 
-    r.msgID[key.toString(16).toUpperCase()] = r0[key];
+function translateResults(r) {
+  var msgID = {};
+  for (var key in r.msgID) {
+    var key1 = parseInt(key).toString(16).toUpperCase();
+    while (key1.length < 8) key1 = "0" + key1;
+    msgID[key1] = r.msgID[key];
+    console.log(key, key1);
+  }
+  r.msgID = msgID;
 
   r.component = translateIndicesToNames(r.component, ras.components);
   r.locationType = translateIndicesToNames(r.locationType, ras.locationTypes);
@@ -82,4 +85,4 @@ function test() {
   console.log(mycube.query(q));
 }
 
-test();
+// test();
