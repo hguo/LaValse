@@ -33,7 +33,6 @@ function translateResults(r) {
     var key1 = parseInt(key).toString(16).toUpperCase();
     while (key1.length < 8) key1 = "0" + key1;
     msgID[key1] = r.msgID[key];
-    console.log(key, key1);
   }
   r.msgID = msgID;
 
