@@ -37,6 +37,27 @@ const locationNarratives = {
   "QIA": "PCI Adapter Cards in I/O Racks"
 };
 
+var parseNumberFunctions = {
+  "A": function(s) {return [parseInt(s[1])]},
+  "B": function(s) {return [parseInt(s[1])]},
+  "C": function(s) {return [parseInt(s.slice(1, 3))]},
+  "D": function(s) {return [parseInt(s[1])]},
+  "F": function(s) {return [parseInt(s[1])]},
+  "H": function(s) {return [parseInt(s[1])]},
+  "I": function(s) {return [parseInt(s[1], 16)]},
+  "J": function(s) {return [parseInt(s.slice(1, 3))]},
+  "K": function(s) {return [parseInt(s[1])]},
+  "L": function(s) {return [0]}, 
+  "M": function(s) {return [parseInt(s[1])]},
+  "N": function(s) {return [parseInt(s.slice(1, 3))]},
+  "O": function(s) {return [parseInt(s.slice(1, 3))]},
+  "P": function(s) {return [parseInt(s[1])]},
+  "Q": function(s) {return [parseInt(s[1], 32), parseInt(s[2], 32)]},
+  "R": function(s) {return [parseInt(s[1], 32), parseInt(s[2], 32)]},
+  "S": function(s) {return [0]},
+  "U": function(s) {return [parseInt(s.slice(1, 3))]}
+};
+
 var parseFunctions = {
   "A": function(s) {
     const v = {"0": "right", "7": "left"}; 
@@ -128,6 +149,10 @@ function parseLocationType(str) {
   return pattern;
 }
 
+function parseLocationTypeInt(pattern) {
+  return Object.keys(locationNarratives).indexOf(pattern);
+}
+
 function parseLocation(str) {
   var L = {}; // return value
   
@@ -148,6 +173,28 @@ function parseLocation(str) {
 
   // console.log(L);
   return L;
+}
+
+function locationToFixedSizeArray(str) {
+  var array = [];
+  
+  var substrings = str.split("-");
+  var pattern = "";
+  substrings.forEach(function(s) {pattern += s[0];});
+
+  array[0] = parseLocationTypeInt(pattern);
+
+  substrings.forEach(function(s) {
+    if (s.length > 0) {
+      var array1 = parseNumberFunctions[s[0]](s);
+      array.push.apply(array, array1);
+    }
+  });
+
+  while (array.length < 6) 
+    array.push(0);
+
+  return array;
 }
 
 function locationStrToNodeBoardStr(str) {
@@ -212,9 +259,13 @@ function parseComputeBlock(str) {
   return set;
 }
 
-// module.exports = {
-//   parseLocation: parseLocation
-// };
+module.exports = {
+  parseLocation: parseLocation,
+  parseLocationType: parseLocationType,
+  parseLocationTypeInt: parseLocationTypeInt,
+  locationToFixedSizeArray: locationToFixedSizeArray
+};
 
 // console.log(parseLocation("R1A-M1-N13"));
 // parseComputeBlock("MIR-00000-73FF1-16384");
+// console.log(locationToFixedSizeArray("Q0G-I6-J04"));

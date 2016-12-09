@@ -1,7 +1,7 @@
 const fs = require("fs");
 const csv = require("fast-csv");
 const assert = require("assert");
-const mira = require("./public/mira");
+const mira = require("./mira");
 
 var stream = fs.createReadStream(process.argv[2]);
 
@@ -26,11 +26,13 @@ var csvStream = csv({headers: true})
       qualifier: d.QUALIFIER,
       machineName: d.MACHINE_NAME
     };
-    // console.log(mira.parseLocation(rasData.location));
+    var a = mira.locationToFixedSizeArray(rasData.location);
+
     console.log(
         rasData._id,
-        parseInt("0x" + rasData.messageID.toLowerCase(), 16),
-        rasData.eventTime.getTime());
+        parseInt("0x" + rasData.messageID.toLowerCase(), 16), 
+        rasData.eventTime.getTime(),
+        a[0], a[1], a[2], a[3], a[4], a[5]);
   })
   .on("end", function() {
   });
