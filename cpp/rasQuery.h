@@ -7,6 +7,13 @@ namespace ras {
 
 struct QueryResults {
   std::map<uint64_t, uint32_t> timeVolume;
+
+  std::map<uint64_t, std::map<uint64_t, uint32_t> > timeVolumeByMsgID;
+  std::map<uint8_t, std::map<uint64_t, uint32_t> > timeVolumeByComponent;
+  std::map<uint8_t, std::map<uint64_t, uint32_t> > timeVolumeByLocationType;
+  std::map<uint8_t, std::map<uint64_t, uint32_t> > timeVolumeByCategory;
+  std::map<uint8_t, std::map<uint64_t, uint32_t> > timeVolumeBySeverity;
+
   std::map<uint64_t, uint32_t> msgID;
   std::map<uint8_t, uint32_t> component;
   std::map<uint8_t, uint32_t> locationType;
@@ -16,6 +23,8 @@ struct QueryResults {
 
 struct Query {
   uint64_t t0 = 0, t1 = 0, tg = TIME_HOUR; // tg is time granularity
+  uint8_t subvolume = VAR_NONE;
+
   std::set<uint64_t> msgID; 
   std::set<uint8_t> component;
   std::set<uint8_t> locationType;
@@ -40,7 +49,15 @@ struct Query {
     for (size_t i=0; i<events.size(); i++) {
       const Event& e = events[i];
       crossfilter(e, b, c);
-      if (c[0]) results.timeVolume[e.aggregateTime(tg)] ++;
+      if (c[0]) {
+        uint64_t t = e.aggregateTime(tg);
+        results.timeVolume[t] ++;
+        if (subvolume == VAR_MSGID && b[1]) results.timeVolumeByMsgID[e.msgID][t] ++;
+        if (subvolume == VAR_COMPONENT && b[2]) results.timeVolumeByComponent[e.component()][t] ++;
+        if (subvolume == VAR_LOCATIONTYPE && b[3]) results.timeVolumeByLocationType[e.locationType][t] ++;
+        if (subvolume == VAR_CATEGORY && b[4]) results.timeVolumeByCategory[e.category()][t] ++;
+        if (subvolume == VAR_SEVERITY && b[5]) results.timeVolumeBySeverity[e.severity()][t] ++;
+      }
       if (c[1]) results.msgID[e.msgID] ++;
       if (c[2]) results.component[e.component()] ++;
       if (c[3]) results.locationType[e.locationType] ++;

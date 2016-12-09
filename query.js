@@ -62,15 +62,13 @@ function query(q0) {
 }
 
 // var q = {}; 
-/*
 var q = {
   t0: 1436184000000,
   t1: 1436936400000,
   severity: ["FATAL"],
   component: ["CNK", "DIAGS"]
 }
-*/
-// console.log(query(q));
+console.log(query(q));
 
 module.exports = {
   query: query
