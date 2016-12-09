@@ -126,42 +126,42 @@ void CatalogServer::Query(const FunctionCallbackInfo<Value>& args) {
       query.severity.insert( severity->Get(i)->Uint32Value() );
   }
  
-#if 0
-  query.tg = ras::TIME_DAY;
-  query.t0 = 1436184000000;
-  query.t1 = 1436936400000;
-  query.category.insert(ras::CAT_BQC);
-  query.severity.insert(ras::SEV_FATAL);
-  query.severity.insert(ras::SEV_WARN);
-#endif
-  
   typedef std::chrono::high_resolution_clock clock;
   auto t0 = clock::now();
   query.crossfilter(events, results);
   auto t1 = clock::now();
-  float elapsed = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count() / 1000.0; 
+  float elapsed = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count() / 1000000.0; 
+  
+  Local<Object> jout = Object::New(isolate);
 
-  fprintf(stderr, "eventTime (hour)\n");
+  jout->Set(String::NewFromUtf8(isolate, "queryTime"), Number::New(isolate, elapsed));
+
+  Local<Object> jTimeVolume = Object::New(isolate);
   for (const auto &kv : results.timeVolume) 
-    fprintf(stderr, " - %llu: %d\n", kv.first, kv.second);
-  
-  fprintf(stderr, "msgIDs\n");
+    jTimeVolume->Set(Number::New(isolate, kv.first), Number::New(isolate, kv.second));
+  jout->Set(String::NewFromUtf8(isolate, "timeVolume"), jTimeVolume);
+
+  Local<Object> jMsgID = Object::New(isolate);
   for (const auto &kv : results.msgID) 
-    fprintf(stderr, " - %llu: %d\n", kv.first, kv.second);
-  
-  fprintf(stderr, "components\n");
+    jMsgID->Set(Number::New(isolate, kv.first), Number::New(isolate, kv.second));
+  jout->Set(String::NewFromUtf8(isolate, "msgID"), jMsgID);
+
+  Local<Object> jComponent = Object::New(isolate);
   for (const auto &kv : results.component) 
-    fprintf(stderr, " - %d: %d\n", kv.first, kv.second);
+    jComponent->Set(Number::New(isolate, kv.first), Number::New(isolate, kv.second));
+  jout->Set(String::NewFromUtf8(isolate, "component"), jComponent);
   
-  fprintf(stderr, "locationTypes\n");
+  Local<Object> jLocationType = Object::New(isolate);
   for (const auto &kv : results.locationType) 
-    fprintf(stderr, " - %d: %d\n", kv.first, kv.second);
+    jLocationType->Set(Number::New(isolate, kv.first), Number::New(isolate, kv.second));
+  jout->Set(String::NewFromUtf8(isolate, "locationType"), jLocationType);
   
-  fprintf(stderr, "severities\n");
+  Local<Object> jSeverity = Object::New(isolate);
   for (const auto &kv : results.severity) 
-    fprintf(stderr, " - %d: %d\n", kv.first, kv.second);
-  
-  fprintf(stderr, "N=%d, TIME=%f ms\n", (int)events.size(), elapsed);
+    jSeverity->Set(Number::New(isolate, kv.first), Number::New(isolate, kv.second));
+  jout->Set(String::NewFromUtf8(isolate, "severity"), jSeverity);
+
+  args.GetReturnValue().Set(jout);
 }
 
 void Init(Local<Object> exports) {
