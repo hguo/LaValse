@@ -46,7 +46,8 @@ var parseNumberFunctions = {
   "H": function(s) {return [parseInt(s[1])]},
   "I": function(s) {return [parseInt(s[1], 16)]},
   "J": function(s) {return [parseInt(s.slice(1, 3))]},
-  "K": function(s) {return [parseInt(s[1])]},
+  // "K": function(s) {return [parseInt(s[1])]},
+  "K": function(s) {return [0]}, // found NaN in the log
   "L": function(s) {return [0]}, 
   "M": function(s) {return [parseInt(s[1])]},
   "N": function(s) {return [parseInt(s.slice(1, 3))]},

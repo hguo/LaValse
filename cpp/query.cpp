@@ -8,8 +8,8 @@ int main(int argc, char **argv) {
   size_t sz = ftell(fp);
   fseek(fp, 0L, SEEK_SET);
   
-  // const int n = sz / sizeof(ras::Event);
-  const int n = 10000000;
+  const int n = sz / sizeof(ras::Event);
+  // const int n = 10000000;
   std::vector<ras::Event> events(n);
   
   fread((void*)events.data(), sizeof(ras::Event), n, fp);
@@ -19,11 +19,13 @@ int main(int argc, char **argv) {
   ras::QueryResults results;
 
   query.tg = ras::TIME_DAY;
+#if 0
   query.t0 = 1436184000000;
   query.t1 = 1436936400000;
   query.categories.insert(ras::CAT_BQC);
   query.severities.insert(ras::SEV_FATAL);
   query.severities.insert(ras::SEV_WARN);
+#endif
 
   typedef std::chrono::high_resolution_clock clock;
   auto t0 = clock::now();

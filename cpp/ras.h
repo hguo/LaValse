@@ -36,7 +36,7 @@ struct Event {
   uint8_t category() const;
   uint8_t component() const;
   uint8_t severity() const;
-  uint8_t controlActions() const;
+  uint16_t controlActions() const;
   uint64_t aggregateTime(uint64_t tg) const {
     return eventTime - eventTime % tg;
   }

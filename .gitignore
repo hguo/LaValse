@@ -1,4 +1,7 @@
 node_modules
+build*
 db
 *.swp
+a.out
+raslog
 log

@@ -37,7 +37,7 @@ struct Query {
     const int ndims = 6;
     bool b[ndims], c[ndims];
 
-    for (int i=0; i<events.size(); i++) {
+    for (size_t i=0; i<events.size(); i++) {
       const Event& e = events[i];
       crossfilter(e, b, c);
       if (c[0]) results.timeVolume[e.aggregateTime(tg)] ++;
