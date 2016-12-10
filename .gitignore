@@ -5,3 +5,4 @@ db
 a.out
 raslog
 log
+*.old
