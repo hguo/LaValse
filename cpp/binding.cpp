@@ -129,6 +129,7 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
   typedef std::chrono::high_resolution_clock clock;
   auto t0 = clock::now();
   query.crossfilter(events, results);
+  query.complete(results);
   auto t1 = clock::now();
   float elapsed = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count() / 1000000.0; 
   

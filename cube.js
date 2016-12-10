@@ -27,7 +27,7 @@ function translateQuery(q0) {
   }
 }
 
-function translateResults(r) {
+function translateResults(r, fullResult) {
   var msgID = {};
   for (var key in r.msgID) {
     var key1 = parseInt(key).toString(16).toUpperCase();
@@ -41,6 +41,15 @@ function translateResults(r) {
   r.category = translateIndicesToNames(r.category, ras.categories);
   r.severity = translateIndicesToNames(r.severity, ras.severities);
 
+  /*
+  if (fullResult != undefined || fullResult != null) {
+    completeMissingResults(r.component, fullResult.component);
+    completeMissingResults(r.locationType, fullResult.locationType);
+    completeMissingResults(r.category, fullResult.category);
+    completeMissingResults(r.severity, fullResult.severity);
+  }
+  */
+
   return r;
 
   function translateIndicesToNames(src, book) { // src is [], book is {}
@@ -52,17 +61,24 @@ function translateResults(r) {
     }
     return dst;
   }
+
+  function completeMissingResults(partial, full) {
+    for (var key in full) 
+      if (!(key in partial))
+        partial[key] = 0;
+  }
 }
 
 function cube(filename) {
   this.cc = new catalogCube.catalogCube();
   this.cc.loadRASLog("raslog");
+  this.fullResult = this.query({});
 }
 
 cube.prototype.query = function(q0) {
   q = translateQuery(q0);
   var r0 = this.cc.query(q);
-  return translateResults(r0);
+  return translateResults(r0, this.fullResult);
 }
 
 module.exports = {

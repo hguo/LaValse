@@ -37,7 +37,7 @@ function histogramToArray(r) {
 }
 
 function barChart(name, id, data) {
-  const W = 200, H = 300;
+  const W = 200, H = 400;
   const margin = {top: 10, right: 10, bottom: 25, left: 10},
         width = W - margin.left - margin.right,
         height = H - margin.top - margin.bottom;
@@ -94,7 +94,8 @@ function barChart(name, id, data) {
     
     svg.selectAll(".bar")
       .style("fill", function(d) {
-        if (highlighted.size == 0 || highlighted.has(d.k)) return "lightblue"; // color(d.k);
+        if (highlighted.size == 0) return "steelblue"; 
+        else if (highlighted.has(d.k)) return "orange"; // color(d.k);
         else return "lightgrey";
       });
     svg.selectAll(".mlabel")
@@ -123,14 +124,16 @@ function barChart(name, id, data) {
       .enter().append("rect")
       .attr("class", "bar")
       .style("fill", function(d) {
-        if (highlighted.size == 0 || highlighted.has(d.k)) return "lightblue"; // color(d.k);
+        if (highlighted.size == 0) return "steelblue"; 
+        else if (highlighted.has(d.k)) return "orange"; // color(d.k);
         else return "lightgrey";
       })
+      .style("fill-opacity", 0.5)
       .attr("y", function(d) {return y(d.k);})
       .attr("width", function(d) {
         // return d3.max([10, x(d.v)]);
-        // return d.v == 0 ? 0 : x(d.v);
-        return x(d.v);
+        return d.v == 0 ? 0 : x(d.v); // for log
+        // return x(d.v);
       })
       .attr("height", function(d) {return y.bandwidth();})
       .on("mouseover", tip.show)

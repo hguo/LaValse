@@ -66,6 +66,17 @@ struct Query {
     }
   }
 
+  void complete(QueryResults& r) {
+    for (uint8_t i=0; i<NUM_CAT; i++) 
+      r.category[i]; 
+    for (uint8_t i=0; i<NUM_COMP; i++) 
+      r.component[i]; 
+    for (uint8_t i=0; i<NUM_LOC; i++) 
+      r.locationType[i];
+    for (uint8_t i=0; i<NUM_SEV; i++) 
+      r.severity[i]; 
+  }
+
   void crossfilter(const Event& e, bool b[], bool c[]) {
     const int ndims = 6; // FIXME
     b[0] = checkTime(e.eventTime, t0, t1);
