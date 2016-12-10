@@ -19,7 +19,7 @@ function timeVolumeChart(id, data, geom) {
     .domain(d3.extent(data, function(d) {return d.k;}));
   var y = d3.scaleLog()
     .rangeRound([height, 0])
-    .domain(d3.extent(data, function(d) {return d.v;}))
+    .domain([1, d3.max(data, function(d) {return d.v;})])
     .nice(8);
 
   var line = d3.line()
@@ -44,5 +44,20 @@ function timeVolumeChart(id, data, geom) {
     .style("fill", "none")
     .style("stroke", "steelblue")
     .attr("d", line);
-}
 
+  this.updateData = function(data) {
+    x.domain(d3.extent(data, function(d) {return d.k;}));
+    y.domain([1, d3.max(data, function(d) {return d.v;})]);
+  
+    svg.select(".line")
+      .datum(data)
+      .transition()
+      .attr("d", line);
+
+    svg.select(".axis-x")
+      .transition().call(xAxis);
+    
+    svg.select(".axis-y")
+      .transition().call(yAxis)
+  }
+}

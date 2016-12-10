@@ -1,5 +1,5 @@
 var query = {};
-var severityChart, componentChart, categoryChart, locationTypeChart;
+var severityChart, componentChart, categoryChart, locationTypeChart, timeVolumeChart;
 
 init();
 
@@ -17,7 +17,8 @@ function init() {
     locationTypeChart = new barChart(
         "locationType", "#locationTypeChart", histogramToArray(d.locationType),
         {L: 400, T: 0, W: 200, H: 400});
-    timeVolumeChart("#timeVolumeChart", histogramToArray(d.timeVolume), 
+    timeVolumeChart = new timeVolumeChart(
+        "#timeVolumeChart", histogramToArray(d.timeVolume), 
         {L: 0, T: 400, W: 600, H: 150});
   });
 }
@@ -30,7 +31,7 @@ function refresh() {
     componentChart.updateData(histogramToArray(d.component));
     categoryChart.updateData(histogramToArray(d.category));
     locationTypeChart.updateData(histogramToArray(d.locationType));
-    timeVolumeChart("#timeVolumeChart", histogramToArray(d.timeVolume), 
+    timeVolumeChart.updateData(histogramToArray(d.timeVolume), 
         {L: 0, T: 400, W: 600, H: 150});
   });
 }
