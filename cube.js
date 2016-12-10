@@ -41,14 +41,12 @@ function translateResults(r, fullResult) {
   r.category = translateIndicesToNames(r.category, ras.categories);
   r.severity = translateIndicesToNames(r.severity, ras.severities);
 
-  /*
   if (fullResult != undefined || fullResult != null) {
-    completeMissingResults(r.component, fullResult.component);
-    completeMissingResults(r.locationType, fullResult.locationType);
-    completeMissingResults(r.category, fullResult.category);
-    completeMissingResults(r.severity, fullResult.severity);
+    r.component = completeMissingResults(r.component, fullResult.component);
+    r.locationType = completeMissingResults(r.locationType, fullResult.locationType);
+    r.category = completeMissingResults(r.category, fullResult.category);
+    r.severity = completeMissingResults(r.severity, fullResult.severity);
   }
-  */
 
   return r;
 
@@ -63,9 +61,13 @@ function translateResults(r, fullResult) {
   }
 
   function completeMissingResults(partial, full) {
-    for (var key in full) 
-      if (!(key in partial))
-        partial[key] = 0;
+    var dst = {};
+    for (var key in full)
+      if (key in partial) 
+        dst[key] = partial[key]; 
+      else 
+        dst[key] = 0;
+    return dst;
   }
 }
 

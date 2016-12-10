@@ -7,32 +7,6 @@ body {
   position: absolute;
 }
 
-#severityChart {
-  top: 0;
-  left: 0;
-}
-
-#componentChart {
-  top: 0;
-  left: 200;
-}
-
-#categoryChart {
-  top: 0;
-  left: 400;
-}
-
-#locationTypeChart {
-  top: 0;
-  left: 600;
-}
-
-#timeVolumeChart {
-  top: 400;
-  left: 0;
-}
-
-
 #tableView {
   font-size: 9pt;
 }

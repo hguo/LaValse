@@ -5,11 +5,20 @@ init();
 
 function init() {
   d3.json("/cube?query={}", function (d) {
-    severityChart = new barChart("severity", "#severityChart", histogramToArray(d.severity)); 
-    componentChart = new barChart("component", "#componentChart", histogramToArray(d.component)); 
-    categoryChart = new barChart("category", "#categoryChart", histogramToArray(d.category)); 
-    locationTypeChart = new barChart("locationType", "#locationTypeChart", histogramToArray(d.locationType));
-    timeVolumeChart("#timeVolumeChart", histogramToArray(d.timeVolume));
+    severityChart = new barChart(
+        "severity", "#severityChart", histogramToArray(d.severity), 
+        {L: 0, T: 0, W: 200, H: 100});
+    componentChart = new barChart(
+        "component", "#componentChart", histogramToArray(d.component),
+        {L: 0, T: 100, W: 200, H: 300});
+    categoryChart = new barChart(
+        "category", "#categoryChart", histogramToArray(d.category),
+        {L: 200, T: 0, W: 200, H: 400});
+    locationTypeChart = new barChart(
+        "locationType", "#locationTypeChart", histogramToArray(d.locationType),
+        {L: 400, T: 0, W: 200, H: 400});
+    timeVolumeChart("#timeVolumeChart", histogramToArray(d.timeVolume), 
+        {L: 0, T: 400, W: 600, H: 150});
   });
 }
 
@@ -36,20 +45,21 @@ function histogramToArray(r) {
   return array;
 }
 
-function barChart(name, id, data) {
-  const W = 200, H = 400;
+function barChart(name, id, data, geom) {
   const margin = {top: 10, right: 10, bottom: 25, left: 10},
-        width = W - margin.left - margin.right,
-        height = H - margin.top - margin.bottom;
+        width = geom.W - margin.left - margin.right,
+        height = geom.H - margin.top - margin.bottom;
 
   var highlighted = new Set;
 
   $(id).html("");
   var svg = d3.select(id)
     .append("svg")
-    .attr("class", "barchart")
-    .attr("width", W)
-    .attr("height", H)
+    .attr("class", "chart")
+    .style("top", geom.T)
+    .style("left", geom.L)
+    .attr("width", geom.W)
+    .attr("height", geom.H)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -99,6 +109,9 @@ function barChart(name, id, data) {
         else return "lightgrey";
       });
     svg.selectAll(".mlabel")
+      .style("font-weight", function(d) {
+        if (highlighted.has(d.k)) return "bold";
+      })
       .style("fill", function(d) {
         if (highlighted.size == 0 || highlighted.has(d.k)) return "black";
         else return "grey";
@@ -145,6 +158,9 @@ function barChart(name, id, data) {
       .data(data)
       .enter().append("text")
       .attr("class", "mlabel")
+      .style("font-weight", function(d) {
+        if (highlighted.has(d.k)) return "bold";
+      })
       .style("fill", function(d) {
         if (highlighted.size == 0 || highlighted.has(d.k)) return "black";
         else return "grey";
@@ -168,18 +184,19 @@ function barChart(name, id, data) {
 }
 
 
-function timeVolumeChart(id, data) {
-  const W = 800, H = 120;
+function timeVolumeChart(id, data, geom) {
   const margin = {top: 10, right: 20, bottom: 25, left: 50},
-        width = W - margin.left - margin.right,
-        height = H - margin.top - margin.bottom;
+        width = geom.W - margin.left - margin.right,
+        height = geom.H - margin.top - margin.bottom;
 
   $(id).html("");
   var svg = d3.select(id)
     .append("svg")
-    .attr("class", "timeVolumeChart")
-    .attr("width", W)
-    .attr("height", H)
+    .attr("class", "chart")
+    .style("top", geom.T)
+    .style("left", geom.L)
+    .attr("width", geom.W)
+    .attr("height", geom.H)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
