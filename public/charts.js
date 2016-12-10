@@ -30,7 +30,8 @@ function refresh() {
     componentChart.updateData(histogramToArray(d.component));
     categoryChart.updateData(histogramToArray(d.category));
     locationTypeChart.updateData(histogramToArray(d.locationType));
-    timeVolumeChart("#timeVolumeChart", histogramToArray(d.timeVolume));
+    timeVolumeChart("#timeVolumeChart", histogramToArray(d.timeVolume), 
+        {L: 0, T: 400, W: 600, H: 150});
   });
 }
 
@@ -71,10 +72,12 @@ function barChart(name, id, data, geom) {
   svg.call(tip);
   
   var x = d3.scaleLog()
-    .rangeRound([0, width]);
+    .rangeRound([0, width])
+    .domain([1, d3.max(data, function(d) {return d.v;})]);
   var y = d3.scaleBand()
     .rangeRound([height, 0])
-    .padding(0.05);
+    .padding(0.05)
+    .domain(data.map(function(d) {return d.k;}));
   // var color = d3.scaleOrdinal(d3.schemeCategory20)
   //   .domain(d3.extent(data, function(d) {return d.k;}));
 
@@ -95,6 +98,31 @@ function barChart(name, id, data, geom) {
     .attr("class", "axis axis-y")
     .call(yAxis)
     .selectAll("text").remove(); // remove tick labels
+  
+  svg.selectAll(".bar").data(data)
+    .enter().append("rect")
+    .attr("class", "bar")
+    .style("fill", "steelblue")
+    .style("fill-opacity", 0.5)
+    .attr("y", function(d) {return y(d.k);})
+    .attr("width", function(d) {
+      return d.v == 0 ? 0 : x(d.v); // for log
+      // return x(d.v);
+    })
+    .attr("height", function(d) {return y.bandwidth();})
+    .on("mouseover", tip.show)
+    .on("mouseout", tip.hide)
+    .on("click", highlight);
+  
+  svg.selectAll(".mlabel").data(data)
+    .enter().append("text")
+    .attr("class", "mlabel")
+    .text(function(d) {return d.k;})
+    .attr("x", function(d) {return 8;})
+    .attr("y", function(d) {return y(d.k) + y.bandwidth()/2 + 4.5;})
+    .on("mouseover", tip.show)
+    .on("mouseout", tip.hide)
+    .on("click", highlight);
 
   function highlight(d) {
     if (highlighted.has(d.k)) highlighted.delete(d.k); 
@@ -131,11 +159,10 @@ function barChart(name, id, data, geom) {
     x.domain([1, d3.max(data, function(d) {return d.v;})]);
     y.domain(data.map(function(d) {return d.k;}));
 
-    svg.selectAll(".bar").remove(); 
-    svg.selectAll(".bar")
-      .data(data)
-      .enter().append("rect")
-      .attr("class", "bar")
+    var bars = svg.selectAll(".bar").data(data);
+    bars.enter().append("rect")
+      .merge(bars)
+      .transition()
       .style("fill", function(d) {
         if (highlighted.size == 0) return "steelblue"; 
         else if (highlighted.has(d.k)) return "orange"; // color(d.k);
@@ -144,33 +171,25 @@ function barChart(name, id, data, geom) {
       .style("fill-opacity", 0.5)
       .attr("y", function(d) {return y(d.k);})
       .attr("width", function(d) {
-        // return d3.max([10, x(d.v)]);
         return d.v == 0 ? 0 : x(d.v); // for log
         // return x(d.v);
       })
-      .attr("height", function(d) {return y.bandwidth();})
-      .on("mouseover", tip.show)
-      .on("mouseout", tip.hide)
-      .on("click", highlight);
+      .attr("height", function(d) {return y.bandwidth();});
+    bars.exit().remove();
   
-    svg.selectAll(".mlabel").remove(); 
-    svg.selectAll(".mlabel")
-      .data(data)
-      .enter().append("text")
-      .attr("class", "mlabel")
+    var labels = svg.selectAll(".mlabel").data(data);
+    labels.enter().append("text")
+      .merge(labels)
       .style("font-weight", function(d) {
         if (highlighted.has(d.k)) return "bold";
+        else return "regular";
       })
       .style("fill", function(d) {
         if (highlighted.size == 0 || highlighted.has(d.k)) return "black";
         else return "grey";
       })
       .text(function(d) {return d.k;})
-      .attr("x", function(d) {return 8;})
-      .attr("y", function(d) {return y(d.k) + y.bandwidth()/2 + 4.5;})
-      .on("mouseover", tip.show)
-      .on("mouseout", tip.hide)
-      .on("click", highlight);
+      .attr("y", function(d) {return y(d.k) + y.bandwidth()/2 + 4.5;});
   
     svg.select(".axis-x")
       .transition().duration(300).call(xAxis);
@@ -180,7 +199,7 @@ function barChart(name, id, data, geom) {
       .transition().duration(300).call(yAxis)
   };
   
-  this.updateData(data);
+  // this.updateData(data);
 }
 
 
