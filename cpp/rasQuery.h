@@ -4,6 +4,24 @@
 #include "ras.h"
 #include <cstdlib>
 #include <thread>
+#include <sched.h>
+
+#ifdef __APPLE__
+#include <mach/mach_init.h>
+#include <mach/thread_policy.h>
+#include <mach/thread_act.h>
+#define cpu_set_t thread_affinity_policy_data_t
+#define CPU_SET(cpu_id, new_mask) \
+        (*(new_mask)).affinity_tag = (cpu_id + 1)
+#define CPU_ZERO(new_mask)                 \
+        (*(new_mask)).affinity_tag = THREAD_AFFINITY_TAG_NULL
+#define GET_AFFINITY(pid, size, mask) \
+         (*(mask)).affinity_tag = THREAD_AFFINITY_TAG_NULL
+#define SET_AFFINITY(pid, size, mask)       \
+        thread_policy_set(mach_thread_self(), THREAD_AFFINITY_POLICY, \
+                          (int *)mask, THREAD_AFFINITY_POLICY_COUNT)
+#endif
+
 
 namespace ras {
 
@@ -45,17 +63,25 @@ struct Query {
   }
 
   void crossfilter(const std::vector<Event>& events, QueryResults& results) {
-    std::vector<std::thread> threads(nthreads-1);
+    std::vector<std::thread*> threads(nthreads-1);
+    std::vector<QueryResults*> results1(nthreads-1);
 
-    for (int i=0; i<nthreads-1; i++) 
-      threads[i] = std::thread(&Query::crossfilter_thread, this, nthreads, i+1, events, std::ref(results));
+    for (int i=0; i<nthreads-1; i++) {
+      results1[i] = new QueryResults(*this);
+      // threads[i] = std::thread(&Query::crossfilter_thread, this, nthreads, i+1, events, std::ref(results));
+      threads[i] = new std::thread(&Query::crossfilter_thread, this, nthreads, i+1, events, std::ref(*results1[i]));
+    }
+    // crossfilter_thread(nthreads, 0, events, results);
     crossfilter_thread(nthreads, 0, events, results);
-
-    for (int i=0; i<nthreads-1; i++)
-      threads[i].join();
+    
+    for (int i=0; i<nthreads-1; i++) {
+      threads[i]->join();
+      delete threads[i];
+      delete results1[i];
+    }
   }
 
-  void add1(uint32_t& a) {
+  inline void add1(uint32_t& a) {
 #if 0
     __sync_fetch_and_add(&a, 1);
 #else
@@ -64,6 +90,10 @@ struct Query {
   }
 
   void crossfilter_thread(int nthreads, int tid, const std::vector<Event>& events, QueryResults& results) {
+    typedef std::chrono::high_resolution_clock clock;
+    auto t0 = clock::now();
+    set_affinity(tid);
+    
     const int ndims = 6;
     bool b[ndims], c[ndims];
 
@@ -87,6 +117,10 @@ struct Query {
       if (c[4]) add1(results.category[e.category()]);
       if (c[5]) add1(results.severity[e.severity()]);
     }
+    
+    auto t1 = clock::now();
+    float elapsed = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count() / 1000.0; 
+    // fprintf(stderr, "%f\n", elapsed); 
   }
 
   void crossfilter_kernel(const Event& e, bool b[], bool c[]) {
@@ -109,6 +143,16 @@ struct Query {
       }
       c[i] = v;
     }
+  }
+  
+  void set_affinity(int processorID) {
+    cpu_set_t cpu_set;
+    CPU_ZERO(&cpu_set);
+    CPU_SET(processorID, &cpu_set); // the 0th CPU is for comm
+   
+    pthread_t thread = pthread_self();
+    // int rtn = pthread_setaffinity_np(thread, sizeof(cpu_set_t), &cpu_set);
+    SET_AFFINITY(thread, sizeof(cpu_set_t), &cpu_set);
   }
 };
 
