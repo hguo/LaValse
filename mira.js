@@ -19,7 +19,7 @@ const locationNarratives = {
   "RMNJC": "Compute Card Cores on Node Board",
   "RIJC": "Compute Card Cores on I/O Boards in Compute Rack",
   "RMNU": "Link Module on Node Board",
-  "DCA": "DCA on Node Board",
+  "RMND": "DCA on Node Board",
   "QIJC": "Compute Card Cores on I/O Boards in I/O Rack",
   "RIU": "Link Module on I/O Board in Compute Rack",
   "QIU": "Link Module on I/O Board in I/O Rack",
@@ -151,7 +151,9 @@ function parseLocationType(str) {
 }
 
 function parseLocationTypeInt(pattern) {
-  return Object.keys(locationNarratives).indexOf(pattern);
+  var index = Object.keys(locationNarratives).indexOf(pattern);
+  if (index < 0) console.error(index, pattern);
+  return index;
 }
 
 function parseLocation(str) {
@@ -183,6 +185,7 @@ function locationToFixedSizeArray(str) {
   var pattern = "";
   substrings.forEach(function(s) {pattern += s[0];});
 
+  if (pattern.length == 0) pattern = undefined;
   array[0] = parseLocationTypeInt(pattern);
 
   substrings.forEach(function(s) {

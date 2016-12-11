@@ -19,6 +19,7 @@ function timeVolumeChart(id, data, geom) {
     .domain(d3.extent(data, function(d) {return d.k;}));
   var y = d3.scaleLog()
     .rangeRound([height, 0])
+    .clamp(true)
     .domain([1, d3.max(data, function(d) {return d.v;})])
     .nice(8);
 

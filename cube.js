@@ -1,4 +1,5 @@
 const catalogCube = require("./cpp/build/Release/catalogCube.node");
+// const catalogCube = require("./cpp/build/Debug/catalogCube.node");
 const ras = require("./rasbook");
 
 function translateQuery(q0) {

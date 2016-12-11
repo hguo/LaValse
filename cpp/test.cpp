@@ -16,16 +16,19 @@ int main(int argc, char **argv) {
   fclose(fp);
 
   ras::Query query;
-  ras::QueryResults results;
+  ras::QueryResults results(query);
 
   query.tg = ras::TIME_DAY;
-#if 0
-  query.t0 = 1436184000000;
-  query.t1 = 1436936400000;
-  query.category.insert(ras::CAT_BQC);
-  query.severity.insert(ras::SEV_FATAL);
-  query.severity.insert(ras::SEV_WARN);
-#endif
+  // query.t0 = 1436184000000;
+  // query.t1 = 1436936400000;
+  memset(query.msgID, 1, ras::NUM_MSGID);
+  memset(query.component, 1, ras::NUM_COMP);
+  memset(query.locationType, 1, ras::NUM_LOC);
+  memset(query.category, 1, ras::NUM_CAT);
+  memset(query.severity, 1, ras::NUM_SEV);
+  // query.category[ras::CAT_BQC] = true;
+  // query.severity[ras::SEV_FATAL] = true;
+  // query.severity[ras::SEV_WARN] = true;
 
   typedef std::chrono::high_resolution_clock clock;
   auto t0 = clock::now();
@@ -33,6 +36,7 @@ int main(int argc, char **argv) {
   auto t1 = clock::now();
   float elapsed = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count() / 1000.0; 
 
+#if 0
   fprintf(stderr, "eventTime (hour)\n");
   for (const auto &kv : results.timeVolume) 
     fprintf(stderr, " - %llu: %d\n", kv.first, kv.second);
@@ -52,6 +56,7 @@ int main(int argc, char **argv) {
   fprintf(stderr, "severities\n");
   for (const auto &kv : results.severity) 
     fprintf(stderr, " - %d: %d\n", kv.first, kv.second);
+#endif
   
   fprintf(stderr, "N=%d, TIME=%f ms\n", n, elapsed);
 }
