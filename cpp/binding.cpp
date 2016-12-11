@@ -151,28 +151,33 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
   jout->Set(String::NewFromUtf8(isolate, "timeVolume"), jTimeVolume);
 
   Local<Object> jMsgID = Object::New(isolate);
-  for (int i=0; i<NUM_MSGID; i++) 
-    jMsgID->Set(Number::New(isolate, i), Number::New(isolate, results.msgID[i]));
+  for (int i=0; i<NUM_MSGID; i++)
+    if (results.msgID[i] > 0)
+      jMsgID->Set(Number::New(isolate, i), Number::New(isolate, results.msgID[i]));
   jout->Set(String::NewFromUtf8(isolate, "msgID"), jMsgID);
 
   Local<Object> jComponent = Object::New(isolate);
   for (int i=0; i<NUM_COMP; i++) 
-    jComponent->Set(Number::New(isolate, i), Number::New(isolate, results.component[i]));
+    if (results.component[i] > 0)
+      jComponent->Set(Number::New(isolate, i), Number::New(isolate, results.component[i]));
   jout->Set(String::NewFromUtf8(isolate, "component"), jComponent);
   
   Local<Object> jLocationType = Object::New(isolate);
   for (int i=0; i<NUM_LOC; i++) 
-    jLocationType->Set(Number::New(isolate, i), Number::New(isolate, results.locationType[i]));
+    if (results.locationType[i] > 0)
+      jLocationType->Set(Number::New(isolate, i), Number::New(isolate, results.locationType[i]));
   jout->Set(String::NewFromUtf8(isolate, "locationType"), jLocationType);
   
   Local<Object> jCategory = Object::New(isolate);
   for (int i=0; i<NUM_CAT; i++) 
-    jCategory->Set(Number::New(isolate, i), Number::New(isolate, results.category[i]));
+    if (results.category[i] > 0)
+      jCategory->Set(Number::New(isolate, i), Number::New(isolate, results.category[i]));
   jout->Set(String::NewFromUtf8(isolate, "category"), jCategory);
   
   Local<Object> jSeverity = Object::New(isolate);
   for (int i=0; i<NUM_SEV; i++) 
-    jSeverity->Set(Number::New(isolate, i), Number::New(isolate, results.severity[i]));
+    if (results.severity[i] > 0)
+      jSeverity->Set(Number::New(isolate, i), Number::New(isolate, results.severity[i]));
   jout->Set(String::NewFromUtf8(isolate, "severity"), jSeverity);
 
   args.GetReturnValue().Set(jout);
