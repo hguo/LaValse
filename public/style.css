@@ -7,6 +7,11 @@ body {
   position: absolute;
 }
 
+#timeVolumeChart .overlay {
+  fill: none;
+  pointer-events: all;
+}
+
 #tableView {
   font-size: 9pt;
 }

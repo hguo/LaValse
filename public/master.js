@@ -1,4 +1,8 @@
-var query = {};
+var query = {
+  T0: 1420070400000, // 2015-01-01
+  T1: 1451520000000, // 2015-12-31
+  tg: 86400000 // aggregation by day
+};
 var severityChart, componentChart, categoryChart, locationTypeChart, timeVolumeChart;
 
 init();
@@ -19,7 +23,7 @@ function init() {
         {L: 400, T: 0, W: 200, H: 400});
     timeVolumeChart = new timeVolumeChart(
         "#timeVolumeChart", histogramToArray(d.timeVolume), 
-        {L: 0, T: 400, W: 600, H: 150});
+        {L: 0, T: 400, W: 600, H: 100});
   });
 }
 

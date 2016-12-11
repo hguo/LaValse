@@ -13,6 +13,13 @@ function timeVolumeChart(id, data, geom) {
     .attr("height", geom.H)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  
+  var tip = d3.tip()
+    .attr("class", "d3-tip")
+    .html(function(d) {
+      return d.k + ": " + d.v;
+    });
+  svg.call(tip);
 
   var x = d3.scaleTime()
     .rangeRound([0, width])
@@ -46,6 +53,47 @@ function timeVolumeChart(id, data, geom) {
     .style("stroke", "steelblue")
     .attr("d", line);
 
+  var cursor = svg.append("line")
+    .attr("class", "cursor")
+    .style("display", "none")
+    .attr("x1", 0).attr("y1", 0).attr("x2", 0).attr("y2", height)
+    .style("stroke", "black")
+    .style("stroke-dasharray", "2,2");
+
+  var cursorPoint = svg.append("circle")
+    .attr("class", "cursorPoint")
+    .style("display", "none")
+    .attr("r", 3)
+    .on("mouseover", tip.show)
+    .on("mouseout", tip.show);
+
+  var brush = d3.brushX()
+    .extent([[0, 0], [width, height]])
+    .on("end", brushed);
+  svg.append("g")
+    .attr("class", "brush")
+    .call(brush);
+
+  /*
+    // .call(brush.move, x.range())
+    .on("mouseover", function() {
+      cursor.style("display", null);
+      cursorPoint.style("display", null);
+    })
+    .on("mouseout", function() {
+      cursor.style("display", "none");
+      cursorPoint.style("display", "none");
+    })
+    .on("mousemove", function() {
+      var mx = x.invert(d3.mouse(this)[0]);
+      var bisect = d3.bisector(function(d) {return d.k;}).left; 
+      var i = bisect(data, mx);
+
+      cursor.attr("transform", "translate(" + x(mx) + ",0)");
+      cursorPoint.attr("transform", "translate(" + x(mx) + "," + y(data[i].v) + ")");
+    });
+  */
+
   this.updateData = function(data) {
     x.domain(d3.extent(data, function(d) {return d.k;}));
     y.domain([1, d3.max(data, function(d) {return d.v;})]);
@@ -60,5 +108,12 @@ function timeVolumeChart(id, data, geom) {
     
     svg.select(".axis-y")
       .transition().call(yAxis)
+  }
+
+  function brushed() {
+    var s = d3.event.selection || x.range();
+    query.t0 = x.invert(s[0]).getTime();
+    query.t1 = x.invert(s[1]).getTime();
+    refresh();
   }
 }

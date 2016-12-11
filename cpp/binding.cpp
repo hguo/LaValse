@@ -99,14 +99,14 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
 
   ras::Query query;
 
-  int nthreads = input->Get(String::NewFromUtf8(isolate, "nthreads"))->IntegerValue();
-  if (nthreads != 0) query.nthreads = nthreads;
+  query.nthreads = input->Get(String::NewFromUtf8(isolate, "nthreads"))->IntegerValue();
+  if (query.nthreads == 0) query.nthreads = 1;
+  
+  query.tg = input->Get(String::NewFromUtf8(isolate, "tg"))->IntegerValue();
+  if (query.tg == 0) query.tg = ras::TIME_DAY;
 
   query.t0 = input->Get(String::NewFromUtf8(isolate, "t0"))->IntegerValue();
   query.t1 = input->Get(String::NewFromUtf8(isolate, "t1"))->IntegerValue();
-  query.tg = input->Get(String::NewFromUtf8(isolate, "tg"))->IntegerValue();
-
-  if (query.tg == 0) query.tg = ras::TIME_DAY;
   
   ras::QueryResults results(query);
 
