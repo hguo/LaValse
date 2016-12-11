@@ -22,6 +22,7 @@ struct Query {
   uint64_t T0 = 1420070400000, T1 = 1451606400000; // time scope
   uint64_t t0 = 0, t1 = 0, tg = TIME_HOUR; // tg is time granularity
   uint16_t subvolume = 0;
+  int nthreads = 1;
 
   bool msgID[NUM_MSGID], component[NUM_COMP], locationType[NUM_LOC], category[NUM_CAT], severity[NUM_SEV];
 
@@ -44,8 +45,6 @@ struct Query {
   }
 
   void crossfilter(const std::vector<Event>& events, QueryResults& results) {
-    // const int nthreads = std::thread::hardware_concurrency();
-    const int nthreads = 1; 
     std::vector<std::thread> threads(nthreads-1);
 
     for (int i=0; i<nthreads-1; i++) 
@@ -54,6 +53,14 @@ struct Query {
 
     for (int i=0; i<nthreads-1; i++)
       threads[i].join();
+  }
+
+  void add1(uint32_t& a) {
+#if 0
+    __sync_fetch_and_add(&a, 1);
+#else
+    a ++;
+#endif
   }
 
   void crossfilter_thread(int nthreads, int tid, const std::vector<Event>& events, QueryResults& results) {
@@ -67,18 +74,18 @@ struct Query {
         uint32_t t = e.aggregateTime(T0, tg); // FIXME
         results.timeVolume[t] ++;
         if (subvolume) {
-          if (b[1]) __sync_fetch_and_add(&results.subTimeVolumes[0][t], 1);
-          if (b[2]) __sync_fetch_and_add(&results.subTimeVolumes[1][t], 1);
-          if (b[3]) __sync_fetch_and_add(&results.subTimeVolumes[2][t], 1);
-          if (b[4]) __sync_fetch_and_add(&results.subTimeVolumes[3][t], 1);
-          if (b[5]) __sync_fetch_and_add(&results.subTimeVolumes[4][t], 1);
+          if (b[1]) add1(results.subTimeVolumes[0][t]);
+          if (b[2]) add1(results.subTimeVolumes[1][t]);
+          if (b[3]) add1(results.subTimeVolumes[2][t]);
+          if (b[4]) add1(results.subTimeVolumes[3][t]);
+          if (b[5]) add1(results.subTimeVolumes[4][t]);
         }
       }
-      if (c[1]) __sync_fetch_and_add(&results.msgID[e.msgID], 1);
-      if (c[2]) __sync_fetch_and_add(&results.component[e.component()], 1);
-      if (c[3]) __sync_fetch_and_add(&results.locationType[e.locationType], 1);
-      if (c[4]) __sync_fetch_and_add(&results.category[e.category()], 1);
-      if (c[5]) __sync_fetch_and_add(&results.severity[e.severity()], 1);
+      if (c[1]) add1(results.msgID[e.msgID]);
+      if (c[2]) add1(results.component[e.component()]);
+      if (c[3]) add1(results.locationType[e.locationType]);
+      if (c[4]) add1(results.category[e.category()]);
+      if (c[5]) add1(results.severity[e.severity()]);
     }
   }
 
