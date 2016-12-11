@@ -4,42 +4,29 @@ const ras = require("./rasbook");
 function translateQuery(q0) {
   var q = q0;
 
-  if ("msgID" in q) {
-    var msgID = [];
-    q0.msgID.forEach(function(e) { msgID.push(parseInt("0x" + e.toLowerCase(), 16)); });
-    q.msgID = msgID;
-  }
-
-  if ("component" in q) q.component = translateNamesToIndices(q.component, ras.components);
-  if ("locationType" in q) q.locationType = translateNamesToIndices(q.locationType, ras.locationTypes);
-  if ("category" in q) q.category = translateNamesToIndices(q.category, ras.categories);
-  if ("severity" in q) q.severity = translateNamesToIndices(q.severity, ras.severities);
+  if ("msgID" in q) q.msgID = translateNamesToIndices(q.msgID, ras.eventMap);
+  if ("component" in q) q.component = translateNamesToIndices(q.component, ras.componentMap);
+  if ("locationType" in q) q.locationType = translateNamesToIndices(q.locationType, ras.locationTypeMap);
+  if ("category" in q) q.category = translateNamesToIndices(q.category, ras.categoryMap);
+  if ("severity" in q) q.severity = translateNamesToIndices(q.severity, ras.severityMap);
   
   return q;
  
-  function translateNamesToIndices(src, book) { // src is [], book is {}
+  function translateNamesToIndices(src, bimap) { // src is [], book is {}
     var dst = [];
     src.forEach(function(e) {
-      var index = Object.keys(book).indexOf(e);
-      dst.push(index);
+      dst.push(bimap.key(e));
     });
     return dst;
   }
 }
 
 function translateResults(r, fullResult) {
-  var msgID = {};
-  for (var key in r.msgID) {
-    var key1 = parseInt(key).toString(16).toUpperCase();
-    while (key1.length < 8) key1 = "0" + key1;
-    msgID[key1] = r.msgID[key];
-  }
-  r.msgID = msgID;
-
-  r.component = translateIndicesToNames(r.component, ras.components);
-  r.locationType = translateIndicesToNames(r.locationType, ras.locationTypes);
-  r.category = translateIndicesToNames(r.category, ras.categories);
-  r.severity = translateIndicesToNames(r.severity, ras.severities);
+  r.msgID = translateIndicesToNames(r.msgID, ras.eventMap);
+  r.component = translateIndicesToNames(r.component, ras.componentMap);
+  r.locationType = translateIndicesToNames(r.locationType, ras.locationTypeMap);
+  r.category = translateIndicesToNames(r.category, ras.categoryMap);
+  r.severity = translateIndicesToNames(r.severity, ras.severityMap);
 
   if (fullResult != undefined || fullResult != null) {
     r.component = completeMissingResults(r.component, fullResult.component);
@@ -50,11 +37,10 @@ function translateResults(r, fullResult) {
 
   return r;
 
-  function translateIndicesToNames(src, book) { // src is [], book is {}
+  function translateIndicesToNames(src, bimap) { // src is [], book is {}
     var dst = {};
-    var bookKeys = Object.keys(book);
     for (var key in src) {
-      var key1 = bookKeys[key];
+      var key1 = bimap.val(key);
       dst[key1] = src[key];
     }
     return dst;

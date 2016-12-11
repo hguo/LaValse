@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
   ras::QueryResults results;
 
   query.tg = ras::TIME_DAY;
-#if 1
+#if 0
   query.t0 = 1436184000000;
   query.t1 = 1436936400000;
   query.category.insert(ras::CAT_BQC);
@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
   
   fprintf(stderr, "msgIDs\n");
   for (const auto &kv : results.msgID) 
-    fprintf(stderr, " - %llu: %d\n", kv.first, kv.second);
+    fprintf(stderr, " - %hu: %d\n", kv.first, kv.second);
   
   fprintf(stderr, "components\n");
   for (const auto &kv : results.component) 

@@ -8,13 +8,13 @@ namespace ras {
 struct QueryResults {
   std::map<uint64_t, uint32_t> timeVolume;
 
-  std::map<uint64_t, std::map<uint64_t, uint32_t> > timeVolumeByMsgID;
+  std::map<uint16_t, std::map<uint64_t, uint32_t> > timeVolumeByMsgID;
   std::map<uint8_t, std::map<uint64_t, uint32_t> > timeVolumeByComponent;
   std::map<uint8_t, std::map<uint64_t, uint32_t> > timeVolumeByLocationType;
   std::map<uint8_t, std::map<uint64_t, uint32_t> > timeVolumeByCategory;
   std::map<uint8_t, std::map<uint64_t, uint32_t> > timeVolumeBySeverity;
 
-  std::map<uint64_t, uint32_t> msgID;
+  std::map<uint16_t, uint32_t> msgID;
   std::map<uint8_t, uint32_t> component;
   std::map<uint8_t, uint32_t> locationType;
   std::map<uint8_t, uint32_t> category;
@@ -25,7 +25,7 @@ struct Query {
   uint64_t t0 = 0, t1 = 0, tg = TIME_HOUR; // tg is time granularity
   uint16_t subvolume = 0;
 
-  std::set<uint64_t> msgID; 
+  std::set<uint16_t> msgID; 
   std::set<uint8_t> component;
   std::set<uint8_t> locationType;
   std::set<uint8_t> category;

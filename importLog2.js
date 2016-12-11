@@ -2,6 +2,7 @@ const fs = require("fs");
 const csv = require("fast-csv");
 const assert = require("assert");
 const mira = require("./mira");
+const rasbook = require("./rasbook");
 
 var stream = fs.createReadStream(process.argv[2]);
 
@@ -30,7 +31,7 @@ var csvStream = csv({headers: true})
 
     console.log(
         rasData._id,
-        parseInt("0x" + rasData.messageID.toLowerCase(), 16), 
+        rasbook.eventMap.key(rasData.messageID),
         rasData.eventTime.getTime(),
         a[0], a[1], a[2], a[3], a[4], a[5]);
   })

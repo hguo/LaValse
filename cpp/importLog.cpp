@@ -6,7 +6,7 @@ int main(int argc, char **argv) {
   
   FILE *fp = fopen("raslog", "a");
 
-  while (scanf("%d %lld %lld %hhu %hhu %hhu %hhu %hhu %hhu",
+  while (scanf("%d %hu %lld %hhu %hhu %hhu %hhu %hhu %hhu",
         &e.recID, &e.msgID, &e.eventTime, 
         &e.locationType, &e.location[0], &e.location[1], &e.location[2], &e.location[3], &e.location[4]) == 9)
   {

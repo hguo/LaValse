@@ -1,3 +1,5 @@
+const BiMap = require("bimap");
+
 const events = {
 "00010001": {	component: "CNK",	category: "Software_Error",	severity: "FATAL",	message: "Kernel unexpected operation.  IP=$(Address)  LR=$(LR)  ESR=$(ESR)  DEAR=$(DEAR)  MSR=$(MSR)  IntCode=$(CODE)",	description: "The kernel has performed an operation that was not permitted.  There are several triggers for these types of errors (bad memory reads or writes, branching to an invalid address).  These are typically software defects that should be understood and addressed.  On rare occasions, the trigger could be bad hardware but the initial debug assumption should always start with a software defect.",	serviceAction: "Please report these errors to IBM.  Logs, timestamps, and any other recreation material will be helpful.",	controlAction: "SOFTWARE_IN_ERROR,END_JOB,FREE_COMPUTE_BLOCK",	relevantDiagnosticSuites: "processor",	sourceFile: "/bgsys/source/srcV1R2M2.3650/cnk/src/ras.h",	lineNumber: "28"},
 "00010002": {	component: "CNK",	category: "BQC",	severity: "FATAL",	message: "Kernel invalid number of cores.  CoreMask=$(MASK)  Number=$(COUNT)",	description: "CNK requires that the number of cores starting CNK must be either 2, 3, 5, 9, or 17",	serviceAction: "In production environments, the BQC node likely has a bad core.  Run diagnostics to determine if core sparing is possible and follow diagnostics recommendations.  In development environments, suggest running coreprocessor to verify that there is not a software problem early in the boot sequence.",	controlAction: "SOFTWARE_IN_ERROR,END_JOB,FREE_COMPUTE_BLOCK",	relevantDiagnosticSuites: "checkup",	sourceFile: "/bgsys/source/srcV1R2M2.3650/cnk/src/ras.h",	lineNumber: "43"},"00010003": {	component: "CNK",	category: "BQC",	severity: "FATAL",	message: "Kernel invalid personality options were specified.  NodeConfig=$(Config)",	description: "Settings in the personality are incompatible with CNK.",	serviceAction: "The BQC node likely has a bad core, recommend running diagnostics and follow diagnostics recommendations.",	controlAction: "SOFTWARE_IN_ERROR,END_JOB,FREE_COMPUTE_BLOCK",	relevantDiagnosticSuites: "checkup",	sourceFile: "/bgsys/source/srcV1R2M2.3650/cnk/src/ras.h",	lineNumber: "58"},
@@ -929,9 +931,33 @@ undefined: "undefined",
 };
 
 module.exports = {
-  events: events,
-  categories: categories,
-  components: components,
-  locationTypes: locationTypes,
-  severities: severities
+  // events: events,
+  // categories: categories,
+  // components: components,
+  // locationTypes: locationTypes,
+  // severities: severities,
+  eventMap: generateBiMap(events),
+  categoryMap: generateBiMap(categories),
+  componentMap: generateBiMap(components),
+  locationTypeMap: generateBiMap(locationTypes),
+  severityMap: generateBiMap(severities)
 };
+
+function generateBiMap(obj) {
+  var bimap = new BiMap;
+  var i = 0;
+  for (var key in obj)
+    bimap.push(key, i ++);
+  return bimap;
+}
+
+function generateCxxHeader_event() {
+  var i = 0;
+  for (var key in events) {
+    var e = events[key];
+    console.log("{" + i + ", COMP_" + e.component + ", CAT_" + e.category + ", SEV_" + e.severity + "},");
+    i ++;
+  }
+}
+
+// generateCxxHeader_event();
