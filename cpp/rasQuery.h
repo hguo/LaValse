@@ -10,15 +10,7 @@ namespace ras {
 struct Query;
 
 struct QueryResults {
-#if 0
-  std::map<uint16_t, std::map<uint64_t, uint32_t> > timeVolumeByMsgID;
-  std::map<uint8_t, std::map<uint64_t, uint32_t> > timeVolumeByComponent;
-  std::map<uint8_t, std::map<uint64_t, uint32_t> > timeVolumeByLocationType;
-  std::map<uint8_t, std::map<uint64_t, uint32_t> > timeVolumeByCategory;
-  std::map<uint8_t, std::map<uint64_t, uint32_t> > timeVolumeBySeverity;
-#endif
-  // std::vector<uint32_t> timeVolume;
-  uint32_t *timeVolume;
+  uint32_t *timeVolume, *subTimeVolumes[5];
   uint32_t msgID[NUM_MSGID], component[NUM_COMP], locationType[NUM_LOC], category[NUM_CAT], severity[NUM_SEV];
   uint32_t slots;
 
@@ -74,13 +66,13 @@ struct Query {
       if (c[0]) {
         uint32_t t = e.aggregateTime(T0, tg); // FIXME
         results.timeVolume[t] ++;
-#if 0
-        if (subvolume & VAR_MSGID && b[1]) results.timeVolumeByMsgID[e.msgID][t] ++;
-        if (subvolume & VAR_COMPONENT && b[2]) results.timeVolumeByComponent[e.component()][t] ++;
-        if (subvolume & VAR_LOCATIONTYPE && b[3]) results.timeVolumeByLocationType[e.locationType][t] ++;
-        if (subvolume & VAR_CATEGORY && b[4]) results.timeVolumeByCategory[e.category()][t] ++;
-        if (subvolume & VAR_SEVERITY && b[5]) results.timeVolumeBySeverity[e.severity()][t] ++;
-#endif
+        if (subvolume) {
+          if (b[1]) __sync_fetch_and_add(&results.subTimeVolumes[0][t], 1);
+          if (b[2]) __sync_fetch_and_add(&results.subTimeVolumes[1][t], 1);
+          if (b[3]) __sync_fetch_and_add(&results.subTimeVolumes[2][t], 1);
+          if (b[4]) __sync_fetch_and_add(&results.subTimeVolumes[3][t], 1);
+          if (b[5]) __sync_fetch_and_add(&results.subTimeVolumes[4][t], 1);
+        }
       }
       if (c[1]) __sync_fetch_and_add(&results.msgID[e.msgID], 1);
       if (c[2]) __sync_fetch_and_add(&results.component[e.component()], 1);
@@ -124,11 +116,18 @@ QueryResults::QueryResults(const Query& q)
   slots = (q.T1 - q.T0) / q.tg;
   timeVolume = (uint32_t*)malloc(4*slots);
   memset(timeVolume, 0, 4*slots);
+
+  for (int i=0; i<5; i++) {
+    subTimeVolumes[i] = (uint32_t*)malloc(4*slots);
+    memset(subTimeVolumes[i], 0, 4*slots);
+  }
 }
 
 QueryResults::~QueryResults()
 {
   free(timeVolume);
+  for (int i=0; i<5; i++)
+    free(subTimeVolumes[i]);
 }
 
 }
