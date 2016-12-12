@@ -12,16 +12,16 @@ function init() {
   d3.json("/cube?query={}", function (d) {
     if (d == null || d == undefined) return;
     severityChart = new barChart(
-        "severity", "#severityChart", histogramToArray(d.severity), 
+        "severity", "#severityChart", histogramToArray(d.severity), severities,
         {L: 0, T: 0, W: 200, H: 100});
     componentChart = new barChart(
-        "component", "#componentChart", histogramToArray(d.component),
+        "component", "#componentChart", histogramToArray(d.component), components,
         {L: 0, T: 100, W: 200, H: 200});
     categoryChart = new barChart(
-        "category", "#categoryChart", histogramToArray(d.category),
+        "category", "#categoryChart", histogramToArray(d.category), categories,
         {L: 200, T: 0, W: 200, H: 300});
     locationTypeChart = new barChart(
-        "locationType", "#locationTypeChart", histogramToArray(d.locationType),
+        "locationType", "#locationTypeChart", histogramToArray(d.locationType), locationTypes,
         {L: 400, T: 0, W: 200, H: 300});
     timeVolumeChart = new timeVolumeChart(
         "#timeVolumeChart", histogramToArray(d.timeVolume), 

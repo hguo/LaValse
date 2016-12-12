@@ -1,4 +1,4 @@
-function barChart(name, id, data, geom) {
+function barChart(name, id, data, humanReadableText, geom) {
   const margin = {top: 20, right: 10, bottom: 25, left: 10},
         width = geom.W - margin.left - margin.right,
         height = geom.H - margin.top - margin.bottom;
@@ -24,7 +24,7 @@ function barChart(name, id, data, geom) {
   var tip = d3.tip()
     .attr("class", "d3-tip")
     .html(function(d) {
-      return d.k + ": " + d.v;
+      return humanReadableText[d.k] + ": " + d.v;
     });
   svg.call(tip);
   
