@@ -100,6 +100,9 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
 
   query.nthreads = input->Get(String::NewFromUtf8(isolate, "nthreads"))->IntegerValue();
   if (query.nthreads == 0) query.nthreads = 1;
+
+  query.top = input->Get(String::NewFromUtf8(isolate, "top"))->IntegerValue();
+  if (query.top == 0) query.top = 10;
   
   query.tg = input->Get(String::NewFromUtf8(isolate, "tg"))->IntegerValue();
   if (query.tg == 0) query.tg = ras::TIME_DAY;
@@ -203,6 +206,11 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
     if (results.RMN[i] > 0)
       jRMN->Set(Number::New(isolate, i), Number::New(isolate, results.RMN[i]));
   jout->Set(String::NewFromUtf8(isolate, "RMN"), jRMN);
+
+  Local<Array> jTop = Array::New(isolate); 
+  for (size_t i=0; i<results.topRecIDs.size(); i++) 
+    jTop->Set(Number::New(isolate, i), Number::New(isolate, results.topRecIDs[i]));
+  jout->Set(String::NewFromUtf8(isolate, "top"), jTop);
 
   args.GetReturnValue().Set(jout);
 }

@@ -31,7 +31,8 @@ struct QueryResults {
   uint32_t *timeVolume, *subTimeVolumes[5];
   uint32_t msgID[NUM_MSGID], component[NUM_COMP], locationType[NUM_LOC], 
            category[NUM_CAT], severity[NUM_SEV], RMN[NUM_RMN];
-  uint32_t slots;
+  uint32_t slots; // time slots
+  std::vector<uint32_t> topRecIDs;
 
   explicit QueryResults(const Query& q);
   ~QueryResults();
@@ -41,6 +42,7 @@ struct Query {
   uint64_t T0 = 1420070400000, T1 = 1451606400000; // time scope
   uint64_t t0 = 1420070400000, t1 = 1451606400000, tg = TIME_HOUR; // tg is time granularity
   uint8_t subvolumes = 0;
+  int top = 100; // return top n recIDs
   int nthreads = 1;
 
   bool msgID[NUM_MSGID], component[NUM_COMP], locationType[NUM_LOC], 
@@ -98,6 +100,7 @@ struct Query {
     
     const int ndims = 7;
     bool b[ndims], c[ndims];
+    int ntop = 0;
 
     for (size_t i=tid; i<events.size(); i+=nthreads) {
       const Event& e = events[i];
@@ -119,6 +122,11 @@ struct Query {
       if (c[4]) add1(results.category[e.category()]);
       if (c[5]) add1(results.severity[e.severity()]);
       if (c[6]) add1(results.RMN[e.RMN]);
+
+      if (b[0] && c[0] && ntop<top-1) { // all true
+        results.topRecIDs.push_back(e.recID);
+        ntop ++;
+      }
     }
     
     auto t1 = clock::now();
@@ -186,6 +194,8 @@ QueryResults::QueryResults(const Query& q)
     subTimeVolumes[i] = (uint32_t*)malloc(4*slots);
     memset(subTimeVolumes[i], 0, 4*slots);
   }
+
+  topRecIDs.reserve(q.top);
 }
 
 QueryResults::~QueryResults()
