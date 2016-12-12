@@ -13,13 +13,13 @@ function machineView() {
   tip.append("p").html("hello world");
 
   var svg = d3.select("#machineView").append("svg")
-    // .attr("id", "machineView")
     .attr("class", "chart")
     .style("left", L)
     .style("top", T)
     .attr("width", W)
     .attr("height", H)
     .append("g")
+    .attr("id", "machineViewSvg")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   for (i=0; i<3; i++) {
@@ -60,7 +60,7 @@ function machineView() {
               .attr("id", nodeBoard2str(i, j, k, nodeBoardID))
               .attr("transform", "translate(" + q*nodeBoardW + "," + p*nodeBoardH + ")");
             nodeBoard.append("rect")
-              .attr("class", "nodeBoardBox")
+              .attr("class", "nbbox")
               .attr("id", nodeBoard2str(i, j, k, nodeBoardID))
               .attr("width", nodeBoardW)
               .attr("height", nodeBoardH);
@@ -70,15 +70,71 @@ function machineView() {
     }
   }
 
+  var brush = d3.brush()
+    .extent([[0, 0], [W, H]])
+    .on("end", brushed);
+  svg.append("g")
+    .attr("class", "brush")
+    .attr("id", "machineViewBrush")
+    .call(brush);
+
   /*
-  $(".nodeBoardBox").hover(function(evt) {
+  $(".nbbox").hover(function(evt) {
     tip.style("visibility", "visible");
     tip.select("p").html($(this).attr("id"));
   });
-  $(".nodeBoardBox").mouseleave(function() {
+  $(".nbbox").mouseleave(function() {
     tip.style("visibility", "hidden");
   });
   */
+
+  this.updateData = function(data) {
+    var scale = d3.scaleLog()
+      // .domain([1, d3.max(array, function(d) {return d.v;})])
+      .domain([1, 100000]) // TODO
+      .clamp(true)
+      .range(["white", "steelblue"])
+      .interpolate(d3.interpolateCubehelixLong);
+
+    $(".nbbox").each(function() {
+      var id = $(this).attr("id");
+      var val = data[id];
+      var color = val == undefined ? scale(0) : scale(val);
+      $(this).css("fill", color);
+    })
+
+    /* // also works
+    d3.selectAll(".nbbox").each(function(d){
+      var _this = d3.select(this);
+      var _id = _this.attr("id");
+      var color; 
+      if (data[_id] == undefined) color = scale(0);
+      else color = scale(data[_id]);
+      _this.style("fill", color);
+    }); */
+  }
+
+  function brushed() {
+    var s = d3.event.selection;
+    if (s != null) {
+      var RMN = [];
+      var b0 = $("#machineViewBrush > .selection")[0].getBoundingClientRect();
+      $(".nbbox").filter(function() {
+        var b = $(this)[0].getBoundingClientRect();
+        var x = b.left, y = b.top;
+        return x>=b0.left && x<=b0.right && y>=b0.top && y<=b0.bottom;
+      }).each(function() {
+        RMN.push($(this).attr("id"));
+      });
+      if (RMN.length > 0) {
+        query["RMN"] = RMN;
+        refresh();
+      }
+    } else {
+      delete query["RMN"];
+      refresh();
+    }
+  }
 }
 
 function highlightBlockAndLocation(block, location) {
@@ -88,8 +144,8 @@ function highlightBlockAndLocation(block, location) {
 
 function highlightBlock(str) {
   var set = parseComputeBlock(str);
-  $(".nodeBoardBox").css("fill", "white");
-  $(".nodeBoardBox").filter(function() {
+  $(".nbbox").css("fill", "white");
+  $(".nbbox").filter(function() {
     var mpStr = $(this).attr("id").slice(0, 6);
     return set.has(mpStr);
   }).css("fill", "darkblue");
@@ -97,7 +153,7 @@ function highlightBlock(str) {
 
 function highlightNodeBoard(str) {
   var nodeBoardStr = locationStrToNodeBoardStr(str);
-  $(".nodeBoardBox#" + nodeBoardStr).css("fill", "red");
+  $(".nbbox#" + nodeBoardStr).css("fill", "red");
 }
 
 // createMachineView();

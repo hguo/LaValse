@@ -27,6 +27,7 @@ function init() {
         "#timeVolumeChart", histogramToArray(d.timeVolume), 
         {L: 0, T: 300, W: 1200, H: 100});
     machineView = new machineView();
+    machineView.updateData(d.RMN, histogramToArray(d.RMN));
   });
 }
 
@@ -40,6 +41,7 @@ function refresh() {
     locationTypeChart.updateData(histogramToArray(d.locationType));
     timeVolumeChart.updateData(histogramToArray(d.timeVolume), 
         {L: 0, T: 400, W: 600, H: 150});
+    machineView.updateData(d.RMN, histogramToArray(d.RMN));
   });
 }
 

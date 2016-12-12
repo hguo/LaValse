@@ -309,7 +309,7 @@ function enumerateRMNLocations() { // nb level
       locations.push( rack2str(row, col) );
       for (mp = 0; mp < 2; mp ++) {
         locations.push( midplane2str(row, col, mp) );
-        for (nb = 0; nb < 32; nb ++) {
+        for (nb = 0; nb < 32; nb ++) { // FIXME: nb<16
           locations.push( nodeBoard2str(row, col, mp, nb) );
         }
       }

@@ -28,6 +28,7 @@ function translateResults(r, fullResult) {
   r.locationType = translateIndicesToNames(r.locationType, ras.locationTypeMap);
   r.category = translateIndicesToNames(r.category, ras.categoryMap);
   r.severity = translateIndicesToNames(r.severity, ras.severityMap);
+  r.RMN = translateIndicesToNames(r.RMN, ras.RMNLocationMap);
 
   if (fullResult != undefined || fullResult != null) {
     r.component = completeMissingResults(r.component, fullResult.component);

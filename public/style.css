@@ -34,7 +34,7 @@ body {
   stroke: steelblue;
 }
 
-#machineView .nodeBoardBox {
+#machineView .nbbox {
   fill: white;
   stroke-width: 0.5;
   stroke: steelblue;
