@@ -1,5 +1,5 @@
 function machineView() {
-  const L = 600, T = 0, W = 612, H = 258;
+  const L = 600, T = 20, W = 612, H = 258;
   const margin = {top: 2, right: 2, bottom: 2, left: 2},
         width = W - margin.left - margin.right,
         height = H - margin.top - margin.bottom;

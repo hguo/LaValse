@@ -1,5 +1,5 @@
 function barChart(name, id, data, geom) {
-  const margin = {top: 10, right: 10, bottom: 25, left: 10},
+  const margin = {top: 20, right: 10, bottom: 25, left: 10},
         width = geom.W - margin.left - margin.right,
         height = geom.H - margin.top - margin.bottom;
 
@@ -15,6 +15,11 @@ function barChart(name, id, data, geom) {
     .attr("height", geom.H)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  svg.append("text")
+    .attr("class", "barChartTitle")
+    .attr("x", 0).attr("y", -4)
+    .text(name);
 
   var tip = d3.tip()
     .attr("class", "d3-tip")
