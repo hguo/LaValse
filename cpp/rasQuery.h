@@ -39,7 +39,7 @@ struct QueryResults {
 
 struct Query {
   uint64_t T0 = 1420070400000, T1 = 1451606400000; // time scope
-  uint64_t t0 = 0, t1 = 0, tg = TIME_HOUR; // tg is time granularity
+  uint64_t t0 = 1420070400000, t1 = 1451606400000, tg = TIME_HOUR; // tg is time granularity
   uint8_t subvolumes = 0;
   int nthreads = 1;
 
@@ -57,7 +57,6 @@ struct Query {
   }
 
   inline static bool checkTime(uint64_t t, uint64_t t0, uint64_t t1) {
-    if (t1 == 0) return true;
     return (t >= t0 && t <= t1);
   }
 
@@ -129,6 +128,15 @@ struct Query {
 
   void crossfilter_kernel(const Event& e, bool b[], bool c[]) {
     const int ndims = 7; // FIXME
+    // fprintf(stderr, "%llu, %llu, %llu, %llu\n", t0, t1, T0, T1);
+    if (!checkTime(e.eventTime, T0, T1)) {
+      for (int i=0; i<ndims; i++) {
+        b[i] = false; 
+        c[i] = false;
+      }
+      return;
+    }
+
     b[0] = checkTime(e.eventTime, t0, t1);
     b[1] = check(e.msgID, msgID);
     b[2] = check(e.component(), component);

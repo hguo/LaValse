@@ -1,7 +1,9 @@
 var query = {
   T0: 1420070400000, // 2015-01-01
   T1: 1451520000000, // 2015-12-31
-  tg: 86400000 // aggregation by day
+  t0: 1420070400000, // 2015-01-01
+  t1: 1451520000000, // 2015-12-31
+  tg: 27587368 // (t1 - t0) / width_of_time_chart // aggregation resolution
 };
 var severityChart, componentChart, categoryChart, locationTypeChart, timeVolumeChart;
 var machineView;

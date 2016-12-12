@@ -21,7 +21,17 @@ function timeVolumeChart(id, data, geom) {
     });
   svg.call(tip);
 
+  var zoom = d3.zoom()
+    .scaleExtent([1, 10000])
+    // .translateExtent([0, 0], [width, height])
+    .extent([[0, 0], [width, height]])
+    .on("zoom", zoomed);
+
+  var x0 = d3.scaleTime()
+    .rangeRound([0, width])
+    .domain(d3.extent(data, function(d) {return d.k;}));
   var x = d3.scaleTime()
+    .clamp(true)
     .rangeRound([0, width])
     .domain(d3.extent(data, function(d) {return d.k;}));
   var y = d3.scaleLog()
@@ -72,7 +82,8 @@ function timeVolumeChart(id, data, geom) {
     .on("end", brushed);
   svg.append("g")
     .attr("class", "brush")
-    .call(brush);
+    .call(brush)
+    .call(zoom);
 
   /*
     // .call(brush.move, x.range())
@@ -95,12 +106,12 @@ function timeVolumeChart(id, data, geom) {
   */
 
   this.updateData = function(data) {
-    x.domain(d3.extent(data, function(d) {return d.k;}));
+    // x.domain(d3.extent(data, function(d) {return d.k;}));
     y.domain([1, d3.max(data, function(d) {return d.v;})]);
   
     svg.select(".line")
       .datum(data)
-      .transition()
+      // .transition()
       .attr("d", line);
 
     svg.select(".axis-x")
@@ -115,5 +126,26 @@ function timeVolumeChart(id, data, geom) {
     query.t0 = x.invert(s[0]).getTime();
     query.t1 = x.invert(s[1]).getTime();
     refresh();
+  }
+
+  var zoomTimer = d3.timer(function() {zoomTimer.stop()});
+
+  function zoomed() { // TODO
+    var t = d3.event.transform;
+    x.domain(t.rescaleX(x0).domain());
+    svg.select(".axis-x").call(xAxis);
+    svg.select(".line").attr("d", line);
+
+    zoomTimer.restart(zoomTimedOut, 500);
+  }
+
+  function zoomTimedOut() {
+    query.t0 = x.domain()[0].getTime();
+    query.t1 = x.domain()[1].getTime();
+    query.T0 = query.t0; 
+    query.T1 = query.t1;
+    query.tg = (query.T1 - query.T0) / width;
+    refresh();
+    zoomTimer.stop();
   }
 }

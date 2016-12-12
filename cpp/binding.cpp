@@ -104,8 +104,17 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
   query.tg = input->Get(String::NewFromUtf8(isolate, "tg"))->IntegerValue();
   if (query.tg == 0) query.tg = ras::TIME_DAY;
 
+  query.T0 = input->Get(String::NewFromUtf8(isolate, "T0"))->IntegerValue();
+  if (query.T0 == 0) query.T0 = 1420070400000;
+  query.T1 = input->Get(String::NewFromUtf8(isolate, "T1"))->IntegerValue();
+  if (query.T1 == 0) query.T1 = 1451606400000;
+  
   query.t0 = input->Get(String::NewFromUtf8(isolate, "t0"))->IntegerValue();
+  if (query.t0 == 0) query.t0 = 1420070400000;
   query.t1 = input->Get(String::NewFromUtf8(isolate, "t1"))->IntegerValue();
+  if (query.t1 == 0) query.t1 = 1451606400000;
+
+  // fprintf(stderr, "%llu, %llu, %llu, %llu\n", query.t0, query.t1, query.T0, query.T1);
   
   ras::QueryResults results(query);
 

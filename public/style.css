@@ -7,7 +7,7 @@ body {
   position: absolute;
 }
 
-#timeVolumeChart .overlay {
+#timeVolumeChart .pane {
   fill: none;
   pointer-events: all;
 }
