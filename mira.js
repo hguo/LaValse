@@ -267,15 +267,6 @@ function parseComputeBlock(str) {
   return set;
 }
 
-module.exports = {
-  parseLocation: parseLocation,
-  parseLocationType: parseLocationType,
-  parseLocationTypeInt: parseLocationTypeInt,
-  locationToFixedSizeArray: locationToFixedSizeArray,
-  enumerateRMNLocations: enumerateRMNLocations,
-  locationToRMNLocation: locationToRMNLocation
-};
-
 function locationToRMNLocation(str) {
   var L = parseLocation(str);
   switch (L.pattern) {
@@ -331,3 +322,14 @@ function enumerateRMNLocations() { // nb level
 // console.log(parseLocation("R1A-M1-N13"));
 // parseComputeBlock("MIR-00000-73FF1-16384");
 // console.log(locationToFixedSizeArray("Q0G-I6-J04"));
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+  module.exports = {
+    parseLocation: parseLocation,
+    parseLocationType: parseLocationType,
+    parseLocationTypeInt: parseLocationTypeInt,
+    locationToFixedSizeArray: locationToFixedSizeArray,
+    enumerateRMNLocations: enumerateRMNLocations,
+    locationToRMNLocation: locationToRMNLocation
+  };
+}

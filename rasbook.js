@@ -931,20 +931,6 @@ undefined: "undefined",
 "QIA": "PCI Adapter Cards in I/O Racks"
 };
 
-module.exports = {
-  // events: events,
-  // categories: categories,
-  // components: components,
-  // locationTypes: locationTypes,
-  // severities: severities,
-  eventMap: generateBiMap(events),
-  categoryMap: generateBiMap(categories),
-  componentMap: generateBiMap(components),
-  severityMap: generateBiMap(severities),
-  locationTypeMap: generateBiMap(locationTypes),
-  RMNLocationMap: generateBiMapFromArray(mira.enumerateRMNLocations())
-};
-
 function generateBiMap(obj) {
   var bimap = new BiMap;
   var i = 0;
@@ -970,3 +956,19 @@ function generateCxxHeader_event() {
 }
 
 // generateCxxHeader_event();
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+  module.exports = {
+    // events: events,
+    // categories: categories,
+    // components: components,
+    // locationTypes: locationTypes,
+    // severities: severities,
+    eventMap: generateBiMap(events),
+    categoryMap: generateBiMap(categories),
+    componentMap: generateBiMap(components),
+    severityMap: generateBiMap(severities),
+    locationTypeMap: generateBiMap(locationTypes),
+    RMNLocationMap: generateBiMapFromArray(mira.enumerateRMNLocations())
+  };
+}
