@@ -15,8 +15,7 @@ void CatalogCube::LoadEvents(const std::string& filename)
   size_t sz = ftell(fp);
   fseek(fp, 0L, SEEK_SET);
   
-  // const int n = sz / sizeof(ras::Event) - 1;
-  const int n = 10000000;
+  const int n = sz / sizeof(ras::Event);
   events.resize(n);
   
   fread((void*)events.data(), sizeof(ras::Event), n, fp);
@@ -110,11 +109,15 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
   
   ras::QueryResults results(query);
 
+  Local<Array> subvolumes = Local<Array>::Cast(input->Get(String::NewFromUtf8(isolate, "subvolumes"))); // TODO
+  // for (uint32_t i=0; i<subvolumes.size(); i++)
+  //   query.subvolumes
+
   Local<Array> msgID = Local<Array>::Cast(input->Get(String::NewFromUtf8(isolate, "msgID")));
   for (uint32_t i=0; i<msgID->Length(); i++) 
     query.msgID[ msgID->Get(i)->IntegerValue() ] = true;
   if (msgID->Length() == 0) memset(query.msgID, 1, NUM_MSGID);
-  
+
   Local<Array> component = Local<Array>::Cast(input->Get(String::NewFromUtf8(isolate, "component")));
   for (uint32_t i=0; i<component->Length(); i++) 
     query.component[ component->Get(i)->Uint32Value() ] = true;

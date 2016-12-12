@@ -26,6 +26,7 @@ enum {
   CTL_FREE_COMPUTE_BLOCK = 0x100000000
 };
 enum {NUM_RMN = 3217}; // 3217 RMN locations
+enum {SUBVOL_SEV = 0x1, SUBVOL_MSGID = 0x10, SUBVOL_COMP = 0x100, SUBVOL_LOC = 0x1000, SUBVOL_CAT = 0x10000};
 enum {TIME_SECOND = 1000L, TIME_MINUTE = 60000L, TIME_HOUR = 3600000L, TIME_DAY = 86400000L}; // granularity for time aggregation
 
 static const uint16_t eventTable[][5] = {

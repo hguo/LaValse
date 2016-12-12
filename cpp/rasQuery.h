@@ -40,7 +40,7 @@ struct QueryResults {
 struct Query {
   uint64_t T0 = 1420070400000, T1 = 1451606400000; // time scope
   uint64_t t0 = 0, t1 = 0, tg = TIME_HOUR; // tg is time granularity
-  uint16_t subvolume = 0;
+  uint8_t subvolumes = 0;
   int nthreads = 1;
 
   bool msgID[NUM_MSGID], component[NUM_COMP], locationType[NUM_LOC], 
@@ -106,7 +106,7 @@ struct Query {
       if (c[0]) {
         uint32_t t = e.aggregateTime(T0, tg); // FIXME
         results.timeVolume[t] ++;
-        if (subvolume) {
+        if (subvolumes) {
           if (b[1]) add1(results.subTimeVolumes[0][t]);
           if (b[2]) add1(results.subTimeVolumes[1][t]);
           if (b[3]) add1(results.subTimeVolumes[2][t]);
