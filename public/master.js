@@ -9,6 +9,7 @@ init();
 
 function init() {
   d3.json("/cube?query={}", function (d) {
+    if (d == null || d == undefined) return;
     severityChart = new barChart(
         "severity", "#severityChart", histogramToArray(d.severity), 
         {L: 0, T: 0, W: 200, H: 100});

@@ -25,6 +25,7 @@ enum {
   CTL_END_JOB = 0x10000000,
   CTL_FREE_COMPUTE_BLOCK = 0x100000000
 };
+enum {NUM_RMN = 3217}; // 3217 RMN locations
 enum {TIME_SECOND = 1000L, TIME_MINUTE = 60000L, TIME_HOUR = 3600000L, TIME_DAY = 86400000L}; // granularity for time aggregation
 
 static const uint16_t eventTable[][5] = {
@@ -858,7 +859,7 @@ struct Event {
   uint64_t eventTime;
 
   uint8_t locationType;
-  uint8_t location[5];
+  uint16_t RMN; // RMN location
 
   uint8_t component() const {return eventTable[msgID][1];}
   uint8_t category() const {return eventTable[msgID][2];}

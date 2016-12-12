@@ -28,12 +28,16 @@ var csvStream = csv({headers: true})
       machineName: d.MACHINE_NAME
     };
     var a = mira.locationToFixedSizeArray(rasData.location);
+    var RMN = mira.locationToRMNLocation(rasData.location);
+    var RMNindex = rasbook.RMNLocationMap.key(RMN);
+    if (RMNindex == undefined) RMNindex = 0;
 
     console.log(
         rasData._id,
         rasbook.eventMap.key(rasData.messageID),
         rasData.eventTime.getTime(),
-        a[0], a[1], a[2], a[3], a[4], a[5]);
+        a[0], // location type
+        RMNindex);
   })
   .on("end", function() {
   });

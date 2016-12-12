@@ -6,12 +6,12 @@ int main(int argc, char **argv) {
   
   FILE *fp = fopen("raslog", "a");
 
-  while (scanf("%d %hu %lld %hhu %hhu %hhu %hhu %hhu %hhu",
-        &e.recID, &e.msgID, &e.eventTime, 
-        &e.locationType, &e.location[0], &e.location[1], &e.location[2], &e.location[3], &e.location[4]) == 9)
+  while (scanf("%d %hu %lld %hhu %hu", 
+        &e.recID, &e.msgID, &e.eventTime, &e.locationType, &e.RMN) == 5)
   {
+    // fprintf(stderr, "%d, %hu, %lld, %hhu, %hu\n", 
+    //     e.recID, e.msgID, e.eventTime, e.locationType, e.RMN);
     fwrite(&e, sizeof(ras::Event), 1, fp);
-    // fprintf(stderr, "%d, %d, %d, %lld\n", e.category(), e.component(), e.severity(), e.eventTime);
   }
   fclose(fp);
 

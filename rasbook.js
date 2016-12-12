@@ -1,4 +1,5 @@
 const BiMap = require("bimap");
+const mira = require("./mira");
 
 const events = {
 "00010001": {	component: "CNK",	category: "Software_Error",	severity: "FATAL",	message: "Kernel unexpected operation.  IP=$(Address)  LR=$(LR)  ESR=$(ESR)  DEAR=$(DEAR)  MSR=$(MSR)  IntCode=$(CODE)",	description: "The kernel has performed an operation that was not permitted.  There are several triggers for these types of errors (bad memory reads or writes, branching to an invalid address).  These are typically software defects that should be understood and addressed.  On rare occasions, the trigger could be bad hardware but the initial debug assumption should always start with a software defect.",	serviceAction: "Please report these errors to IBM.  Logs, timestamps, and any other recreation material will be helpful.",	controlAction: "SOFTWARE_IN_ERROR,END_JOB,FREE_COMPUTE_BLOCK",	relevantDiagnosticSuites: "processor",	sourceFile: "/bgsys/source/srcV1R2M2.3650/cnk/src/ras.h",	lineNumber: "28"},
@@ -939,8 +940,9 @@ module.exports = {
   eventMap: generateBiMap(events),
   categoryMap: generateBiMap(categories),
   componentMap: generateBiMap(components),
+  severityMap: generateBiMap(severities),
   locationTypeMap: generateBiMap(locationTypes),
-  severityMap: generateBiMap(severities)
+  RMNLocationMap: generateBiMapFromArray(mira.enumerateRMNLocations())
 };
 
 function generateBiMap(obj) {
@@ -948,6 +950,13 @@ function generateBiMap(obj) {
   var i = 0;
   for (var key in obj)
     bimap.push(key, i ++);
+  return bimap;
+}
+
+function generateBiMapFromArray(array) {
+  var bimap = new BiMap;
+  for (var i=0; i<array.length; i++)
+    bimap.push(array[i], i);
   return bimap;
 }
 

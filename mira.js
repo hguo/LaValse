@@ -163,6 +163,10 @@ function parseLocation(str) {
   var pattern = "";
   substrings.forEach(function(s) {pattern += s[0];});
 
+  if (str.length == 0) {
+    L.pattern = undefined
+    return L;
+  }
   if (!(pattern in locationNarratives)) return L;
 
   L.string = str;
@@ -267,9 +271,63 @@ module.exports = {
   parseLocation: parseLocation,
   parseLocationType: parseLocationType,
   parseLocationTypeInt: parseLocationTypeInt,
-  locationToFixedSizeArray: locationToFixedSizeArray
+  locationToFixedSizeArray: locationToFixedSizeArray,
+  enumerateRMNLocations: enumerateRMNLocations,
+  locationToRMNLocation: locationToRMNLocation
 };
 
+function locationToRMNLocation(str) {
+  var L = parseLocation(str);
+  switch (L.pattern) {
+  case "R":
+  case "RB": 
+  case "RBP": 
+  case "RK":
+  case "RI":
+  case "RIJ":
+  case "RIJC":
+  case "RID": 
+  case "RIO":
+  case "RIH":
+  case "RIHF":
+  case "RIA": 
+  case "RL":
+    return rack2str(L.row, L.column);
+
+  case "RM": 
+  case "RMS": 
+    return midplane2str(L.row, L.column, L.midplane);
+
+  case "RMN": 
+  case "RMNJ": 
+  case "RMNJC": 
+  case "RMNU":
+  case "RMND":
+  case "RMNO":
+    return nodeBoard2str(L.row, L.column, L.midplane, L.nodeBoard);
+
+  default: 
+    return undefined;
+  }
+}
+
+function enumerateRMNLocations() { // nb level
+  var locations = [undefined];
+  for (row = 0; row < 3; row ++) {
+    for (col = 0; col < 16; col ++) {
+      locations.push( rack2str(row, col) );
+      for (mp = 0; mp < 2; mp ++) {
+        locations.push( midplane2str(row, col, mp) );
+        for (nb = 0; nb < 32; nb ++) {
+          locations.push( nodeBoard2str(row, col, mp, nb) );
+        }
+      }
+    }
+  }
+  return locations;
+}
+
+// console.log(enumerateRMNLocations().length);
 // console.log(parseLocation("R1A-M1-N13"));
 // parseComputeBlock("MIR-00000-73FF1-16384");
 // console.log(locationToFixedSizeArray("Q0G-I6-J04"));

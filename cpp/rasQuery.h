@@ -29,7 +29,8 @@ struct Query;
 
 struct QueryResults {
   uint32_t *timeVolume, *subTimeVolumes[5];
-  uint32_t msgID[NUM_MSGID], component[NUM_COMP], locationType[NUM_LOC], category[NUM_CAT], severity[NUM_SEV];
+  uint32_t msgID[NUM_MSGID], component[NUM_COMP], locationType[NUM_LOC], 
+           category[NUM_CAT], severity[NUM_SEV], RMN[NUM_RMN];
   uint32_t slots;
 
   explicit QueryResults(const Query& q);
@@ -42,7 +43,8 @@ struct Query {
   uint16_t subvolume = 0;
   int nthreads = 1;
 
-  bool msgID[NUM_MSGID], component[NUM_COMP], locationType[NUM_LOC], category[NUM_CAT], severity[NUM_SEV];
+  bool msgID[NUM_MSGID], component[NUM_COMP], locationType[NUM_LOC], 
+       category[NUM_CAT], severity[NUM_SEV], RMN[NUM_RMN];
 
   Query()
   {
@@ -51,14 +53,15 @@ struct Query {
     memset(locationType, 0, NUM_LOC);
     memset(category, 0, NUM_CAT);
     memset(severity, 0, NUM_SEV);
+    memset(RMN, 0, NUM_RMN);
   }
 
-  static bool checkTime(uint64_t t, uint64_t t0, uint64_t t1) {
+  inline static bool checkTime(uint64_t t, uint64_t t0, uint64_t t1) {
     if (t1 == 0) return true;
     return (t >= t0 && t <= t1);
   }
 
-  static bool check(uint16_t m, bool s[]) {
+  inline static bool check(uint16_t m, bool s[]) {
     return s[m];
   }
 
@@ -94,7 +97,7 @@ struct Query {
     auto t0 = clock::now();
     set_affinity(tid);
     
-    const int ndims = 6;
+    const int ndims = 7;
     bool b[ndims], c[ndims];
 
     for (size_t i=tid; i<events.size(); i+=nthreads) {
@@ -116,6 +119,7 @@ struct Query {
       if (c[3]) add1(results.locationType[e.locationType]);
       if (c[4]) add1(results.category[e.category()]);
       if (c[5]) add1(results.severity[e.severity()]);
+      if (c[6]) add1(results.RMN[e.RMN]);
     }
     
     auto t1 = clock::now();
@@ -124,13 +128,14 @@ struct Query {
   }
 
   void crossfilter_kernel(const Event& e, bool b[], bool c[]) {
-    const int ndims = 6; // FIXME
+    const int ndims = 7; // FIXME
     b[0] = checkTime(e.eventTime, t0, t1);
     b[1] = check(e.msgID, msgID);
     b[2] = check(e.component(), component);
     b[3] = check(e.locationType, locationType);
     b[4] = check(e.category(), category);
     b[5] = check(e.severity(), severity);
+    b[6] = check(e.RMN, RMN);
 
     for (int i=0; i<ndims; i++) {
       bool v = true;
@@ -163,6 +168,7 @@ QueryResults::QueryResults(const Query& q)
   memset(locationType, 0, NUM_LOC*4);
   memset(category, 0, NUM_CAT*4);
   memset(severity, 0, NUM_SEV*4);
+  memset(RMN, 0, NUM_RMN*4);
 
   slots = (q.T1 - q.T0) / q.tg;
   timeVolume = (uint32_t*)malloc(4*slots);

@@ -134,7 +134,13 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
   for (uint32_t i=0; i<severity->Length(); i++) 
     query.severity[ severity->Get(i)->Uint32Value() ] = true;
   if (severity->Length() == 0) memset(query.severity, 1, NUM_SEV);
- 
+  
+  Local<Array> RMN = Local<Array>::Cast(input->Get(String::NewFromUtf8(isolate, "RMN")));
+  for (uint32_t i=0; i<RMN->Length(); i++) 
+    query.RMN[ RMN->Get(i)->Uint32Value() ] = true;
+  if (RMN->Length() == 0) memset(query.RMN, 1, NUM_RMN);
+
+
   typedef std::chrono::high_resolution_clock clock;
   auto t0 = clock::now();
   query.crossfilter(events, results);
@@ -179,6 +185,12 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
     if (results.severity[i] > 0)
       jSeverity->Set(Number::New(isolate, i), Number::New(isolate, results.severity[i]));
   jout->Set(String::NewFromUtf8(isolate, "severity"), jSeverity);
+  
+  Local<Object> jRMN = Object::New(isolate);
+  for (int i=0; i<NUM_RMN; i++) 
+    if (results.RMN[i] > 0)
+      jRMN->Set(Number::New(isolate, i), Number::New(isolate, results.RMN[i]));
+  jout->Set(String::NewFromUtf8(isolate, "RMN"), jRMN);
 
   args.GetReturnValue().Set(jout);
 }
