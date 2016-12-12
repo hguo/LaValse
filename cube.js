@@ -10,6 +10,7 @@ function translateQuery(q0) {
   if ("locationType" in q) q.locationType = translateNamesToIndices(q.locationType, ras.locationTypeMap);
   if ("category" in q) q.category = translateNamesToIndices(q.category, ras.categoryMap);
   if ("severity" in q) q.severity = translateNamesToIndices(q.severity, ras.severityMap);
+  if ("RMN" in q) q.RMN = translateNamesToIndices(q.RMN, ras.RMNLocationMap);
   
   return q;
  

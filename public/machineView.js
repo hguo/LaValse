@@ -90,7 +90,6 @@ function machineView() {
 
   this.updateData = function(data) {
     var scale = d3.scaleLog()
-      // .domain([1, d3.max(array, function(d) {return d.v;})])
       .domain([1, 100000]) // TODO
       .clamp(true)
       .range(["white", "steelblue"])
