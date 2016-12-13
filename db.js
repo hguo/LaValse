@@ -1,11 +1,19 @@
 const MongoClient = require("mongodb").MongoClient;
+const async = require("async");
 
-const uri = "mongodb://localhost:27017/catalog";
-const collectionName = "mira";
+const dbname = "catalog";
+const collection = "mira";
 
-function getRASLog(query, num) {
-  MongoClient.connect(uri, function(err, db) {
-    if (err != null) return; 
-    // TODO
-  }
+function query(query) {
+  async.series([
+    function(cb) {
+      MongoClient.connect(uri, function(err, db) {
+        if (err != null) return;
+      });
+    }
+  ]);
 }
+
+module.exports = {
+  query: query
+};

@@ -70,13 +70,18 @@ function machineView() {
     }
   }
 
+  var zoom = d3.zoom()
+    .scaleExtent([1, 40])
+    .on("zoom", zoomed);
+
   var brush = d3.brush()
     .extent([[0, 0], [W, H]])
     .on("end", brushed);
   svg.append("g")
     .attr("class", "brush")
     .attr("id", "machineViewBrush")
-    .call(brush);
+    .call(brush)
+    .call(zoom);
 
   /*
   $(".nbbox").hover(function(evt) {
@@ -133,6 +138,11 @@ function machineView() {
       delete query["RMN"];
       refresh();
     }
+  }
+
+  function zoomed() {
+    svg.attr("transform", d3.event.transform);
+    // console.log("zoomed");
   }
 }
 
