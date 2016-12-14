@@ -117,6 +117,8 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
   query.t1 = input->Get(String::NewFromUtf8(isolate, "t1"))->IntegerValue();
   if (query.t1 == 0) query.t1 = 1451606400000;
 
+  query.volumeBy = input->Get(String::NewFromUtf8(isolate, "volumeBy"))->IntegerValue();
+
   // fprintf(stderr, "%llu, %llu, %llu, %llu\n", query.t0, query.t1, query.T0, query.T1);
   
   ras::QueryResults results(query);
