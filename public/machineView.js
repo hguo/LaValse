@@ -72,6 +72,7 @@ function machineView() {
 
   var zoom = d3.zoom()
     .scaleExtent([1, 40])
+    .translateExtent([[0, 0], [W, H]])
     .on("zoom", zoomed);
 
   var brush = d3.brush()

@@ -23,7 +23,7 @@ function timeVolumeChart(id, data, geom) {
 
   var zoom = d3.zoom()
     .scaleExtent([1, 10000])
-    // .translateExtent([0, 0], [width, height])
+    .translateExtent([[0, 0], [width, height]])
     .extent([[0, 0], [width, height]])
     .on("zoom", zoomed);
 
