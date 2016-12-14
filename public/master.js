@@ -11,7 +11,7 @@ var machineView;
 init();
 
 function init() {
-  d3.json("/cube?query={}", function (d) {
+  d3.json("/cube?query=" + JSON.stringify(query), function (d) {
     if (d == null || d == undefined) return;
     severityChart = new barChart(
         "severity", "#severityChart", histogramToArray(d.severity), severities,
@@ -26,7 +26,7 @@ function init() {
         "locationType", "#locationTypeChart", histogramToArray(d.locationType), locationTypes,
         {L: 400, T: 0, W: 200, H: 300});
     timeVolumeChart = new timeVolumeChart(
-        "#timeVolumeChart", histogramToArray(d.timeVolume), 
+        "#timeVolumeChart", d.timeVolumes[0], // histogramToArray(d.timeVolume), 
         {L: 0, T: 300, W: 1200, H: 100});
     machineView = new machineView();
     machineView.updateData(d.RMN, histogramToArray(d.RMN));
@@ -41,7 +41,7 @@ function refresh() {
     componentChart.updateData(histogramToArray(d.component));
     categoryChart.updateData(histogramToArray(d.category));
     locationTypeChart.updateData(histogramToArray(d.locationType));
-    timeVolumeChart.updateData(histogramToArray(d.timeVolume), 
+    timeVolumeChart.updateData(d.timeVolumes[0], 
         {L: 0, T: 400, W: 600, H: 150});
     machineView.updateData(d.RMN, histogramToArray(d.RMN));
   });

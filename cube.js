@@ -2,9 +2,19 @@ const catalogCube = require("./cpp/build/Release/catalogCube.node");
 // const catalogCube = require("./cpp/build/Debug/catalogCube.node");
 const ras = require("./rasbook");
 
+const volumeByMap = {
+  "all": 0,
+  "msgID": 1,
+  "compoment": 2, 
+  "locationType": 3,
+  "category": 4,
+  "severity": 5
+};
+
 function translateQuery(q0) {
   var q = q0;
 
+  if ("volumeBy" in q) q.volumeBy = volumeByMap[q.volumeBy];
   if ("msgID" in q) q.msgID = translateNamesToIndices(q.msgID, ras.eventMap);
   if ("component" in q) q.component = translateNamesToIndices(q.component, ras.componentMap);
   if ("locationType" in q) q.locationType = translateNamesToIndices(q.locationType, ras.locationTypeMap);
