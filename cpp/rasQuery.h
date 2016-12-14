@@ -28,10 +28,11 @@ namespace ras {
 struct Query;
 
 struct QueryResults {
-  uint32_t *timeVolume, *subTimeVolumes[5];
+  uint32_t nvolumes;
+  uint32_t nslots; // time slots
+  uint32_t *timeVolumes;
   uint32_t msgID[NUM_MSGID], component[NUM_COMP], locationType[NUM_LOC], 
            category[NUM_CAT], severity[NUM_SEV], RMN[NUM_RMN];
-  uint32_t slots; // time slots
   std::vector<uint32_t> topRecIDs;
 
   explicit QueryResults(const Query& q);
@@ -41,7 +42,7 @@ struct QueryResults {
 struct Query {
   uint64_t T0 = 1420070400000, T1 = 1451606400000; // time scope
   uint64_t t0 = 1420070400000, t1 = 1451606400000, tg = TIME_HOUR; // tg is time granularity
-  uint8_t subvolumes = 0;
+  uint8_t volumeBy = VAR_NONE;
   int top = 100; // return top n recIDs
   int nthreads = 1;
 
@@ -86,11 +87,12 @@ struct Query {
   }
 
   inline void add1(uint32_t& a) {
-#if 0
-    __sync_fetch_and_add(&a, 1);
-#else
+    // __sync_fetch_and_add(&a, 1);
     a ++;
-#endif
+  }
+        
+  inline void add1(uint32_t *timeVolumes, int nslots, int index, int t) {
+    add1(timeVolumes[nslots*index+t]);
   }
 
   void crossfilter_thread(int nthreads, int tid, const std::vector<Event>& events, QueryResults& results) {
@@ -99,6 +101,7 @@ struct Query {
     set_affinity(tid);
     
     const int ndims = 7;
+    const int nslots = results.nslots;
     bool b[ndims], c[ndims];
     int ntop = 0;
 
@@ -107,13 +110,14 @@ struct Query {
       crossfilter_kernel(e, b, c);
       if (c[0]) {
         uint32_t t = e.aggregateTime(T0, tg); // FIXME
-        results.timeVolume[t] ++;
-        if (subvolumes) {
-          if (b[1]) add1(results.subTimeVolumes[0][t]);
-          if (b[2]) add1(results.subTimeVolumes[1][t]);
-          if (b[3]) add1(results.subTimeVolumes[2][t]);
-          if (b[4]) add1(results.subTimeVolumes[3][t]);
-          if (b[5]) add1(results.subTimeVolumes[4][t]);
+        switch (volumeBy) {
+        case VAR_NONE: add1(results.timeVolumes[t]); break;
+        case VAR_MSGID: add1(results.timeVolumes, nslots, e.msgID, t); break;
+        case VAR_COMP: add1(results.timeVolumes, nslots, e.component(), t); break;
+        case VAR_LOC: add1(results.timeVolumes, nslots, e.locationType, t); break;
+        case VAR_CAT: add1(results.timeVolumes, nslots, e.category(), t); break;
+        case VAR_SEV: add1(results.timeVolumes, nslots, e.severity(), t); break;
+        default: break;
         }
       }
       if (c[1]) add1(results.msgID[e.msgID]);
@@ -186,23 +190,18 @@ QueryResults::QueryResults(const Query& q)
   memset(severity, 0, NUM_SEV*4);
   memset(RMN, 0, NUM_RMN*4);
 
-  slots = (q.T1 - q.T0) / q.tg;
-  timeVolume = (uint32_t*)malloc(4*slots);
-  memset(timeVolume, 0, 4*slots);
+  nslots = (q.T1 - q.T0) / q.tg;
+  nvolumes = ras::nvolumes[q.volumeBy];
 
-  for (int i=0; i<5; i++) {
-    subTimeVolumes[i] = (uint32_t*)malloc(4*slots);
-    memset(subTimeVolumes[i], 0, 4*slots);
-  }
+  timeVolumes = (uint32_t*)malloc(sizeof(uint32_t)*nslots*nvolumes);
+  memset(timeVolumes, 0, sizeof(uint32_t)*nslots*nvolumes);
 
   topRecIDs.reserve(q.top);
 }
 
 QueryResults::~QueryResults()
 {
-  free(timeVolume);
-  for (int i=0; i<5; i++)
-    free(subTimeVolumes[i]);
+  free(timeVolumes);
 }
 
 }

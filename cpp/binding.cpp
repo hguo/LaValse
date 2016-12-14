@@ -121,10 +121,6 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
   
   ras::QueryResults results(query);
 
-  Local<Array> subvolumes = Local<Array>::Cast(input->Get(String::NewFromUtf8(isolate, "subvolumes"))); // TODO
-  // for (uint32_t i=0; i<subvolumes.size(); i++)
-  //   query.subvolumes
-
   Local<Array> msgID = Local<Array>::Cast(input->Get(String::NewFromUtf8(isolate, "msgID")));
   for (uint32_t i=0; i<msgID->Length(); i++) 
     query.msgID[ msgID->Get(i)->IntegerValue() ] = true;
@@ -167,9 +163,9 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
   jout->Set(String::NewFromUtf8(isolate, "queryTime"), Number::New(isolate, elapsed));
 
   Local<Object> jTimeVolume = Object::New(isolate);
-  for (uint32_t i=0; i<results.slots; i++)
-    jTimeVolume->Set(Number::New(isolate, i*query.tg + query.T0), Number::New(isolate, results.timeVolume[i]));
-  jout->Set(String::NewFromUtf8(isolate, "timeVolume"), jTimeVolume);
+  for (uint32_t i=0; i<results.nslots; i++)
+    jTimeVolume->Set(Number::New(isolate, i*query.tg + query.T0), Number::New(isolate, results.timeVolumes[i]));
+  jout->Set(String::NewFromUtf8(isolate, "timeVolume"), jTimeVolume); // TODO
 
   Local<Object> jMsgID = Object::New(isolate);
   for (int i=0; i<NUM_MSGID; i++)

@@ -9,7 +9,7 @@
 namespace ras {
 
 enum {NUM_MSGID = 822};
-enum {VAR_MSGID = 0x1, VAR_COMPONENT = 0x10, VAR_LOCATIONTYPE = 0x100, VAR_CATEGORY = 0x1000, VAR_SEVERITY = 0x10000};
+enum {VAR_NONE = 0, VAR_MSGID, VAR_COMP, VAR_LOC, VAR_CAT, VAR_SEV};
 enum {CAT_BQC = 0, CAT_BGL, CAT_BQL, CAT_DDR, CAT_PCI, CAT_Ethernet, CAT_Infiniband, CAT_AC_TO_DC_PWR, CAT_DC_TO_DC_PWR, CAT_Cable, CAT_Message_Unit, CAT_Card, CAT_Clocks, CAT_Clock_FPGA, CAT_Service_Card, CAT_IO_Board, CAT_Node_Board, CAT_Icon, CAT_Palomino, CAT_DCA, CAT_Fan, CAT_Fan_Assembly, CAT_Optical_Module, CAT_Temp_Sensor, CAT_Job, CAT_Block, CAT_Process, CAT_Coolant_Monitor, CAT_Software_Error, CAT_ELF_Image, CAT_UPC, NUM_CAT};
 enum {COMP_CNK = 0, COMP_DIAGS, COMP_BGMASTER, COMP_MC, COMP_MCSERVER, COMP_MMCS, COMP_BAREMETAL, COMP_FIRMWARE, COMP_CTRLNET, COMP_LINUX, COMP_CIOS, COMP_MUDM, COMP_SPI, COMP_BGPM, COMP_TEST, NUM_COMP};
 enum {SEV_INFO = 0, SEV_WARN, SEV_FATAL, NUM_SEV};
@@ -26,8 +26,10 @@ enum {
   CTL_FREE_COMPUTE_BLOCK = 0x100000000
 };
 enum {NUM_RMN = 3217}; // 3217 RMN locations
-enum {SUBVOL_SEV = 0x1, SUBVOL_MSGID = 0x10, SUBVOL_COMP = 0x100, SUBVOL_LOC = 0x1000, SUBVOL_CAT = 0x10000};
+enum {SUBVOL_SEV = 0, SUBVOL_MSGID, SUBVOL_COMP, SUBVOL_LOC, SUBVOL_CAT};
 enum {TIME_SECOND = 1000L, TIME_MINUTE = 60000L, TIME_HOUR = 3600000L, TIME_DAY = 86400000L}; // granularity for time aggregation
+
+static const int nvolumes[] = {1, NUM_MSGID, NUM_COMP, NUM_LOC, NUM_CAT, NUM_SEV};
 
 static const uint16_t eventTable[][5] = {
   {0, COMP_CNK, CAT_Software_Error, SEV_FATAL},
