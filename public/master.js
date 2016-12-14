@@ -1,4 +1,5 @@
 var query = {
+  // volumeBy: "category",
   T0: 1420070400000, // 2015-01-01
   T1: 1451520000000, // 2015-12-31
   t0: 1420070400000, // 2015-01-01
@@ -26,7 +27,7 @@ function init() {
         "locationType", "#locationTypeChart", histogramToArray(d.locationType), locationTypes,
         {L: 400, T: 0, W: 200, H: 300});
     timeVolumeChart = new timeVolumeChart(
-        "#timeVolumeChart", d.timeVolumes[0], // histogramToArray(d.timeVolume), 
+        "#timeVolumeChart", d.timeVolumes, // histogramToArray(d.timeVolume), 
         {L: 0, T: 300, W: 1200, H: 100});
     machineView = new machineView();
     machineView.updateData(d.RMN, histogramToArray(d.RMN));
@@ -41,7 +42,7 @@ function refresh() {
     componentChart.updateData(histogramToArray(d.component));
     categoryChart.updateData(histogramToArray(d.category));
     locationTypeChart.updateData(histogramToArray(d.locationType));
-    timeVolumeChart.updateData(d.timeVolumes[0], 
+    timeVolumeChart.updateData(d.timeVolumes, 
         {L: 0, T: 400, W: 600, H: 150});
     machineView.updateData(d.RMN, histogramToArray(d.RMN));
   });

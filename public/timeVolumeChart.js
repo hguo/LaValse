@@ -29,22 +29,28 @@ function timeVolumeChart(id, data, geom) {
 
   var x0 = d3.scaleTime()
     .rangeRound([0, width])
-    // .domain(d3.extent(data, function(d) {return d.k;}));
     .domain([query.T0, query.T1]);
   var x = d3.scaleTime()
     .clamp(true)
     .rangeRound([0, width])
-    // .domain(d3.extent(data, function(d) {return d.k;}));
     .domain([query.T0, query.T1]);
   var y = d3.scaleLog()
     .rangeRound([height, 0])
     .clamp(true)
-    .domain([1, d3.max(data, function(d) {return d;})])
+    .domain([1, d3.max(data, function(d) {
+      return d3.max(d, function(dd) {
+        return dd;
+      })
+    })])
     .nice(8);
 
   var line = d3.line()
-    .x(function(d, i) {return x(query.T0 + query.tg * i);})
-    .y(function(d) {return y(d);});
+    .x(function(d, i) {
+      return x(query.T0 + query.tg * i);
+    })
+    .y(function(d) {
+      return y(d);
+    });
 
   var xAxis = d3.axisBottom().scale(x), 
       yAxis = d3.axisLeft().scale(y).ticks(4);
@@ -58,12 +64,20 @@ function timeVolumeChart(id, data, geom) {
     .attr("class", "axis axis-y")
     .call(yAxis);
 
-  svg.append("path")
-    .datum(data)
+  var volumes = svg.selectAll(".volume")
+    .data(data)
+    .enter()
+    .append("g")
+    .attr("class", "volume");
+
+  volumes.append("path")
     .attr("class", "line")
     .style("fill", "none")
     .style("stroke", "steelblue")
-    .attr("d", line);
+    .attr("d", function(d) {
+      // console.log(line(d));
+      return line(d);
+    });
 
   var cursor = svg.append("line")
     .attr("class", "cursor")
@@ -108,13 +122,19 @@ function timeVolumeChart(id, data, geom) {
   */
 
   this.updateData = function(data) {
-    // x.domain(d3.extent(data, function(d) {return d.k;}));
-    y.domain([1, d3.max(data, function(d) {return d;})]);
- 
-    svg.select(".line")
-      .datum(data)
+    y.domain([1, d3.max(data, function(d) {
+      return d3.max(d, function(dd) {
+        return dd;
+      })
+    })]);
+
+    svg.selectAll(".line")
+      .data(data)
+      // .datum(data)
       // .transition()
-      .attr("d", line);
+      .attr("d", function(d) {
+        return line(d);
+      });
 
     svg.select(".axis-x")
       .transition().call(xAxis);
@@ -136,7 +156,7 @@ function timeVolumeChart(id, data, geom) {
     var t = d3.event.transform;
     x.domain(t.rescaleX(x0).domain());
     svg.select(".axis-x").call(xAxis);
-    svg.select(".line").attr("d", line);
+    svg.selectAll(".line").attr("d", line);
 
     zoomTimer.restart(zoomTimedOut, 200);
   }
