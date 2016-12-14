@@ -27,7 +27,7 @@ function barChart(name, id, data, humanReadableText, geom) {
       return humanReadableText[d.k] + ": " + d.v;
     });
   svg.call(tip);
-  
+ 
   var x = d3.scaleLog()
     .rangeRound([0, width])
     .domain([1, d3.max(data, function(d) {return d.v;})]);
@@ -35,8 +35,23 @@ function barChart(name, id, data, humanReadableText, geom) {
     .rangeRound([height, 0])
     .padding(0.05)
     .domain(data.map(function(d) {return d.k;}));
-  // var color = d3.scaleOrdinal(d3.schemeCategory20)
-  //   .domain(d3.extent(data, function(d) {return d.k;}));
+ 
+  var color0 = d3.scaleOrdinal(d3.schemeCategory10);
+  var keys = [];
+  for (var i=0; i<data.length; i++) 
+    keys.push(data[i].k);
+  color0.domain(keys);
+  var color = function(i) {
+    if (query.volumeBy == name) {
+      return color0(i);
+    } else if (highlighted.size == 0) {
+      return "steelblue";
+    } else if (highlighted.has(i)) {
+      return "orange";
+    } else {
+      return "lightgrey";
+    }
+  }
 
   var xAxis = d3.axisBottom()
     .scale(x)
@@ -88,11 +103,7 @@ function barChart(name, id, data, humanReadableText, geom) {
     if (highlighted.size == data.length) highlighted.clear();
     
     svg.selectAll(".bar")
-      .style("fill", function(d) {
-        if (highlighted.size == 0) return "steelblue"; 
-        else if (highlighted.has(d.k)) return "orange"; // color(d.k);
-        else return "lightgrey";
-      });
+      .style("fill", function(d) {return color(d.k);});
     svg.selectAll(".mlabel")
       .style("font-weight", function(d) {
         if (highlighted.has(d.k)) return "bold";
@@ -121,9 +132,10 @@ function barChart(name, id, data, humanReadableText, geom) {
       .merge(bars)
       .transition()
       .style("fill", function(d) {
-        if (highlighted.size == 0) return "steelblue"; 
-        else if (highlighted.has(d.k)) return "orange"; // color(d.k);
-        else return "lightgrey";
+        return color(d.k);
+        // if (highlighted.size == 0) return "steelblue"; 
+        // else if (highlighted.has(d.k)) return "orange"; // color(d.k);
+        // else return "lightgrey";
       })
       .style("fill-opacity", 0.5)
       .attr("y", function(d) {return y(d.k);})

@@ -43,8 +43,10 @@ function timeVolumeChart(id, data, geom) {
       })
     })])
     .nice(8);
+  var color = d3.scaleOrdinal(d3.schemeCategory10);
 
   var line = d3.line()
+    .curve(d3.curveBasis)
     .x(function(d, i) {
       return x(query.T0 + query.tg * i);
     })
@@ -70,7 +72,8 @@ function timeVolumeChart(id, data, geom) {
     .append("path")
     .attr("class", "line")
     .style("fill", "none")
-    .style("stroke", "steelblue")
+    // .style("stroke", "steelblue")
+    .style("stroke", function(d, i) {return color(i);})
     .attr("d", function(d) {return line(d);});
 
   var cursor = svg.append("line")
@@ -129,7 +132,8 @@ function timeVolumeChart(id, data, geom) {
       .append("path")
       .attr("class", "line")
       .style("fill", "none")
-      .style("stroke", "steelblue")
+      // .style("stroke", "steelblue")
+      .style("stroke", function(d, i) {return color(i);})
       .attr("d", function(d) {return line(d);});
 
     svg.selectAll(".line")
