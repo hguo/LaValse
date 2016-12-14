@@ -2,11 +2,13 @@ const express = require("express");
 const http = require("http");
 const cube = require("./cube").cube;
 const db = require("./db");
+const basicAuth = require('basic-auth-connect');
 
 var mycube = new cube("raslog");
 
 var app = express();
 app.use(express.static("public"));
+app.use(basicAuth("catalog", "catalog1"));
 
 var server = http.createServer(app);
 server.listen(8081);
