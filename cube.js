@@ -5,7 +5,7 @@ const ras = require("./rasbook");
 const volumeByMap = {
   "all": 0,
   "msgID": 1,
-  "compoment": 2, 
+  "component": 2, 
   "locationType": 3,
   "category": 4,
   "severity": 5

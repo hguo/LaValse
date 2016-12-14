@@ -64,20 +64,14 @@ function timeVolumeChart(id, data, geom) {
     .attr("class", "axis axis-y")
     .call(yAxis);
 
-  var volumes = svg.selectAll(".volume")
+  svg.selectAll(".line")
     .data(data)
     .enter()
-    .append("g")
-    .attr("class", "volume");
-
-  volumes.append("path")
+    .append("path")
     .attr("class", "line")
     .style("fill", "none")
     .style("stroke", "steelblue")
-    .attr("d", function(d) {
-      // console.log(line(d));
-      return line(d);
-    });
+    .attr("d", function(d) {return line(d);});
 
   var cursor = svg.append("line")
     .attr("class", "cursor")
@@ -127,6 +121,16 @@ function timeVolumeChart(id, data, geom) {
         return dd;
       })
     })]);
+ 
+    svg.selectAll(".line").remove();
+    svg.selectAll(".line")
+      .data(data)
+      .enter()
+      .append("path")
+      .attr("class", "line")
+      .style("fill", "none")
+      .style("stroke", "steelblue")
+      .attr("d", function(d) {return line(d);});
 
     svg.selectAll(".line")
       .data(data)

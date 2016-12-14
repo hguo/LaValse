@@ -31,7 +31,14 @@ function init() {
         {L: 0, T: 300, W: 1200, H: 100});
     machineView = new machineView();
     machineView.updateData(d.RMN, histogramToArray(d.RMN));
+    $("#controlPanel").css("display", "block");
   });
+  
+  $("#volumeBy").change(function() {
+    query.volumeBy = $(this).val();
+    $(this).blur();
+    refresh();
+  })
 }
 
 function refresh() {

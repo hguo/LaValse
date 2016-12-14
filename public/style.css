@@ -12,6 +12,13 @@ body {
   pointer-events: all;
 }
 
+#controlPanel {
+  position: absolute;
+  left: 0;
+  top: 400;
+  display: none;
+}
+
 #tableView {
   font-size: 9pt;
 }

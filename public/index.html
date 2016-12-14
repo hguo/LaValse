@@ -20,6 +20,26 @@
     <div id="locationTypeChart" class="chart"></div>
     <div id="timeVolumeChart" class="chart"></div>
     <div id="machineView" class="chart"></div>
+    <div id="controlPanel">
+      <span>
+        volumeBy 
+        <select id="volumeBy">
+          <option value="all">all</option>
+          <option value="severity">severity</option>
+          <option value="component">component</option>
+          <option value="category">category</option>
+          <option value="locationType">locationType</option>
+        </select>
+      </span>
+      <span>
+        log/linear
+        <select id="scale">
+          <option value="auto">auto</option>
+          <option value="log">log</option>
+          <option value="linear">linear</option>
+        </select>
+      </span>
+    </div>
 
     <script src="mira.js"></script>
     <script src="rasbook.js"></script>
