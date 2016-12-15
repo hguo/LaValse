@@ -28,7 +28,7 @@ function barChart(name, id, data, humanReadableText, geom) {
     });
   svg.call(tip);
  
-  var x = d3.scaleLog()
+  var xLog = d3.scaleLog()
     .rangeRound([0, width])
     .domain([1, d3.max(data, function(d) {return d.v;})]);
   var y = d3.scaleBand()
@@ -54,7 +54,7 @@ function barChart(name, id, data, humanReadableText, geom) {
   }
 
   var xAxis = d3.axisBottom()
-    .scale(x)
+    .scale(xLog)
     .ticks(3);
   var yAxis = d3.axisLeft()
     .scale(y)
@@ -78,7 +78,7 @@ function barChart(name, id, data, humanReadableText, geom) {
     .style("fill-opacity", 0.5)
     .attr("y", function(d) {return y(d.k);})
     .attr("width", function(d) {
-      return d.v == 0 ? 0 : x(d.v); // for log
+      return d.v == 0 ? 0 : xLog(d.v); // for log
       // return x(d.v);
     })
     .attr("height", function(d) {return y.bandwidth();})
@@ -124,7 +124,7 @@ function barChart(name, id, data, humanReadableText, geom) {
   }
 
   this.updateData = function(data) {
-    x.domain([1, d3.max(data, function(d) {return d.v;})]);
+    xLog.domain([1, d3.max(data, function(d) {return d.v;})]);
     y.domain(data.map(function(d) {return d.k;}));
 
     var bars = svg.selectAll(".bar").data(data);
@@ -140,7 +140,7 @@ function barChart(name, id, data, humanReadableText, geom) {
       .style("fill-opacity", 0.5)
       .attr("y", function(d) {return y(d.k);})
       .attr("width", function(d) {
-        return d.v == 0 ? 0 : x(d.v); // for log
+        return d.v == 0 ? 0 : xLog(d.v); // for log
         // return x(d.v);
       })
       .attr("height", function(d) {return y.bandwidth();});

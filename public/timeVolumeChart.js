@@ -34,7 +34,7 @@ function timeVolumeChart(id, data, geom) {
     .clamp(true)
     .rangeRound([0, width])
     .domain([query.T0, query.T1]);
-  var y = d3.scaleLog()
+  var yLog = d3.scaleLog()
     .rangeRound([height, 0])
     .clamp(true)
     .domain([1, d3.max(data, function(d) {
@@ -45,17 +45,12 @@ function timeVolumeChart(id, data, geom) {
     .nice(8);
   var color = d3.scaleOrdinal(d3.schemeCategory10);
 
-  var line = d3.line()
-    .curve(d3.curveBasis)
-    .x(function(d, i) {
-      return x(query.T0 + query.tg * i);
-    })
-    .y(function(d) {
-      return y(d);
-    });
-
   var xAxis = d3.axisBottom().scale(x), 
-      yAxis = d3.axisLeft().scale(y).ticks(4);
+      yAxis = d3.axisLeft().scale(yLog).ticks(4);
+
+  var line = d3.line() // .curve(d3.curveBasis)
+    .x(function(d, i) {return x(query.T0 + query.tg * i);})
+    .y(function(d) {return yLog(d);});
 
   svg.append("g")
     .attr("class", "axis axis-x")
@@ -119,7 +114,7 @@ function timeVolumeChart(id, data, geom) {
   */
 
   this.updateData = function(data) {
-    y.domain([1, d3.max(data, function(d) {
+    yLog.domain([1, d3.max(data, function(d) {
       return d3.max(d, function(dd) {
         return dd;
       })
