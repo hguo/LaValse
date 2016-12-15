@@ -32,6 +32,7 @@ function init() {
     machineView = new machineView();
     machineView.updateData(d.RMN, histogramToArray(d.RMN));
     $("#controlPanel").css("display", "block");
+    $("#toggleLogScale").on("click", timeVolumeChart.toggleLogScale);
   });
   
   $("#volumeBy").change(function() {

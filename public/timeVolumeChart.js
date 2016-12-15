@@ -2,6 +2,8 @@ function timeVolumeChart(id, data, geom) {
   const margin = {top: 10, right: 10, bottom: 25, left: 50},
         width = geom.W - margin.left - margin.right,
         height = geom.H - margin.top - margin.bottom;
+  
+  var useLogScale = true;
 
   $(id).html("");
   var svg = d3.select(id)
@@ -22,35 +24,44 @@ function timeVolumeChart(id, data, geom) {
   svg.call(tip);
 
   var zoom = d3.zoom()
-    .scaleExtent([1, 10000])
+    .scaleExtent([1, 100000])
     .translateExtent([[0, 0], [width, height]])
     .extent([[0, 0], [width, height]])
     .on("zoom", zoomed);
 
+  var xDomain = [query.T0, query.T1];
+  var yMax = d3.max(data, function(d) {return d3.max(d, function(dd) {return dd;});});
+  var yDomainLog = [1, yMax];
+  var yDomainLinear = [0, yMax];
+
   var x0 = d3.scaleTime()
     .rangeRound([0, width])
-    .domain([query.T0, query.T1]);
+    .domain(xDomain);
   var x = d3.scaleTime()
     .clamp(true)
     .rangeRound([0, width])
-    .domain([query.T0, query.T1]);
+    .domain(xDomain);
   var yLog = d3.scaleLog()
     .rangeRound([height, 0])
     .clamp(true)
-    .domain([1, d3.max(data, function(d) {
-      return d3.max(d, function(dd) {
-        return dd;
-      })
-    })])
+    .domain(yDomainLog)
+    .nice(8);
+  var yLinear = d3.scaleLinear() 
+    .rangeRound([height, 0])
+    .clamp(true)
+    .domain(yDomainLinear)
     .nice(8);
   var color = d3.scaleOrdinal(d3.schemeCategory10);
 
   var xAxis = d3.axisBottom().scale(x), 
       yAxis = d3.axisLeft().scale(yLog).ticks(4);
 
-  var line = d3.line() // .curve(d3.curveBasis)
+  var lineLog = d3.line() // .curve(d3.curveBasis)
     .x(function(d, i) {return x(query.T0 + query.tg * i);})
     .y(function(d) {return yLog(d);});
+  var lineLinear = d3.line() 
+    .x(function(d, i) {return x(query.T0 + query.tg * i);})
+    .y(function(d) {return yLinear(d);});
 
   svg.append("g")
     .attr("class", "axis axis-x")
@@ -69,7 +80,7 @@ function timeVolumeChart(id, data, geom) {
     .style("fill", "none")
     // .style("stroke", "steelblue")
     .style("stroke", function(d, i) {return color(i);})
-    .attr("d", function(d) {return line(d);});
+    .attr("d", function(d) {return lineLog(d);});
 
   var cursor = svg.append("line")
     .attr("class", "cursor")
@@ -114,11 +125,13 @@ function timeVolumeChart(id, data, geom) {
   */
 
   this.updateData = function(data) {
-    yLog.domain([1, d3.max(data, function(d) {
-      return d3.max(d, function(dd) {
-        return dd;
-      })
-    })]);
+    yMax = d3.max(data, function(d) {return d3.max(d, function(dd) {return dd;});});
+    yDomainLog = [1, yMax];
+    yDomainLinear = [0, yMax];
+    yLog.domain(yDomainLog);
+    yLinear.domain(yDomainLinear);
+    
+    var line = useLogScale ? lineLog : lineLinear;
  
     svg.selectAll(".line").remove();
     svg.selectAll(".line")
@@ -146,6 +159,20 @@ function timeVolumeChart(id, data, geom) {
       .transition().call(yAxis)
   }
 
+  this.toggleLogScale = function() {
+    useLogScale = !useLogScale;
+
+    var line = useLogScale ? lineLog : lineLinear;
+    var y = useLogScale ? yLog : yLinear;
+
+    svg.selectAll(".line")
+      .transition()
+      .attr("d", function(d) {return line(d);});
+    svg.select(".axis-y")
+      .transition()
+      .call(yAxis.scale(y));
+  }
+
   function brushed() {
     var s = d3.event.selection || x.range();
     query.t0 = x.invert(s[0]).getTime();
@@ -156,6 +183,8 @@ function timeVolumeChart(id, data, geom) {
   var zoomTimer = d3.timer(function() {zoomTimer.stop()});
 
   function zoomed() { // TODO
+    var line = useLogScale ? lineLog : lineLinear;
+    
     var t = d3.event.transform;
     x.domain(t.rescaleX(x0).domain());
     svg.select(".axis-x").call(xAxis);
