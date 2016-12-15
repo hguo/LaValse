@@ -3,6 +3,7 @@ function barChart(name, id, data, humanReadableText, geom) {
         width = geom.W - margin.left - margin.right,
         height = geom.H - margin.top - margin.bottom;
 
+  var useLogScale = true;
   var highlighted = new Set;
 
   $(id).html("");
@@ -27,10 +28,18 @@ function barChart(name, id, data, humanReadableText, geom) {
       return humanReadableText[d.k] + ": " + d.v;
     });
   svg.call(tip);
- 
+
+  var xMax = d3.max(data, function(d) {return d.v;});
+  var xDomainLog = [1, xMax], 
+      xDomainLinear = [0, xMax];
+
   var xLog = d3.scaleLog()
     .rangeRound([0, width])
-    .domain([1, d3.max(data, function(d) {return d.v;})]);
+    .clamp(true)
+    .domain(xDomainLog);
+  var xLinear = d3.scaleLinear()
+    .rangeRound([0, width])
+    .domain(xDomainLinear);
   var y = d3.scaleBand()
     .rangeRound([height, 0])
     .padding(0.05)
@@ -124,8 +133,13 @@ function barChart(name, id, data, humanReadableText, geom) {
   }
 
   this.updateData = function(data) {
-    xLog.domain([1, d3.max(data, function(d) {return d.v;})]);
-    y.domain(data.map(function(d) {return d.k;}));
+    xMax = d3.max(data, function(d) {return d.v;});
+    xDomainLog = [1, xMax];
+    xDomainLinear = [0, xMax];
+    xLog.domain(xDomainLog);
+    xLinear.domain(xDomainLinear);
+
+    var x = useLogScale ? xLog : xLinear;
 
     var bars = svg.selectAll(".bar").data(data);
     bars.enter().append("rect")
@@ -140,8 +154,8 @@ function barChart(name, id, data, humanReadableText, geom) {
       .style("fill-opacity", 0.5)
       .attr("y", function(d) {return y(d.k);})
       .attr("width", function(d) {
-        return d.v == 0 ? 0 : xLog(d.v); // for log
-        // return x(d.v);
+        // return d.v == 0 ? 0 : xLog(d.v); // for log
+        return x(d.v);
       })
       .attr("height", function(d) {return y.bandwidth();});
     bars.exit().remove();
@@ -167,5 +181,17 @@ function barChart(name, id, data, humanReadableText, geom) {
       .selectAll("text").remove() // remove tick labels
       .transition().duration(300).call(yAxis)
   };
+  
+  this.toggleLogScale = function() {
+    useLogScale = !useLogScale;
+    var x = useLogScale ? xLog : xLinear;
+
+    svg.selectAll(".bar")
+      .transition()
+      .attr("width", function(d) {return x(d.v);});
+    svg.select(".axis-x")
+      .transition()
+      .call(xAxis.scale(x));
+  }
 }
 

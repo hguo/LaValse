@@ -32,7 +32,14 @@ function init() {
     machineView = new machineView();
     machineView.updateData(d.RMN, histogramToArray(d.RMN));
     $("#controlPanel").css("display", "block");
-    $("#toggleLogScale").on("click", timeVolumeChart.toggleLogScale);
+    $("#toggleLogScale").on("click", function() {
+      timeVolumeChart.toggleLogScale();
+      severityChart.toggleLogScale();
+      componentChart.toggleLogScale();
+      categoryChart.toggleLogScale();
+      locationTypeChart.toggleLogScale();
+      timeVolumeChart.toggleLogScale();
+    });
   });
   
   $("#volumeBy").change(function() {

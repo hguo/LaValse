@@ -31,8 +31,8 @@ function timeVolumeChart(id, data, geom) {
 
   var xDomain = [query.T0, query.T1];
   var yMax = d3.max(data, function(d) {return d3.max(d, function(dd) {return dd;});});
-  var yDomainLog = [1, yMax];
-  var yDomainLinear = [0, yMax];
+  var yDomainLog = [1, yMax],
+      yDomainLinear = [0, yMax];
 
   var x0 = d3.scaleTime()
     .rangeRound([0, width])
