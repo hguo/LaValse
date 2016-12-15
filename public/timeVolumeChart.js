@@ -192,8 +192,8 @@ function timeVolumeChart(id, data, geom) {
   function zoomed() { // TODO
     var line = useLogScale ? lineLog : lineLinear;
    
-    svg.select(".brush")
-      .call(brush.move, null);
+    // svg.select(".brush")
+    //   .call(brush.move, null);
     
     var t = d3.event.transform;
     x.domain(t.rescaleX(x0).domain());

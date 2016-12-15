@@ -112,7 +112,6 @@ function barChart(name, id, data, humanReadableText, geom) {
       if (highlighted.has(d.k)) highlighted.delete(d.k); 
       else highlighted.add(d.k);
       if (highlighted.size == data.length) highlighted.clear();
-      refresh();
     }
     
     svg.selectAll(".bar")
@@ -133,6 +132,8 @@ function barChart(name, id, data, humanReadableText, geom) {
         query[name].push(v);
       });
     }
+      
+    refresh();
   }
 
   this.updateData = function(data) {

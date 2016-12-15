@@ -45,7 +45,6 @@ function init() {
     componentChart.toggleLogScale();
     categoryChart.toggleLogScale();
     locationTypeChart.toggleLogScale();
-    timeVolumeChart.toggleLogScale();
   });
 
   var defaultQuery = Object.assign({}, query);
