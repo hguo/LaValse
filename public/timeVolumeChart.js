@@ -173,6 +173,13 @@ function timeVolumeChart(id, data, geom) {
       .call(yAxis.scale(y));
   }
 
+  this.reset = function() {
+    useLogScale = true;
+    svg.select(".brush")
+      .call(brush.move, null)
+      .call(zoom.transform, d3.zoomIdentity);
+  }
+
   function brushed() {
     var s = d3.event.selection || x.range();
     query.t0 = x.invert(s[0]).getTime();
@@ -184,6 +191,9 @@ function timeVolumeChart(id, data, geom) {
 
   function zoomed() { // TODO
     var line = useLogScale ? lineLog : lineLinear;
+   
+    svg.select(".brush")
+      .call(brush.move, null);
     
     var t = d3.event.transform;
     x.domain(t.rescaleX(x0).domain());

@@ -145,6 +145,12 @@ function machineView() {
     svg.attr("transform", d3.event.transform);
     // console.log("zoomed");
   }
+
+  this.reset = function() {
+    svg.select(".brush")
+      .call(brush.move, null)
+      .call(zoom.transform, d3.zoomIdentity);
+  }
 }
 
 function highlightBlockAndLocation(block, location) {

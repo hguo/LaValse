@@ -106,10 +106,14 @@ function barChart(name, id, data, humanReadableText, geom) {
     .on("click", highlight);
 
   function highlight(d) {
-    if (highlighted.has(d.k)) highlighted.delete(d.k); 
-    else highlighted.add(d.k);
-    
-    if (highlighted.size == data.length) highlighted.clear();
+    if (d == undefined) {
+      highlighted.clear();
+    } else {
+      if (highlighted.has(d.k)) highlighted.delete(d.k); 
+      else highlighted.add(d.k);
+      if (highlighted.size == data.length) highlighted.clear();
+      refresh();
+    }
     
     svg.selectAll(".bar")
       .style("fill", function(d) {return color(d.k);});
@@ -129,7 +133,6 @@ function barChart(name, id, data, humanReadableText, geom) {
         query[name].push(v);
       });
     }
-    refresh();
   }
 
   this.updateData = function(data) {
@@ -154,8 +157,8 @@ function barChart(name, id, data, humanReadableText, geom) {
       .style("fill-opacity", 0.5)
       .attr("y", function(d) {return y(d.k);})
       .attr("width", function(d) {
-        // return d.v == 0 ? 0 : xLog(d.v); // for log
-        return x(d.v);
+        return d.v == 0 ? 0 : x(d.v); // for log
+        // return x(d.v);
       })
       .attr("height", function(d) {return y.bandwidth();});
     bars.exit().remove();
@@ -192,6 +195,11 @@ function barChart(name, id, data, humanReadableText, geom) {
     svg.select(".axis-x")
       .transition()
       .call(xAxis.scale(x));
+  }
+
+  this.reset = function() {
+    useLogScale = true;
+    highlight(undefined);
   }
 }
 

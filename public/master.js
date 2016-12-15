@@ -32,14 +32,6 @@ function init() {
     machineView = new machineView();
     machineView.updateData(d.RMN, histogramToArray(d.RMN));
     $("#controlPanel").css("display", "block");
-    $("#toggleLogScale").on("click", function() {
-      timeVolumeChart.toggleLogScale();
-      severityChart.toggleLogScale();
-      componentChart.toggleLogScale();
-      categoryChart.toggleLogScale();
-      locationTypeChart.toggleLogScale();
-      timeVolumeChart.toggleLogScale();
-    });
   });
   
   $("#volumeBy").change(function() {
@@ -47,6 +39,27 @@ function init() {
     $(this).blur();
     refresh();
   })
+  $("#toggleLogScale").on("click", function() {
+    timeVolumeChart.toggleLogScale();
+    severityChart.toggleLogScale();
+    componentChart.toggleLogScale();
+    categoryChart.toggleLogScale();
+    locationTypeChart.toggleLogScale();
+    timeVolumeChart.toggleLogScale();
+  });
+
+  var defaultQuery = Object.assign({}, query);
+  $("#reset").on("click", function() {
+    query = Object.assign({}, defaultQuery);
+    timeVolumeChart.reset();
+    severityChart.reset();
+    componentChart.reset();
+    categoryChart.reset();
+    locationTypeChart.reset();
+    timeVolumeChart.reset();
+    machineView.reset();
+    refresh();
+  });
 }
 
 function refresh() {
