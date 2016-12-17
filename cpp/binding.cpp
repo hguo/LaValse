@@ -120,6 +120,9 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
   query.t1 = input->Get(String::NewFromUtf8(isolate, "t1"))->IntegerValue();
   if (query.t1 == 0) query.t1 = 1451606400000;
 
+  query.controlActions = input->Get(String::NewFromUtf8(isolate, "controlActions"))->IntegerValue();
+  if (query.controlActions == 0) query.controlActions = 0xffff;
+
   query.volumeBy = input->Get(String::NewFromUtf8(isolate, "volumeBy"))->IntegerValue();
 
   // fprintf(stderr, "%llu, %llu, %llu, %llu\n", query.t0, query.t1, query.T0, query.T1);
@@ -127,35 +130,58 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
   ras::QueryResults results(query);
 
   Local<Array> msgID = Local<Array>::Cast(input->Get(String::NewFromUtf8(isolate, "msgID")));
-  for (uint32_t i=0; i<msgID->Length(); i++) 
-    query.msgID[ msgID->Get(i)->IntegerValue() ] = true;
-  if (msgID->Length() == 0) memset(query.msgID, 1, NUM_MSGID);
+  if (msgID->Length() == 0) 
+    memset(query.msgID, 1, NUM_MSGID); 
+  else {
+    memset(query.msgID, 0, NUM_MSGID); 
+    for (uint32_t i=0; i<msgID->Length(); i++) 
+      query.msgID[ msgID->Get(i)->IntegerValue() ] = true;
+  }
 
   Local<Array> component = Local<Array>::Cast(input->Get(String::NewFromUtf8(isolate, "component")));
-  for (uint32_t i=0; i<component->Length(); i++) 
-    query.component[ component->Get(i)->Uint32Value() ] = true;
-  if (component->Length() == 0) memset(query.component, 1, NUM_COMP);
+  if (component->Length() == 0) 
+    memset(query.component, 1, NUM_COMP);
+  else {
+    memset(query.component, 0, NUM_COMP);
+    for (uint32_t i=0; i<component->Length(); i++) 
+      query.component[ component->Get(i)->Uint32Value() ] = true;
+  }
   
   Local<Array> locationType = Local<Array>::Cast(input->Get(String::NewFromUtf8(isolate, "locationType")));
-  for (uint32_t i=0; i<locationType->Length(); i++) 
-    query.locationType[ locationType->Get(i)->Uint32Value() ] = true;
-  if (locationType->Length() == 0) memset(query.locationType, 1, NUM_LOCTYPE);
+  if (locationType->Length() == 0) 
+    memset(query.locationType, 1, NUM_LOCTYPE);
+  else {
+    memset(query.locationType, 0, NUM_LOCTYPE);
+    for (uint32_t i=0; i<locationType->Length(); i++) 
+      query.locationType[ locationType->Get(i)->Uint32Value() ] = true;
+  }
   
   Local<Array> category = Local<Array>::Cast(input->Get(String::NewFromUtf8(isolate, "category")));
-  for (uint32_t i=0; i<category->Length(); i++) 
-    query.category[ category->Get(i)->Uint32Value() ] = true;
-  if (category->Length() == 0) memset(query.category, 1, NUM_CAT);
+  if (category->Length() == 0) 
+    memset(query.category, 1, NUM_CAT);
+  else {
+    memset(query.category, 0, NUM_CAT);
+    for (uint32_t i=0; i<category->Length(); i++) 
+      query.category[ category->Get(i)->Uint32Value() ] = true;
+  }
 
   Local<Array> severity = Local<Array>::Cast(input->Get(String::NewFromUtf8(isolate, "severity")));
-  for (uint32_t i=0; i<severity->Length(); i++) 
-    query.severity[ severity->Get(i)->Uint32Value() ] = true;
-  if (severity->Length() == 0) memset(query.severity, 1, NUM_SEV);
+  if (severity->Length() == 0) 
+    memset(query.severity, 1, NUM_SEV);
+  else {
+    memset(query.severity, 0, NUM_SEV);
+    for (uint32_t i=0; i<severity->Length(); i++) 
+      query.severity[ severity->Get(i)->Uint32Value() ] = true;
+  }
   
   Local<Array> location = Local<Array>::Cast(input->Get(String::NewFromUtf8(isolate, "location")));
-  for (uint32_t i=0; i<location->Length(); i++) 
-    query.location[ location->Get(i)->Uint32Value() ] = true;
-  if (location->Length() == 0) memset(query.location, 1, nlocations[query.LOD]);
-
+  if (location->Length() == 0) 
+    memset(query.location, 1, nlocations[query.LOD]);
+  else {
+    memset(query.location, 0, nlocations[query.LOD]);
+    for (uint32_t i=0; i<location->Length(); i++) 
+      query.location[ location->Get(i)->Uint32Value() ] = true;
+  }
 
   typedef std::chrono::high_resolution_clock clock;
   auto t0 = clock::now();
@@ -212,7 +238,9 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
     if (results.severity[i] > 0)
       jSeverity->Set(Number::New(isolate, i), Number::New(isolate, results.severity[i]));
   jout->Set(String::NewFromUtf8(isolate, "severity"), jSeverity);
-  
+
+  jout->Set(String::NewFromUtf8(isolate, "LOD"), Number::New(isolate, query.LOD));
+
   Local<Object> jLocation = Object::New(isolate);
   for (size_t i=0; i<nlocations[query.LOD]; i++) 
     if (results.location[i] > 0)

@@ -890,7 +890,7 @@ const components = {
 };
 
 const locationTypes = {
-undefined: "undefined",
+"": "undefined",
 "R": "Compute Rack",
 "RB": "Bulk Power Supply in Compute Rack",
 "RBP": "Power Modules in Compute Rack",

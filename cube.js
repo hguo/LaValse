@@ -20,7 +20,9 @@ function translateQuery(q0) {
   if ("locationType" in q) q.locationType = translateNamesToIndices(q.locationType, ras.locationTypeMap);
   if ("category" in q) q.category = translateNamesToIndices(q.category, ras.categoryMap);
   if ("severity" in q) q.severity = translateNamesToIndices(q.severity, ras.severityMap);
-  if ("RMN" in q) q.RMN = translateNamesToIndices(q.RMN, ras.RMNLocationMap);
+  if ("LOD" in q && "location" in q) {
+    q.location = translateNamesToIndices(q.location, ras.locationMaps[q.LOD]);
+  }
   
   return q;
  
@@ -39,7 +41,8 @@ function translateResults(r, fullResult) {
   r.locationType = translateIndicesToNames(r.locationType, ras.locationTypeMap);
   r.category = translateIndicesToNames(r.category, ras.categoryMap);
   r.severity = translateIndicesToNames(r.severity, ras.severityMap);
-  r.RMN = translateIndicesToNames(r.RMN, ras.RMNLocationMap);
+
+  r.location = translateIndicesToNames(r.location, ras.locationMaps[r.LOD]);
 
   if (fullResult != undefined || fullResult != null) {
     r.component = completeMissingResults(r.component, fullResult.component);

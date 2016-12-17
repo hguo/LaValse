@@ -977,7 +977,9 @@ function generateCxxHeader_event() {
   var i = 0;
   for (var key in events) {
     var e = events[key];
-    console.log("{" + i + ", COMP_" + e.component + ", CAT_" + e.category + ", SEV_" + e.severity + ", " + e.controlActionBits + "},");
+    var bits = e.controlActionBits;
+    if (bits == 0) bits = 32768; // no control actions
+    console.log("{" + i + ", COMP_" + e.component + ", CAT_" + e.category + ", SEV_" + e.severity + ", " + bits + "},");
     i ++;
   }
 }
@@ -996,12 +998,13 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     componentMap: generateBiMap(components),
     severityMap: generateBiMap(severities),
     locationTypeMap: generateBiMap(locationTypes),
-    L0LocationMap: generateBiMapFromArray(mira.enumerateL0Locations()),
-    L1LocationMap: generateBiMapFromArray(mira.enumerateL1Locations()),
-    L2LocationMap: generateBiMapFromArray(mira.enumerateL2Locations()),
-    L3LocationMap: generateBiMapFromArray(mira.enumerateL3Locations()),
-    L4LocationMap: generateBiMapFromArray(mira.enumerateL4Locations()),
-    //
+    locationMaps: [
+      generateBiMapFromArray(mira.enumerateL0Locations()),
+      generateBiMapFromArray(mira.enumerateL1Locations()),
+      generateBiMapFromArray(mira.enumerateL2Locations()),
+      generateBiMapFromArray(mira.enumerateL3Locations()),
+      generateBiMapFromArray(mira.enumerateL4Locations())
+    ],
     controlActionsToBits: controlActionsToBits
   };
 }

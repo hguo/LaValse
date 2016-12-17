@@ -122,21 +122,21 @@ function machineView() {
   function brushed() {
     var s = d3.event.selection;
     if (s != null) {
-      var RMN = [];
+      var locations = [];
       var b0 = $("#machineViewBrush > .selection")[0].getBoundingClientRect();
       $(".nbbox").filter(function() {
         var b = $(this)[0].getBoundingClientRect();
         var x = b.left, y = b.top;
         return x>=b0.left && x<=b0.right && y>=b0.top && y<=b0.bottom;
       }).each(function() {
-        RMN.push($(this).attr("id"));
+        locations.push($(this).attr("id"));
       });
-      if (RMN.length > 0) {
-        query["RMN"] = RMN;
+      if (locations.length > 0) {
+        query["locations"] = locations;
         refresh();
       }
     } else {
-      delete query["RMN"];
+      delete query["locations"];
       refresh();
     }
   }

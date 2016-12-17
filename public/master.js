@@ -30,7 +30,7 @@ function init() {
         "#timeVolumeChart", d.timeVolumes, // histogramToArray(d.timeVolume), 
         {L: 0, T: 300, W: 1200, H: 100});
     machineView = new machineView();
-    machineView.updateData(d.RMN, histogramToArray(d.RMN));
+    machineView.updateData(d.location, histogramToArray(d.location));
     $("#controlPanel").css("display", "block");
   });
   
@@ -71,7 +71,7 @@ function refresh() {
     locationTypeChart.updateData(histogramToArray(d.locationType));
     timeVolumeChart.updateData(d.timeVolumes, 
         {L: 0, T: 400, W: 600, H: 150});
-    machineView.updateData(d.RMN, histogramToArray(d.RMN));
+    machineView.updateData(d.location, histogramToArray(d.location));
   });
 }
 
