@@ -183,13 +183,15 @@ struct Query {
   }
   
   void set_affinity(int processorID) {
+#if __APPLE__
     cpu_set_t cpu_set;
     CPU_ZERO(&cpu_set);
-    CPU_SET(processorID, &cpu_set); // the 0th CPU is for comm
+    CPU_SET(processorID, &cpu_set); 
    
     pthread_t thread = pthread_self();
     // int rtn = pthread_setaffinity_np(thread, sizeof(cpu_set_t), &cpu_set);
     SET_AFFINITY(thread, sizeof(cpu_set_t), &cpu_set);
+#endif
   }
 };
 

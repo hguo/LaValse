@@ -1,4 +1,5 @@
 var query = {
+  LOD: 2, // TODO
   // volumeBy: "category",
   T0: 1420070400000, // 2015-01-01
   T1: 1451520000000, // 2015-12-31
@@ -28,7 +29,7 @@ function init() {
         {L: 400, T: 0, W: 200, H: 300});
     timeVolumeChart = new timeVolumeChart(
         "#timeVolumeChart", d.timeVolumes, // histogramToArray(d.timeVolume), 
-        {L: 0, T: 300, W: 1200, H: 100});
+        {L: 0, T: 300, W: 1280, H: 100});
     machineView = new machineView();
     machineView.updateData(d.location, histogramToArray(d.location));
     $("#controlPanel").css("display", "block");

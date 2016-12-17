@@ -1,11 +1,12 @@
 function machineView() {
-  const L = 600, T = 20, W = 612, H = 258;
+  const L = 600, T = 20, W = 690, H = 258;
   const margin = {top: 0, right: 0, bottom: 0, left: 0},
         width = W - margin.left - margin.right,
         height = H - margin.top - margin.bottom;
   const rackW = 34, rackH = 81, rackPadding = 2;
   const midplaneW = 30, midplaneH = 30, midplaneTop = 15, midplanePadding = 2;
   const nodeBoardW = midplaneW/4, nodeBoardH = midplaneH/4;
+  const ioDrawerW = 15, ioDrawerH = 12.76, ioDrawerLeft = 2, ioDrawerTop = 15;
 
   var tip = d3.select("#machineView").append("div")
     .style("position", "absolute")
@@ -65,6 +66,37 @@ function machineView() {
               .attr("width", nodeBoardW)
               .attr("height", nodeBoardH);
           }
+        }
+      }
+    }
+
+    for (j=16; j<18; j++) {
+      var ioRack = row.append("g")
+        .attr("class", "ioRack")
+        .attr("id", ioRack2str(i, j))
+        .attr("transform", "translate(" + ((rackW+rackPadding*2)*j + rackPadding) + "," + rackPadding + ")");
+      ioRack.append("rect")
+        .attr("class", "rackBox")
+        .attr("width", rackW)
+        .attr("height", rackH);
+      ioRack.append("text")
+        .attr("class", "rackID")
+        .attr("x", rackW/2)
+        .attr("y", midplaneTop-midplanePadding)
+        .text(ioRack2str(i, j));
+
+      for (p=0; p<5; p++) {
+        for (q=0; q<2; q++) {
+          var ioDrawerID = p*2+q;
+          var ioDrawer = ioRack.append("g")
+            .attr("class", "ioDrawer")
+            .attr("id", ioDrawer2str(i, j, ioDrawerID))
+            .attr("transform", "translate(" + (ioDrawerLeft + q*ioDrawerW) + "," + (ioDrawerTop + p*ioDrawerH) + ")");
+          ioDrawer.append("rect")
+            .attr("class", "nbbox")
+            .attr("id", ioDrawer2str(i, j, ioDrawerID))
+            .attr("width", ioDrawerW)
+            .attr("height", ioDrawerH);
         }
       }
     }
@@ -132,11 +164,11 @@ function machineView() {
         locations.push($(this).attr("id"));
       });
       if (locations.length > 0) {
-        query["locations"] = locations;
+        query["location"] = locations;
         refresh();
       }
     } else {
-      delete query["locations"];
+      delete query["location"];
       refresh();
     }
   }

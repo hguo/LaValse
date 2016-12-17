@@ -200,7 +200,7 @@ function timeVolumeChart(id, data, geom) {
     svg.select(".axis-x").call(xAxis);
     svg.selectAll(".line").attr("d", line);
 
-    zoomTimer.restart(zoomTimedOut, 200);
+    zoomTimer.restart(zoomTimedOut, 300);
   }
 
   function zoomTimedOut() {
