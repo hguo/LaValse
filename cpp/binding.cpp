@@ -139,7 +139,7 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
   Local<Array> locationType = Local<Array>::Cast(input->Get(String::NewFromUtf8(isolate, "locationType")));
   for (uint32_t i=0; i<locationType->Length(); i++) 
     query.locationType[ locationType->Get(i)->Uint32Value() ] = true;
-  if (locationType->Length() == 0) memset(query.locationType, 1, NUM_LOC);
+  if (locationType->Length() == 0) memset(query.locationType, 1, NUM_LOCTYPE);
   
   Local<Array> category = Local<Array>::Cast(input->Get(String::NewFromUtf8(isolate, "category")));
   for (uint32_t i=0; i<category->Length(); i++) 
@@ -151,10 +151,10 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
     query.severity[ severity->Get(i)->Uint32Value() ] = true;
   if (severity->Length() == 0) memset(query.severity, 1, NUM_SEV);
   
-  Local<Array> L = Local<Array>::Cast(input->Get(String::NewFromUtf8(isolate, "L")));
-  for (uint32_t i=0; i<L->Length(); i++) 
-    query.L[ L->Get(i)->Uint32Value() ] = true;
-  if (L->Length() == 0) memset(query.L, 1, nlocations[query.LOD]);
+  Local<Array> location = Local<Array>::Cast(input->Get(String::NewFromUtf8(isolate, "location")));
+  for (uint32_t i=0; i<location->Length(); i++) 
+    query.location[ location->Get(i)->Uint32Value() ] = true;
+  if (location->Length() == 0) memset(query.location, 1, nlocations[query.LOD]);
 
 
   typedef std::chrono::high_resolution_clock clock;
@@ -196,7 +196,7 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
   jout->Set(String::NewFromUtf8(isolate, "component"), jComponent);
   
   Local<Object> jLocationType = Object::New(isolate);
-  for (int i=0; i<NUM_LOC; i++) 
+  for (int i=0; i<NUM_LOCTYPE; i++) 
     if (results.locationType[i] > 0)
       jLocationType->Set(Number::New(isolate, i), Number::New(isolate, results.locationType[i]));
   jout->Set(String::NewFromUtf8(isolate, "locationType"), jLocationType);
@@ -213,11 +213,11 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
       jSeverity->Set(Number::New(isolate, i), Number::New(isolate, results.severity[i]));
   jout->Set(String::NewFromUtf8(isolate, "severity"), jSeverity);
   
-  Local<Object> jL = Object::New(isolate);
-  for (int i=0; i<nlocations[query.LOD]; i++) 
-    if (results.L[i] > 0)
-      jL->Set(Number::New(isolate, i), Number::New(isolate, results.L[i]));
-  jout->Set(String::NewFromUtf8(isolate, "L"), jL);
+  Local<Object> jLocation = Object::New(isolate);
+  for (size_t i=0; i<nlocations[query.LOD]; i++) 
+    if (results.location[i] > 0)
+      jLocation->Set(Number::New(isolate, i), Number::New(isolate, results.location[i]));
+  jout->Set(String::NewFromUtf8(isolate, "location"), jLocation);
 
   Local<Array> jTop = Array::New(isolate); 
   for (size_t i=0; i<results.topRecIDs.size(); i++) 
