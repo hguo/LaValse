@@ -103,7 +103,10 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
 
   query.top = input->Get(String::NewFromUtf8(isolate, "top"))->IntegerValue();
   if (query.top == 0) query.top = 10;
-  
+ 
+  query.LOD = input->Get(String::NewFromUtf8(isolate, "LOD"))->IntegerValue();
+  if (query.LOD == 0) query.LOD = 2;
+
   query.tg = input->Get(String::NewFromUtf8(isolate, "tg"))->IntegerValue();
   if (query.tg == 0) query.tg = ras::TIME_DAY;
 
@@ -148,10 +151,10 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
     query.severity[ severity->Get(i)->Uint32Value() ] = true;
   if (severity->Length() == 0) memset(query.severity, 1, NUM_SEV);
   
-  Local<Array> RMN = Local<Array>::Cast(input->Get(String::NewFromUtf8(isolate, "RMN")));
-  for (uint32_t i=0; i<RMN->Length(); i++) 
-    query.RMN[ RMN->Get(i)->Uint32Value() ] = true;
-  if (RMN->Length() == 0) memset(query.RMN, 1, NUM_RMN);
+  Local<Array> L = Local<Array>::Cast(input->Get(String::NewFromUtf8(isolate, "L")));
+  for (uint32_t i=0; i<L->Length(); i++) 
+    query.L[ L->Get(i)->Uint32Value() ] = true;
+  if (L->Length() == 0) memset(query.L, 1, nlocations[query.LOD]);
 
 
   typedef std::chrono::high_resolution_clock clock;
@@ -210,11 +213,11 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
       jSeverity->Set(Number::New(isolate, i), Number::New(isolate, results.severity[i]));
   jout->Set(String::NewFromUtf8(isolate, "severity"), jSeverity);
   
-  Local<Object> jRMN = Object::New(isolate);
-  for (int i=0; i<NUM_RMN; i++) 
-    if (results.RMN[i] > 0)
-      jRMN->Set(Number::New(isolate, i), Number::New(isolate, results.RMN[i]));
-  jout->Set(String::NewFromUtf8(isolate, "RMN"), jRMN);
+  Local<Object> jL = Object::New(isolate);
+  for (int i=0; i<nlocations[query.LOD]; i++) 
+    if (results.L[i] > 0)
+      jL->Set(Number::New(isolate, i), Number::New(isolate, results.L[i]));
+  jout->Set(String::NewFromUtf8(isolate, "L"), jL);
 
   Local<Array> jTop = Array::New(isolate); 
   for (size_t i=0; i<results.topRecIDs.size(); i++) 

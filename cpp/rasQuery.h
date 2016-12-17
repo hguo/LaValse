@@ -27,12 +27,15 @@ namespace ras {
 
 struct Query;
 
+enum {MAX_NUM_LOC = 127603, MAX_NUM_TIME_SLOTS = 80000};
+
 struct QueryResults {
   uint32_t nvolumes;
   uint32_t nslots; // time slots
-  uint32_t *timeVolumes;
-  uint32_t msgID[NUM_MSGID], component[NUM_COMP], locationType[NUM_LOC], 
-           category[NUM_CAT], severity[NUM_SEV], RMN[NUM_RMN];
+  uint32_t msgID[NUM_MSGID], component[NUM_COMP], locationType[NUM_LOCTYPE], 
+           category[NUM_CAT], severity[NUM_SEV];
+  uint32_t location[MAX_NUM_LOC];
+  uint32_t timeVolumes[MAX_NUM_TIME_SLOTS];
   std::vector<uint32_t> topRecIDs;
 
   explicit QueryResults(const Query& q);
@@ -43,27 +46,36 @@ struct Query {
   uint64_t T0 = 1420070400000, T1 = 1451606400000; // time scope
   uint64_t t0 = 1420070400000, t1 = 1451606400000, tg = TIME_HOUR; // tg is time granularity
   uint8_t volumeBy = VAR_NONE;
+  int LOD = 2;
   int top = 100; // return top n recIDs
   int nthreads = 1;
 
-  bool msgID[NUM_MSGID], component[NUM_COMP], locationType[NUM_LOC], 
-       category[NUM_CAT], severity[NUM_SEV], RMN[NUM_RMN];
+  bool msgID[NUM_MSGID], component[NUM_COMP], locationType[NUM_LOCTYPE],
+       category[NUM_CAT], severity[NUM_SEV], location[MAX_NUM_LOC];
 
   Query()
   {
+#if 0
     memset(msgID, 0, NUM_MSGID);
     memset(component, 0, NUM_COMP);
     memset(locationType, 0, NUM_LOC);
     memset(category, 0, NUM_CAT);
     memset(severity, 0, NUM_SEV);
-    memset(RMN, 0, NUM_RMN);
+    L.resize(nlocations[LOD], 0);
+#endif
   }
 
   inline static bool checkTime(uint64_t t, uint64_t t0, uint64_t t1) {
     return (t >= t0 && t <= t1);
   }
 
-  inline static bool check(uint16_t m, bool s[]) {
+  template<typename T>
+  inline static bool check(T m, bool s[]) {
+    return s[m];
+  }
+
+  template<typename T>
+  inline static bool check(T m, std::vector<bool> s) {
     return s[m];
   }
 
@@ -91,7 +103,7 @@ struct Query {
     a ++;
   }
         
-  inline void add1(uint32_t *timeVolumes, int nslots, int index, int t) {
+  inline void add1(uint32_t* timeVolumes, int nslots, int index, int t) {
     add1(timeVolumes[nslots*index+t]);
   }
 
@@ -125,10 +137,10 @@ struct Query {
       if (c[3]) add1(results.locationType[e.locationType]);
       if (c[4]) add1(results.category[e.category()]);
       if (c[5]) add1(results.severity[e.severity()]);
-      if (c[6]) add1(results.RMN[e.RMN]);
+      if (c[6]) add1(results.location[e.location[LOD]]);
 
       if (b[0] && c[0] && ntop<top-1) { // all true
-        results.topRecIDs.push_back(e.recID);
+        // results.topRecIDs.push_back(e.recID);
         ntop ++;
       }
     }
@@ -150,12 +162,12 @@ struct Query {
     }
 
     b[0] = checkTime(e.eventTime, t0, t1);
-    b[1] = check(e.msgID, msgID);
-    b[2] = check(e.component(), component);
-    b[3] = check(e.locationType, locationType);
-    b[4] = check(e.category(), category);
-    b[5] = check(e.severity(), severity);
-    b[6] = check(e.RMN, RMN);
+    b[1] = check<uint16_t>(e.msgID, msgID);
+    b[2] = check<uint8_t>(e.component(), component);
+    b[3] = check<uint8_t>(e.locationType, locationType);
+    b[4] = check<uint8_t>(e.category(), category);
+    b[5] = check<uint8_t>(e.severity(), severity);
+    b[6] = check<uint32_t>(e.location[LOD], location);
 
     for (int i=0; i<ndims; i++) {
       bool v = true;
@@ -185,23 +197,21 @@ QueryResults::QueryResults(const Query& q)
 {
   memset(msgID, 0, NUM_MSGID*4);
   memset(component, 0, NUM_COMP*4);
-  memset(locationType, 0, NUM_LOC*4);
+  memset(locationType, 0, NUM_LOCTYPE*4);
   memset(category, 0, NUM_CAT*4);
   memset(severity, 0, NUM_SEV*4);
-  memset(RMN, 0, NUM_RMN*4);
-
+  
   nslots = (q.T1 - q.T0) / q.tg;
   nvolumes = ras::nvolumes[q.volumeBy];
 
-  timeVolumes = (uint32_t*)malloc(sizeof(uint32_t)*nslots*nvolumes);
-  memset(timeVolumes, 0, sizeof(uint32_t)*nslots*nvolumes);
+  memset(timeVolumes, 0, MAX_NUM_TIME_SLOTS*4);
+  memset(location, 0, MAX_NUM_LOC*4);
 
   topRecIDs.reserve(q.top);
 }
 
 QueryResults::~QueryResults()
 {
-  free(timeVolumes);
 }
 
 }

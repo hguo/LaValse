@@ -977,7 +977,7 @@ function generateCxxHeader_event() {
   var i = 0;
   for (var key in events) {
     var e = events[key];
-    console.log("{" + i + ", COMP_" + e.component + ", CAT_" + e.category + ", SEV_" + e.severity + "},");
+    console.log("{" + i + ", COMP_" + e.component + ", CAT_" + e.category + ", SEV_" + e.severity + ", " + e.controlActionBits + "},");
     i ++;
   }
 }

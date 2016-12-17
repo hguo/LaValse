@@ -8,8 +8,8 @@ int main(int argc, char **argv) {
   size_t sz = ftell(fp);
   fseek(fp, 0L, SEEK_SET);
   
-  // const int n = sz / sizeof(ras::Event) - 1;
-  const int n = 10000000;
+  const int n = sz / sizeof(ras::Event) - 1;
+  // const int n = 10000000;
   std::vector<ras::Event> events(n);
   
   fread((void*)events.data(), sizeof(ras::Event), n, fp);
@@ -21,11 +21,13 @@ int main(int argc, char **argv) {
   query.tg = ras::TIME_DAY;
   // query.t0 = 1436184000000;
   // query.t1 = 1436936400000;
+  query.LOD = 2;
   memset(query.msgID, 1, ras::NUM_MSGID);
   memset(query.component, 1, ras::NUM_COMP);
-  memset(query.locationType, 1, ras::NUM_LOC);
+  memset(query.locationType, 1, ras::NUM_LOCTYPE);
   memset(query.category, 1, ras::NUM_CAT);
   memset(query.severity, 1, ras::NUM_SEV);
+  memset(query.location, 1, ras::MAX_NUM_LOC);
   // query.category[ras::CAT_BQC] = true;
   // query.severity[ras::SEV_FATAL] = true;
   // query.severity[ras::SEV_WARN] = true;

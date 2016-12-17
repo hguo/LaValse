@@ -6,14 +6,19 @@ int main(int argc, char **argv) {
   
   FILE *fp = fopen("raslog", "a");
 
-  while (scanf("%d %hu %lld %hhu %hu", 
-        &e.recID, &e.msgID, &e.eventTime, &e.locationType, &e.RMN) == 5)
+  int count = 0;
+  while (scanf("%d %hu %lld %hhu %u %u %u %u %u",
+        &e.recID, &e.msgID, &e.eventTime, &e.locationType, 
+        &e.location[0], &e.location[1], &e.location[2], &e.location[3], &e.location[4]) == 9)
   {
     // fprintf(stderr, "%d, %hu, %lld, %hhu, %hu\n", 
     //     e.recID, e.msgID, e.eventTime, e.locationType, e.RMN);
     fwrite(&e, sizeof(ras::Event), 1, fp);
+    count ++;
   }
   fclose(fp);
+
+  fprintf(stderr, "imported %d logs\n", count);
 
   return 0;
 }

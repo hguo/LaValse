@@ -340,7 +340,8 @@ function locationToL2Location(L) {
   case "RK": return L.str;
   case "RB":
   case "RBP":
-    return bulkPowerSupply2str(L.row, L.column, L.bulkPowerSupply);
+    // return bulkPowerSupply2str(L.row, L.column, L.bulkPowerSupply);
+    return rack2str(L.row, L.column) + "-B";
   case "RM":
     return midplane2str(L.row, L.column, L.midplane);
   case "RMS": 
@@ -503,6 +504,7 @@ function enumerateL1Locations() {
 
         for (nb=0; nb<16; nb++) {
           var nodeBoard = nodeBoard2str(row, col, mp, nb);
+          locations.push(nodeBoard);
           locations.push(nodeBoard + "-J");
           locations.push(nodeBoard + "-U");
           locations.push(nodeBoard + "-D");
@@ -627,10 +629,10 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 }
 
 /*
-var locations = enumerateL1Locations();
+var locations = enumerateL2Locations();
+console.log(locations.length);
 for (var i=0; i<locations.length; i++) {
-  // console.log(locations[i]);
-  var L = parseLocation(locations[i]);
-  console.log(locations[i], locationToL4Location(L));
-}
-*/
+  console.log(locations[i]);
+  // var L = parseLocation(locations[i]);
+  // console.log(locations[i], locationToL4Location(L));
+}*/
