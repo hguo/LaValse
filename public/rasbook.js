@@ -832,8 +832,8 @@ const events = {
 // Category
 const categories = {
 "BQC": "Blue Gene/Q compute card",
-"BGL": "Blue Gene/Q link module",
-"BQL": "BQL",
+"BGL": "(to be removed)", // FIXME: to be removed.  "",
+"BQL": "Blue Gene/Q link module",
 "DDR": "Double Data Rate Memory",
 "PCI": "PCI adapter card",
 "Ethernet": "Ethernet adapter card",

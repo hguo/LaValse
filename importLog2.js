@@ -27,17 +27,28 @@ var csvStream = csv({headers: true})
       qualifier: d.QUALIFIER,
       machineName: d.MACHINE_NAME
     };
-    var a = mira.locationToFixedSizeArray(rasData.location);
-    var RMN = mira.locationToRMNLocation(rasData.location);
-    var RMNindex = rasbook.RMNLocationMap.key(RMN);
-    if (RMNindex == undefined) RMNindex = 0;
 
+    var L = mira.parseLocation(rasData.location);
+    var controlActionBits = rasbook.events[rasData.messageID].controlActionBits;
+    var L0 = mira.locationToL0Location(L),
+        L1 = mira.locationToL1Location(L), 
+        L2 = mira.locationToL2Location(L), 
+        L3 = mira.locationToL3Location(L), 
+        L4 = mira.locationToL4Location(L);
+    var L0i = rasbook.L0LocationMap.key(L0),
+        L1i = rasbook.L1LocationMap.key(L1),
+        L2i = rasbook.L2LocationMap.key(L2),
+        L3i = rasbook.L3LocationMap.key(L3),
+        L4i = rasbook.L4LocationMap.key(L4);
+    
+    // console.log(L0, L1, L2, L3, L4);
     console.log(
         rasData._id,
         rasbook.eventMap.key(rasData.messageID),
         rasData.eventTime.getTime(),
-        a[0], // location type
-        RMNindex);
+        controlActionBits,
+        rasbook.locationTypeMap.key(L.type), // locaitonType
+        L0i, L1i, L2i, L3i, L4i);
   })
   .on("end", function() {
   });

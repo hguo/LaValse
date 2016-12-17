@@ -832,11 +832,22 @@ const events = {
 "FFFE0017": {	component: "TEST",	category: "BQC",	severity: "FATAL",	message: "This is a test ras message.",	description: "This RAS is used for testing purpose only.",	serviceAction: "None",	controlAction: "END_JOB",	thresholdCount: "1",	thresholdPeriod: "1 HOUR",	sourceFile: "/bgsys/source/srcV1R2M2.3650/ras/include/test_ras.h",	lineNumber: "218"}
 };
 
+const controlActions = {
+  CABLE_IN_ERROR: 1,
+  DCA_IN_ERROR: 2,
+  BOARD_IN_ERROR: 4,
+  RACK_IN_ERROR: 8,
+  COMPUTE_IN_ERROR: 16,
+  SOFTWARE_IN_ERROR: 32,
+  BQL_SPARE: 64,
+  END_JOB: 128,
+  FREE_COMPUTE_BLOCK:256 
+};
+
 // Category
 const categories = {
 "BQC": "Blue Gene/Q compute card",
-"BGL": "Blue Gene/Q link module",
-"BQL": "BQL",
+"BQL": "Blue Gene/Q link module",
 "DDR": "Double Data Rate Memory",
 "PCI": "PCI adapter card",
 "Ethernet": "Ethernet adapter card",
@@ -893,43 +904,59 @@ const components = {
 };
 
 const locationTypes = {
-undefined: "undefined",
+"": "undef",
 "R": "Compute Rack",
 "RB": "Bulk Power Supply in Compute Rack",
 "RBP": "Power Modules in Compute Rack",
+"RK": "Clock Card in Compute Rack",
+"RL": "Coolant Monitor in Compute Rack",
 "RM": "Midplane",
+"RMS": "Service Card",
+"RMN": "Node Boards",
+"RMNU": "Link Module on Node Board",
+"RMND": "DCA on Node Board",
+"RMNO": "Optical Module on Node Board",
+"RMNJ": "Compute Cards on Node Board",
+"RMNJC": "Compute Card Cores on Node Board",
+"RI": "I/O Drawers in Compute Rack",
+"RIH": "Fan Assembly in Compute Rack", 
+"RIHF": "Fans in Compute Rack",
+"RIA": "PCI Adapter Cards in Compute Racks",
+"RIU": "Link Module on I/O Board in Compute Rack",
+"RID": "DCA on I/O Board in Compute Rack",
+"RIO": "Optical Module on I/O Board in Compute Rack",
+"RIJ": "Compute Cards on I/O Boards in Compute Rack",
+"RIJC": "Compute Card Cores on I/O Boards in Compute Rack",
 "Q": "I/O Rack",
 "QB": "Bulk Power Supply in I/O Rack",
 "QBP": "Power Modules in I/O Rack",
-"RMS": "Service Card",
-"RK": "Clock Card in Compute Rack",
-"RI": "I/O Drawers in Compute Rack",
-"RMN": "Node Boards",
-"RMNJ": "Compute Cards on Node Board",
 "QK": "Clock Card in I/O Rack",
 "QI": "I/O Drawers in I/O Rack",
-"RIJ": "Compute Cards on I/O Boards in Compute Rack",
+"QIA": "PCI Adapter Cards in I/O Racks",
 "QIJ": "Compute Cards on I/O Boards in I/O Rack",
-"RMNJC": "Compute Card Cores on Node Board",
-"RIJC": "Compute Card Cores on I/O Boards in Compute Rack",
-"RMNU": "Link Module on Node Board",
-"RMND": "DCA on Node Board",
 "QIJC": "Compute Card Cores on I/O Boards in I/O Rack",
-"RIU": "Link Module on I/O Board in Compute Rack",
 "QIU": "Link Module on I/O Board in I/O Rack",
-"RID": "DCA on I/O Board in Compute Rack",
-"RMNO": "Optical Module on Node Board",
-"RIO": "Optical Module on I/O Board in Compute Rack",
-"RIH": "Fan Assembly in Compute Rack", 
-"RIHF": "Fans in Compute Rack",
 "QID": "DCA on I/O Board in I/O Rack",
 "QIO": "Optical Module on I/O Board in I/O Rack",
 "QIH": "Fan Assembly in I/O Rack",
 "QIHF": "Fans in I/O Rack",
-"RIA": "PCI Adapter Cards in Compute Racks",
-"RL": "Coolant Monitor in Compute Rack",
-"QIA": "PCI Adapter Cards in I/O Racks"
 };
+
+function controlActionsToBits(str) {
+  if (str == undefined || str == null || str.length == 0) return 0x0;
+  var substrings = str.split(",");
+  var bits = 0x0;
+  substrings.forEach(function (d) {
+    bits = bits ^ controlActions[d];
+  });
+  // console.log(substrings, bits);
+  return bits;
+}
+
+for (var key in events) {
+  events[key].controlActionBits = controlActionsToBits(events[key].controlAction);
+}
+
 
 function generateBiMap(obj) {
   var bimap = new BiMap;
@@ -959,7 +986,7 @@ function generateCxxHeader_event() {
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
   module.exports = {
-    // events: events,
+    events: events,
     // categories: categories,
     // components: components,
     // locationTypes: locationTypes,
@@ -969,6 +996,12 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     componentMap: generateBiMap(components),
     severityMap: generateBiMap(severities),
     locationTypeMap: generateBiMap(locationTypes),
-    RMNLocationMap: generateBiMapFromArray(mira.enumerateRMNLocations())
+    L0LocationMap: generateBiMapFromArray(mira.enumerateL0Locations()),
+    L1LocationMap: generateBiMapFromArray(mira.enumerateL1Locations()),
+    L2LocationMap: generateBiMapFromArray(mira.enumerateL2Locations()),
+    L3LocationMap: generateBiMapFromArray(mira.enumerateL3Locations()),
+    L4LocationMap: generateBiMapFromArray(mira.enumerateL4Locations()),
+    //
+    controlActionsToBits: controlActionsToBits
   };
 }
