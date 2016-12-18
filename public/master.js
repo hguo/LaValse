@@ -47,14 +47,7 @@ function init() {
     $(this).blur();
     refresh();
   })
-  $("#toggleLogScale").on("click", function() {
-    timeVolumeChart.toggleLogScale();
-    severityChart.toggleLogScale();
-    componentChart.toggleLogScale();
-    categoryChart.toggleLogScale();
-    locationTypeChart.toggleLogScale();
-    controlActionChart.toggleLogScale();
-  });
+  $("#toggleLogScale").on("click", toggleLogScale); 
 
   var defaultQuery = Object.assign({}, query);
   $("#reset").on("click", function() {
@@ -86,6 +79,15 @@ function refresh() {
     machineView.updateData(d.location, histogramToArray(d.location));
     updateMatchedEventsCounter(d.nMatched);
   });
+}
+
+function toggleLogScale() {
+  timeVolumeChart.toggleLogScale();
+  severityChart.toggleLogScale();
+  componentChart.toggleLogScale();
+  categoryChart.toggleLogScale();
+  locationTypeChart.toggleLogScale();
+  controlActionChart.toggleLogScale();
 }
 
 function updateMatchedEventsCounter(n) {

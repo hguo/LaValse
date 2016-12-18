@@ -126,6 +126,9 @@ function timeVolumeChart(id, data, geom) {
 
   this.updateData = function(data) {
     yMax = d3.max(data, function(d) {return d3.max(d, function(dd) {return dd;});});
+    if (yMax <= 500 && useLogScale) toggleLogScale();
+    if (yMax >= 1000 && !useLogScale) toggleLogScale();
+    
     yDomainLog = [1, yMax];
     yDomainLinear = [0, yMax];
     yLog.domain(yDomainLog);
