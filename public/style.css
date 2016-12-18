@@ -7,6 +7,16 @@ body {
   position: absolute;
 }
 
+#tabs {
+  font-size: 9pt;
+  position: absolute;
+  top: 0;
+  left: 1010;
+  width: 400;
+  height: 430;
+  display: none;
+}
+
 #eventTable {
   font-size: 8pt;
   table-layout: fixed;
@@ -35,7 +45,7 @@ body {
   font-size: 9pt;
   position: absolute;
   left: 270;
-  top: 390;
+  top: 440;
   display: none;
 }
 

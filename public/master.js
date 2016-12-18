@@ -1,6 +1,6 @@
 var query = {
   LOD: 2, // TODO
-  top: 7,
+  top: 5,
   // volumeBy: "category",
   T0: 1420070400000, // 2015-01-01
   T1: 1451520000000, // 2015-12-31
@@ -11,7 +11,10 @@ var query = {
 var severityChart, componentChart, categoryChart, locationTypeChart, controlActionChart, timeVolumeChart;
 var machineView;
 
-init();
+$(function() {
+  $("#tabs").tabs();
+  init();
+});
 
 function init() {
   d3.json("/cube?query=" + JSON.stringify(query), function (d) {
@@ -35,11 +38,12 @@ function init() {
         {L: 120, T: 315, W: 120, H: 290});
     timeVolumeChart = new timeVolumeChart(
         "#timeVolumeChart", d.timeVolumes, // histogramToArray(d.timeVolume), 
-        {L: 240, T: 280, W: 720, H: 100});
+        {L: 240, T: 280, W: 720, H: 150});
     machineView = new machineView();
     machineView.updateData(d.location, histogramToArray(d.location));
     $("#controlPanel").css("display", "block");
     $("#tableView").css("display", "block");
+    $("#tabs").css("display", "block");
    
     updateQueryInfo(d);
   });
