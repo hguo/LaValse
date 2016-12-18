@@ -9,6 +9,14 @@ body {
 
 #eventTable {
   font-size: 9pt;
+  table-layout: fixed;
+  width: 1160px;
+}
+
+#eventTable td {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 #timeVolumeChart .pane {
@@ -19,12 +27,16 @@ body {
 #controlPanel {
   position: absolute;
   left: 0;
-  top: 400;
+  top: 300;
   display: none;
 }
 
 #tableView {
   font-size: 9pt;
+  position: absolute;
+  left: 0;
+  top: 420;
+  display: none;
 }
 
 #machineView {

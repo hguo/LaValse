@@ -34,10 +34,12 @@ function init() {
         {L: 360, T: 0, W: 120, H: 300});
     timeVolumeChart = new timeVolumeChart(
         "#timeVolumeChart", d.timeVolumes, // histogramToArray(d.timeVolume), 
-        {L: 0, T: 300, W: 1170, H: 100});
+        {L: 0, T: 320, W: 1170, H: 100});
     machineView = new machineView();
     machineView.updateData(d.location, histogramToArray(d.location));
     $("#controlPanel").css("display", "block");
+    $("#tableView").css("display", "block");
+    updateMatchedEventsCounter(d.nMatched);
   });
   
   $("#volumeBy").change(function() {
@@ -82,7 +84,12 @@ function refresh() {
     timeVolumeChart.updateData(d.timeVolumes, 
         {L: 0, T: 400, W: 600, H: 150});
     machineView.updateData(d.location, histogramToArray(d.location));
+    updateMatchedEventsCounter(d.nMatched);
   });
+}
+
+function updateMatchedEventsCounter(n) {
+  $("#eventCount").html(n)
 }
 
 function refreshTops(q) {
@@ -92,10 +99,14 @@ function refreshTops(q) {
     data.forEach(function(d) {
       table.append(
           "<tr><td>" + d.id + 
+          "</td><td>" + d.eventTime +
           "</td><td>" + d.msgID +
+          "</td><td>" + events[d.msgID].severity + 
+          "</td><td>" + events[d.msgID].component + 
+          "</td><td>" + events[d.msgID].category + 
           "</td><td>" + d.jobID + 
           "</td><td>" + d.location + 
-          "</td><td>" + d.CPU + 
+          "</td><td>" + (d.CPU == null ? "" : d.CPU) + 
           "</td><td>" + d.block + 
           "</td><td>" + d.message + 
           "</td></tr>");
