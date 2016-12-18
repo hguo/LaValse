@@ -27,7 +27,10 @@ namespace ras {
 
 struct Query;
 
-enum {MAX_NUM_LOC = 127603, MAX_NUM_TIME_SLOTS = 80000};
+enum {
+  MAX_NUM_LOC = 127603, 
+  MAX_EVENTS_PER_SLOT = 20
+};
 
 struct QueryResults {
   uint32_t nvolumes;
@@ -36,7 +39,7 @@ struct QueryResults {
   uint32_t msgID[NUM_MSGID], component[NUM_COMP], locationType[NUM_LOCTYPE], 
            category[NUM_CAT], severity[NUM_SEV], controlAction[NUM_CTLACT];
   uint32_t location[MAX_NUM_LOC];
-  uint32_t timeVolumes[MAX_NUM_TIME_SLOTS];
+  uint32_t *timeVolumes;
   std::vector<uint32_t> topRecIDs;
 
   explicit QueryResults(const Query& q);
@@ -209,18 +212,20 @@ QueryResults::QueryResults(const Query& q)
   memset(category, 0, NUM_CAT*4);
   memset(severity, 0, NUM_SEV*4);
   memset(controlAction, 0, NUM_CTLACT*4);
+  memset(location, 0, MAX_NUM_LOC*4);
   
   nslots = (q.T1 - q.T0) / q.tg;
   nvolumes = ras::nvolumes[q.volumeBy];
 
-  memset(timeVolumes, 0, MAX_NUM_TIME_SLOTS*4);
-  memset(location, 0, MAX_NUM_LOC*4);
+  timeVolumes = (uint32_t*)malloc(nslots*nvolumes*4);
+  memset(timeVolumes, 0, nslots*nvolumes*4);
 
   topRecIDs.reserve(q.top);
 }
 
 QueryResults::~QueryResults()
 {
+  free(timeVolumes);
 }
 
 }
