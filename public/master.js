@@ -126,3 +126,8 @@ function histogramToArray(r) {
   }
   return array;
 }
+  
+var formatPower = function(d) {
+  var superscript = "⁰¹²³⁴⁵⁶⁷⁸⁹";
+  return (d + "").split("").map(function(c) { return superscript[c]; }).join(""); 
+};

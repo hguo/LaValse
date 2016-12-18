@@ -64,7 +64,11 @@ function barChart(name, id, data, humanReadableText, geom) {
 
   var xAxis = d3.axisBottom()
     .scale(xLog)
-    .ticks(3);
+    .ticks(3)
+    .tickFormat(function(d) {
+      if (useLogScale) return "10" + formatPower(Math.round(Math.log10(d)));
+      else return d;
+    });
   var yAxis = d3.axisLeft()
     .scale(y)
     .tickSizeInner(3)

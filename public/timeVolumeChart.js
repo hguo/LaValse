@@ -45,7 +45,7 @@ function timeVolumeChart(id, data, geom) {
     .rangeRound([height, 0])
     .clamp(true)
     .domain(yDomainLog)
-    .nice(8);
+    .nice(4);
   var yLinear = d3.scaleLinear() 
     .rangeRound([height, 0])
     .clamp(true)
@@ -54,7 +54,11 @@ function timeVolumeChart(id, data, geom) {
   var color = d3.scaleOrdinal(d3.schemeCategory10);
 
   var xAxis = d3.axisBottom().scale(x), 
-      yAxis = d3.axisLeft().scale(yLog).ticks(4);
+      yAxis = d3.axisLeft().scale(yLog).ticks(4)
+        .tickFormat(function(d) {
+          if (useLogScale) return "10" + formatPower(Math.round(Math.log10(d)));
+          else return d;
+        });
 
   var lineLog = d3.line() // .curve(d3.curveBasis)
     .x(function(d, i) {return x(query.T0 + query.tg * i);})
