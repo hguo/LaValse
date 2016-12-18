@@ -85,7 +85,6 @@ function cube(filename) {
 cube.prototype.query = function(q0) {
   q = translateQuery(q0);
   var r0 = this.cc.query(q);
-  console.log(r0);
   return translateResults(r0, this.fullResult);
 }
 

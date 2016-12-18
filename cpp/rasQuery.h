@@ -128,15 +128,17 @@ struct Query {
       if (c[7]) {
         uint16_t a = e.controlActions();
         if (a & 32768) add1(results.controlAction[9]); // no control actions
-        if (a & 1) add1(results.controlAction[0]);
-        if (a & 2) add1(results.controlAction[1]);
-        if (a & 4) add1(results.controlAction[2]);
-        if (a & 8) add1(results.controlAction[3]);
-        if (a & 16) add1(results.controlAction[4]);
-        if (a & 32) add1(results.controlAction[5]);
-        if (a & 64) add1(results.controlAction[6]);
-        if (a & 128) add1(results.controlAction[7]);
-        if (a & 256) add1(results.controlAction[8]);
+        else {
+          if (a & 1) add1(results.controlAction[0]);
+          if (a & 2) add1(results.controlAction[1]);
+          if (a & 4) add1(results.controlAction[2]);
+          if (a & 8) add1(results.controlAction[3]);
+          if (a & 16) add1(results.controlAction[4]);
+          if (a & 32) add1(results.controlAction[5]);
+          if (a & 64) add1(results.controlAction[6]);
+          if (a & 128) add1(results.controlAction[7]);
+          if (a & 256) add1(results.controlAction[8]);
+        }
       }
 
       if (b[0] && c[0]) { // all true
