@@ -832,17 +832,18 @@ const events = {
 "FFFE0017": {	component: "TEST",	category: "BQC",	severity: "FATAL",	message: "This is a test ras message.",	description: "This RAS is used for testing purpose only.",	serviceAction: "None",	controlAction: "END_JOB",	thresholdCount: "1",	thresholdPeriod: "1 HOUR",	sourceFile: "/bgsys/source/srcV1R2M2.3650/ras/include/test_ras.h",	lineNumber: "218"}
 };
 
-const controlActions = {
-  CABLE_IN_ERROR: 1,
-  DCA_IN_ERROR: 2,
-  BOARD_IN_ERROR: 4,
-  RACK_IN_ERROR: 8,
-  COMPUTE_IN_ERROR: 16,
-  SOFTWARE_IN_ERROR: 32,
-  BQL_SPARE: 64,
-  END_JOB: 128,
-  FREE_COMPUTE_BLOCK:256 
-};
+const controlActions = [
+  "CABLE_IN_ERROR",
+  "DCA_IN_ERROR",
+  "BOARD_IN_ERROR",
+  "RACK_IN_ERROR",
+  "COMPUTE_IN_ERROR",
+  "SOFTWARE_IN_ERROR",
+  "BQL_SPARE",
+  "END_JOB",
+  "FREE_COMPUTE_BLOCK",
+  "NO_ACTION"
+];
 
 // Category
 const categories = {
@@ -998,6 +999,7 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     componentMap: generateBiMap(components),
     severityMap: generateBiMap(severities),
     locationTypeMap: generateBiMap(locationTypes),
+    controlActionMap: generateBiMapFromArray(controlActions),
     locationMaps: [
       generateBiMapFromArray(mira.enumerateL0Locations()),
       generateBiMapFromArray(mira.enumerateL1Locations()),

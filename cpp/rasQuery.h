@@ -32,6 +32,7 @@ enum {MAX_NUM_LOC = 127603, MAX_NUM_TIME_SLOTS = 80000};
 struct QueryResults {
   uint32_t nvolumes;
   uint32_t nslots; // time slots
+  uint32_t nmatched = 0;
   uint32_t msgID[NUM_MSGID], component[NUM_COMP], locationType[NUM_LOCTYPE], 
            category[NUM_CAT], severity[NUM_SEV], controlAction[NUM_CTLACT];
   uint32_t location[MAX_NUM_LOC];
@@ -126,6 +127,7 @@ struct Query {
       if (c[6]) add1(results.location[e.location[LOD]]);
       if (c[7]) {
         uint16_t a = e.controlActions();
+        if (a & 32768) add1(results.controlAction[9]); // no control actions
         if (a & 1) add1(results.controlAction[0]);
         if (a & 2) add1(results.controlAction[1]);
         if (a & 4) add1(results.controlAction[2]);
@@ -135,12 +137,14 @@ struct Query {
         if (a & 64) add1(results.controlAction[6]);
         if (a & 128) add1(results.controlAction[7]);
         if (a & 256) add1(results.controlAction[8]);
-        if (a & 32768) add1(results.controlAction[9]);
       }
 
-      if (b[0] && c[0] && ntop<top-1) { // all true
-        // results.topRecIDs.push_back(e.recID);
-        ntop ++;
+      if (b[0] && c[0]) { // all true
+        results.nmatched ++; 
+        if (ntop<top) {
+          results.topRecIDs.push_back(e.recID);
+          ntop ++;
+        }
       }
     }
     

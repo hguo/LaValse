@@ -20,10 +20,11 @@ function translateQuery(q0) {
   if ("locationType" in q) q.locationType = translateNamesToIndices(q.locationType, ras.locationTypeMap);
   if ("category" in q) q.category = translateNamesToIndices(q.category, ras.categoryMap);
   if ("severity" in q) q.severity = translateNamesToIndices(q.severity, ras.severityMap);
+  if ("controlAction" in q) q.controlAction = translateNamesToIndices(q.controlAction, ras.controlActionMap);
   if ("LOD" in q && "location" in q) {
     q.location = translateNamesToIndices(q.location, ras.locationMaps[q.LOD]);
   }
-  
+
   return q;
  
   function translateNamesToIndices(src, bimap) { // src is [], book is {}
@@ -41,6 +42,7 @@ function translateResults(r, fullResult) {
   r.locationType = translateIndicesToNames(r.locationType, ras.locationTypeMap);
   r.category = translateIndicesToNames(r.category, ras.categoryMap);
   r.severity = translateIndicesToNames(r.severity, ras.severityMap);
+  r.controlAction = translateIndicesToNames(r.controlAction, ras.controlActionMap);
 
   r.location = translateIndicesToNames(r.location, ras.locationMaps[r.LOD]);
 
@@ -49,6 +51,7 @@ function translateResults(r, fullResult) {
     r.locationType = completeMissingResults(r.locationType, fullResult.locationType);
     r.category = completeMissingResults(r.category, fullResult.category);
     r.severity = completeMissingResults(r.severity, fullResult.severity);
+    r.controlAction = completeMissingResults(r.controlAction, fullResult.controlAction);
   }
 
   return r;
@@ -82,6 +85,7 @@ function cube(filename) {
 cube.prototype.query = function(q0) {
   q = translateQuery(q0);
   var r0 = this.cc.query(q);
+  console.log(r0);
   return translateResults(r0, this.fullResult);
 }
 

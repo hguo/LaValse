@@ -120,9 +120,6 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
   query.t1 = input->Get(String::NewFromUtf8(isolate, "t1"))->IntegerValue();
   if (query.t1 == 0) query.t1 = 1451606400000;
 
-  query.controlActions = input->Get(String::NewFromUtf8(isolate, "controlActions"))->IntegerValue();
-  if (query.controlActions == 0) query.controlActions = 0xffff;
-
   query.volumeBy = input->Get(String::NewFromUtf8(isolate, "volumeBy"))->IntegerValue();
 
   // fprintf(stderr, "%llu, %llu, %llu, %llu\n", query.t0, query.t1, query.T0, query.T1);
@@ -145,6 +142,19 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
     memset(query.component, 0, NUM_COMP);
     for (uint32_t i=0; i<component->Length(); i++) 
       query.component[ component->Get(i)->Uint32Value() ] = true;
+  }
+ 
+  Local<Array> controlAction = Local<Array>::Cast(input->Get(String::NewFromUtf8(isolate, "controlAction")));
+  if (controlAction->Length() == 0) 
+    query.controlActions = 0xffff;
+  else {
+    query.controlActions = 0x0000;
+    for (uint32_t i=0; i<controlAction->Length(); i++) 
+      if (component->Get(i)->Uint32Value()) {
+        uint32_t number = 0;
+        number |= 1 << i;
+        query.controlActions ^= number;
+      }
   }
   
   Local<Array> locationType = Local<Array>::Cast(input->Get(String::NewFromUtf8(isolate, "locationType")));
@@ -192,7 +202,8 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
   Local<Object> jout = Object::New(isolate);
 
   jout->Set(String::NewFromUtf8(isolate, "queryTime"), Number::New(isolate, elapsed));
-
+  jout->Set(String::NewFromUtf8(isolate, "nMatched"), Number::New(isolate, results.nmatched));
+  
   Local<Array> jTimeVolumes = Array::New(isolate);
   for (uint32_t i=0; i<results.nvolumes; i++) {
     Local<Array> jTimeVolume = Array::New(isolate);
@@ -201,13 +212,6 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
     jTimeVolumes->Set(Number::New(isolate, i), jTimeVolume);
   }
   jout->Set(String::NewFromUtf8(isolate, "timeVolumes"), jTimeVolumes); // TODO
-
-#if 0 // old code
-  Local<Object> jTimeVolume = Object::New(isolate);
-  for (uint32_t i=0; i<results.nslots; i++)
-    jTimeVolume->Set(Number::New(isolate, i*query.tg + query.T0), Number::New(isolate, results.timeVolumes[i]));
-  jout->Set(String::NewFromUtf8(isolate, "timeVolume"), jTimeVolume); // TODO
-#endif
 
   Local<Object> jMsgID = Object::New(isolate);
   for (int i=0; i<NUM_MSGID; i++)
@@ -247,11 +251,17 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
       jLocation->Set(Number::New(isolate, i), Number::New(isolate, results.location[i]));
   jout->Set(String::NewFromUtf8(isolate, "location"), jLocation);
 
-  Local<Array> jTop = Array::New(isolate); 
+  Local<Object> jControlAction = Object::New(isolate);
+  for (size_t i=0; i<NUM_CTLACT; i++) 
+    if (results.controlAction[i] > 0) 
+      jControlAction->Set(Number::New(isolate, i), Number::New(isolate, results.controlAction[i]));
+  jout->Set(String::NewFromUtf8(isolate, "controlAction"), jControlAction);
+
+  Local<Array> jTop = Array::New(isolate);
   for (size_t i=0; i<results.topRecIDs.size(); i++) 
     jTop->Set(Number::New(isolate, i), Number::New(isolate, results.topRecIDs[i]));
   jout->Set(String::NewFromUtf8(isolate, "top"), jTop);
-
+  
   args.GetReturnValue().Set(jout);
 }
 
