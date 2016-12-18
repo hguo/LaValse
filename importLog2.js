@@ -33,9 +33,7 @@ var csvStream = csv({headers: true})
 
     db.put(rasData.id, JSON.stringify(rasData));
 
-    /*
     var L = mira.parseLocation(rasData.location);
-    // var controlActionBits = rasbook.events[rasData.messageID].controlActionBits;
     var L0 = mira.locationToL0Location(L),
         L1 = mira.locationToL1Location(L), 
         L2 = mira.locationToL2Location(L), 
@@ -49,13 +47,11 @@ var csvStream = csv({headers: true})
    
     // console.log(L0, L1, L2, L3, L4);
     console.log(
-        rasData._id,
-        rasbook.eventMap.key(rasData.messageID),
+        rasData.id,
+        rasbook.eventMap.key(rasData.msgID),
         rasData.eventTime.getTime(),
-        // controlActionBits,
         rasbook.locationTypeMap.key(L.type), // locaitonType
         L0i, L1i, L2i, L3i, L4i);
-    */
   })
   .on("end", function() {
   });
