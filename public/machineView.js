@@ -10,6 +10,11 @@ function machineView() {
   const ioDrawerGroupL = 2, ioDrawerGroupT = 15, ioDrawerGroupW = 30, ioDrawerGroupH = 30;
   const ioDrawerW = 10, ioDrawerH = 21.25;
 
+  const legendL = L+W, legendT = T, legendW = 50, legendH = H;
+  const legendMargin = {top: 20, bottom: 20, right: 40, left: 0};
+  const legendWidth = legendW - legendMargin.left - legendMargin.right,
+        legendHeight = legendH - legendMargin.top - legendMargin.bottom;
+
   var tip = d3.select("#machineView").append("div")
     .style("position", "absolute")
     .style("visibility", "hidden");
@@ -128,17 +133,31 @@ function machineView() {
   });
   */
 
+  var legendSvg = d3.select("#machineViewLegend").append("svg")
+    .attr("class", "chart")
+    .style("left", legendL)
+    .style("top", legendT)
+    .attr("width", legendW)
+    .attr("height", legendH)
+    .append("g")
+    .attr("transform", "translate(" + legendMargin.left + "," + legendMargin.top + ")");
+
   this.updateData = function(data) {
-    var scale = d3.scaleLog()
-      .domain([1, 100000]) // TODO
+    var max = 1000000; // TODO
+    var domain = [1, max];
+    var colorScale = d3.scaleLog()
+      .domain(domain) 
       .clamp(true)
       .range(["white", "steelblue"])
       .interpolate(d3.interpolateCubehelixLong);
+    var legendScale = d3.scaleLog()
+      .domain(domain)
+      .rangeRound([legendHeight, 0]);
 
     $(".nbbox").each(function() {
       var id = $(this).attr("id");
       var val = data[id];
-      var color = val == undefined ? scale(0) : scale(val);
+      var color = val == undefined ? colorScale(0) : colorScale(val);
       $(this).css("fill", color);
     })
 
@@ -151,6 +170,62 @@ function machineView() {
       else color = scale(data[_id]);
       _this.style("fill", color);
     }); */
+
+    legendSvg.selectAll("*").remove();
+    var gradient = legendSvg.append("defs")
+      .append("linearGradient")
+      .attr("id", "gradient")
+      .attr("x1", "0%")
+      .attr("y1", "100%")
+      .attr("x2", "0%")
+      .attr("y2", "0%")
+      .attr("spreadMethod", "pad");
+
+    // var pct = linspace(0, Math.log10(
+    var pct = logspace(1, max, 100);
+    var pctMax = Math.log10(max);
+    pct.forEach(function(d) {
+      gradient.append("stop")
+        .attr("offset", Math.log10(d) / pctMax)
+        .attr("stop-color", colorScale(d))
+        .attr("stop-opacity", 1);
+    });
+
+    legendSvg.append("rect")
+      .attr("x1", 0)
+      .attr("y1", 0)
+      .attr("width", legendWidth)
+      .attr("height", legendHeight)
+      .style("fill", "url(#gradient)");
+
+    var axis = d3.axisRight()
+      .scale(legendScale)
+      .ticks(6).tickSize(3);
+
+    legendSvg.append("g")
+      .attr("class", "axis")
+      .attr("transform", "translate(" + legendWidth + ",0)")
+      .call(axis);
+
+    legendSvg.selectAll(".domain").remove(); // remove the axis line
+
+    function linspace(a, b, n) {
+      var out = [];
+      var delta = (b-a)/(n-1);
+      var i=0;
+      while (i<(n-1)) {
+        out.push(a + i*delta);
+        i++;
+      }
+      out.push(b);
+      return out;
+    }
+
+    function logspace(a, b, n) {
+      return linspace(Math.log10(a), Math.log10(b), n).map(function(x) {
+        return Math.pow(10, x);
+      });
+    }
   }
 
   function brushed() {
