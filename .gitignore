@@ -1,6 +1,8 @@
 node_modules
 build*
 db
+db1
+storage
 *.swp
 a.out
 raslog

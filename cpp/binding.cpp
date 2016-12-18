@@ -203,7 +203,7 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
 
   jout->Set(String::NewFromUtf8(isolate, "queryTime"), Number::New(isolate, elapsed));
   jout->Set(String::NewFromUtf8(isolate, "nMatched"), Number::New(isolate, results.nmatched));
-  fprintf(stderr, "nmatched=%d\n", results.nmatched);
+  // fprintf(stderr, "nmatched=%d\n", results.nmatched);
   
   Local<Array> jTimeVolumes = Array::New(isolate);
   for (uint32_t i=0; i<results.nvolumes; i++) {

@@ -8,9 +8,12 @@
     "async": "^2.1.4",
     "basic-auth-connect": "^1.0.0",
     "bimap": "0.0.15",
+    "deasync": "^0.1.9",
     "express": "^4.14.0",
     "fast-csv": "^2.3.0",
+    "level": "^1.5.0",
     "mongodb": "^2.2.15",
+    "promise": "^7.1.1",
     "ws": "^1.1.1"
   },
   "devDependencies": {},
