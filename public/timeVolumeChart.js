@@ -54,10 +54,11 @@ function timeVolumeChart(id, data, geom) {
   var color = d3.scaleOrdinal(d3.schemeCategory10);
 
   var xAxis = d3.axisBottom().scale(x), 
-      yAxis = d3.axisLeft().scale(yLog).ticks(4)
+      yAxis = d3.axisLeft().scale(yLog).ticks(3)
         .tickFormat(function(d) {
-          if (useLogScale) return "10" + formatPower(Math.round(Math.log10(d)));
-          else return d;
+          return d3.format(".2s")(d);
+          // if (useLogScale) return "10" + formatPower(Math.round(Math.log10(d)));
+          // else return d3.format(".2s")(d);
         });
 
   var lineLog = d3.line() // .curve(d3.curveBasis)
@@ -130,8 +131,8 @@ function timeVolumeChart(id, data, geom) {
 
   this.updateData = function(data) {
     yMax = d3.max(data, function(d) {return d3.max(d, function(dd) {return dd;});});
-    if (yMax <= 500 && useLogScale) toggleLogScale();
-    if (yMax >= 1000 && !useLogScale) toggleLogScale();
+    if (yMax <= 1000 && useLogScale) toggleLogScale();
+    if (yMax >= 10000 && !useLogScale) toggleLogScale();
     
     yDomainLog = [1, yMax];
     yDomainLinear = [0, yMax];

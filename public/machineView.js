@@ -10,8 +10,8 @@ function machineView() {
   const ioDrawerGroupL = 2, ioDrawerGroupT = 15, ioDrawerGroupW = 30, ioDrawerGroupH = 30;
   const ioDrawerW = 10, ioDrawerH = 21.25;
 
-  const legendL = L+W, legendT = T, legendW = 35, legendH = H;
-  const legendMargin = {top: 20, bottom: 20, right: 25, left: 0};
+  const legendL = L+W, legendT = T, legendW = 40, legendH = H;
+  const legendMargin = {top: 20, bottom: 20, right: 30, left: 0};
   const legendWidth = legendW - legendMargin.left - legendMargin.right,
         legendHeight = legendH - legendMargin.top - legendMargin.bottom;
 
@@ -202,7 +202,8 @@ function machineView() {
       .scale(legendScale)
       .ticks(6).tickSize(3)
       .tickFormat(function(d) {
-        return "10" + formatPower(Math.round(Math.log10(d)));
+        return d3.format(".2s")(d);
+        // return "10" + formatPower(Math.round(Math.log10(d)));
       });
 
     legendSvg.append("g")

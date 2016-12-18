@@ -25,7 +25,7 @@ function barChart(name, id, data, humanReadableText, geom) {
   var tip = d3.tip()
     .attr("class", "d3-tip")
     .html(function(d) {
-      return humanReadableText[d.k] + ": " + d.v;
+      return humanReadableText[d.k] + ": " + d3.format(",")(d.v);
     });
   svg.call(tip);
 
@@ -66,8 +66,9 @@ function barChart(name, id, data, humanReadableText, geom) {
     .scale(xLog)
     .ticks(3)
     .tickFormat(function(d) {
-      if (useLogScale) return "10" + formatPower(Math.round(Math.log10(d)));
-      else return d;
+      return d3.format(".2s")(d);
+      // if (useLogScale) return "10" + formatPower(Math.round(Math.log10(d)));
+      // else return d;
     });
   var yAxis = d3.axisLeft()
     .scale(y)

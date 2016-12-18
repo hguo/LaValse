@@ -39,7 +39,8 @@ function init() {
     machineView.updateData(d.location, histogramToArray(d.location));
     $("#controlPanel").css("display", "block");
     $("#tableView").css("display", "block");
-    updateMatchedEventsCounter(d.nMatched);
+   
+    updateQueryInfo(d);
   });
   
   $("#volumeBy").change(function() {
@@ -77,7 +78,8 @@ function refresh() {
     timeVolumeChart.updateData(d.timeVolumes, 
         {L: 0, T: 400, W: 600, H: 150});
     machineView.updateData(d.location, histogramToArray(d.location));
-    updateMatchedEventsCounter(d.nMatched);
+    
+    updateQueryInfo(d);
   });
 }
 
@@ -90,8 +92,11 @@ function toggleLogScale() {
   controlActionChart.toggleLogScale();
 }
 
-function updateMatchedEventsCounter(n) {
-  $("#eventCount").html(n)
+function updateQueryInfo(d) {
+  formatInt = d3.format(",");
+  formatFloat = d3.format(".3f");
+  $("#eventCount").html(formatInt(d.nMatched));
+  $("#executionTime").html(formatFloat(d.queryTime) + " sec");
 }
 
 function refreshTops(q) {
@@ -130,4 +135,6 @@ function histogramToArray(r) {
 var formatPower = function(d) {
   var superscript = "⁰¹²³⁴⁵⁶⁷⁸⁹";
   return (d + "").split("").map(function(c) { return superscript[c]; }).join(""); 
+  // var format = d3.format(".2s");
+  // return format(d);
 };
