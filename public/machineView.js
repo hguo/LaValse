@@ -70,6 +70,7 @@ function machineView() {
             nodeBoard.append("rect")
               .attr("class", "nbbox")
               .attr("id", nodeBoard2str(i, j, k, nodeBoardID))
+              .attr("title", nodeBoard2str(i, j, k, nodeBoardID))
               .attr("width", nodeBoardW)
               .attr("height", nodeBoardH);
           }
@@ -101,6 +102,7 @@ function machineView() {
           ioDrawerGroup.append("rect")
             .attr("class", "nbbox") // TODO
             .attr("id", ioDrawer2str(i, j, ioDrawerID))
+            .attr("title", ioDrawer2str(i, j, ioDrawerID))
             .attr("width", ioDrawerW)
             .attr("height", ioDrawerH)
             .attr("transform", "translate(" + q*ioDrawerW + "," + p*ioDrawerH + ")");
@@ -133,6 +135,8 @@ function machineView() {
   });
   */
 
+  $(".nbbox").tooltip();
+
   var legendSvg = d3.select("#machineViewLegend").append("svg")
     .attr("class", "chart")
     .style("left", legendL)
@@ -159,7 +163,7 @@ function machineView() {
       var val = data[id];
       var color = val == undefined ? colorScale(0) : colorScale(val);
       $(this).css("fill", color);
-    })
+    });
 
     /* // also works
     d3.selectAll(".nbbox").each(function(d){

@@ -13,6 +13,12 @@ var machineView;
 
 $(function() {
   $("#tabs").tabs();
+  $(document).tooltip({
+    content: function() {
+      // return unescape($(this).prop("title"));
+      return $(this).prop("title");
+    }
+  });
   init();
 });
 
@@ -106,24 +112,58 @@ function updateQueryInfo(d) {
 
 function refreshTops(q) {
   d3.json("/db?query=" + JSON.stringify(q), function(data) {
+    var tbody = d3.select("#eventTable tbody");
+    tbody.selectAll("tr").remove();
+    var tr = tbody.selectAll("tr").data(data)
+      .enter().append("tr");
+
+    tr.append("td").html(function(d) {return d.id;});
+    tr.append("td").html(function(d) {return d.eventTime;});
+    tr.append("td").html(function(d) {return d.msgID + " (" + events[d.msgID].severity[0] + ")";})
+      .attr("title", function(d) {
+        return "<b>msgID:</b> " + d.msgID
+          + "<br><b>severity:</b> " + events[d.msgID].severity
+          + "<br><b>description:</b> " + events[d.msgID].description
+          + "<br><b>controlAction:</b> " + String(events[d.msgID].controlAction).replace(/,/g, ', ')
+          + "<br><b>serviceAction:</b> " + events[d.msgID].serviceAction
+          + "<br><b>relevantDiagnosticSuites:</b> " + String(events[d.msgID].relevantDiagnosticSuites).replace(/,/g, ', ');
+      });
+    tr.append("td").html(function(d) {return events[d.msgID].component;});
+    tr.append("td").html(function(d) {return events[d.msgID].category;});
+    tr.append("td").html(function(d) {return d.jobID;});
+    tr.append("td").html(function(d) {return d.location;});
+    tr.append("td").html(function(d) {return d.CPU;});
+    tr.append("td").html(function(d) {return d.block;});
+    tr.append("td").html(function(d) {return d.message;})
+      .attr("title", function(d) {return d.message;});
+  });
+
+    /*
     var table = $("#eventTable tbody");
     table.empty();
     data.forEach(function(d) {
       table.append(
           "<tr><td>" + d.id + 
           "</td><td>" + d.eventTime +
-          "</td><td>" + d.msgID +
-          "</td><td>" + events[d.msgID].severity + 
+          "</td><td title='<b>msgID:</b> " + d.msgID 
+            + "<br><b>severity:</b> " + events[d.msgID].severity
+            + "<br><b>description:</b> " + escape(events[d.msgID].description)
+            + "<br><b>serviceAction:</b> " + escape(events[d.msgID].serviceAction)
+            // + "<br><b>controlAction:</b> " + events[d.msgID].controlAction 
+            + "'>" 
+            + d.msgID + " (" + events[d.msgID].severity[0] + ")" +
+          // "</td><td>" + events[d.msgID].severity + 
           "</td><td>" + events[d.msgID].component + 
           "</td><td>" + events[d.msgID].category + 
           "</td><td>" + d.jobID + 
           "</td><td>" + d.location + 
           "</td><td>" + (d.CPU == null ? "" : d.CPU) + 
           "</td><td>" + d.block + 
-          "</td><td>" + d.message + 
+          "</td><td title='" + d.message + "'>" + d.message + 
           "</td></tr>");
     });
   });
+  */
 }
 
 function histogramToArray(r) {
