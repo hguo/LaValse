@@ -6,7 +6,9 @@ function machineView() {
   const rackW = 34, rackH = 81, rackPadding = 2;
   const midplaneW = 30, midplaneH = 30, midplaneTop = 15, midplanePadding = 2;
   const nodeBoardW = midplaneW/4, nodeBoardH = midplaneH/4;
-  const ioDrawerW = 15, ioDrawerH = 12.76, ioDrawerLeft = 2, ioDrawerTop = 15;
+
+  const ioDrawerGroupL = 2, ioDrawerGroupT = 15, ioDrawerGroupW = 30, ioDrawerGroupH = 30;
+  const ioDrawerW = 10, ioDrawerH = 21.25;
 
   var tip = d3.select("#machineView").append("div")
     .style("position", "absolute")
@@ -85,18 +87,18 @@ function machineView() {
         .attr("y", midplaneTop-midplanePadding)
         .text(ioRack2str(i, j));
 
-      for (p=0; p<5; p++) {
-        for (q=0; q<2; q++) {
-          var ioDrawerID = p*2+q;
-          var ioDrawer = ioRack.append("g")
-            .attr("class", "ioDrawer")
-            .attr("id", ioDrawer2str(i, j, ioDrawerID))
-            .attr("transform", "translate(" + (ioDrawerLeft + q*ioDrawerW) + "," + (ioDrawerTop + p*ioDrawerH) + ")");
-          ioDrawer.append("rect")
-            .attr("class", "nbbox")
+      var ioDrawerGroup = ioRack.append("g")
+        .attr("transform", "translate(" + ioDrawerGroupL + "," + ioDrawerGroupT + ")");
+
+      for (p=0; p<3; p++) {
+        for (q=0; q<3; q++) {
+          var ioDrawerID = p*3+q;
+          ioDrawerGroup.append("rect")
+            .attr("class", "nbbox") // TODO
             .attr("id", ioDrawer2str(i, j, ioDrawerID))
             .attr("width", ioDrawerW)
-            .attr("height", ioDrawerH);
+            .attr("height", ioDrawerH)
+            .attr("transform", "translate(" + q*ioDrawerW + "," + p*ioDrawerH + ")");
         }
       }
     }
