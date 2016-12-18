@@ -1,5 +1,5 @@
 function timeVolumeChart(id, data, geom) {
-  const margin = {top: 10, right: 10, bottom: 25, left: 50},
+  const margin = {top: 10, right: 10, bottom: 25, left: 30},
         width = geom.W - margin.left - margin.right,
         height = geom.H - margin.top - margin.bottom;
   

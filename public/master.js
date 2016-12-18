@@ -1,5 +1,6 @@
 var query = {
   LOD: 2, // TODO
+  top: 7,
   // volumeBy: "category",
   T0: 1420070400000, // 2015-01-01
   T1: 1451520000000, // 2015-12-31
@@ -19,22 +20,22 @@ function init() {
 
     severityChart = new barChart(
         "severity", "#severityChart", histogramToArray(d.severity), severities,
-        {L: 0, T: 0, W: 120, H: 100});
+        {L: 0, T: 25, W: 120, H: 100});
     controlActionChart = new barChart(
         "controlAction", "#controlActionChart", histogramToArray(d.controlAction), controlActions,
-        {L: 0, T: 100, W: 120, H: 200});
+        {L: 0, T: 125, W: 120, H: 190});
     componentChart = new barChart(
         "component", "#componentChart", histogramToArray(d.component), components,
-        {L: 120, T: 0, W: 120, H: 300});
+        {L: 120, T: 25, W: 120, H: 290});
     categoryChart = new barChart(
         "category", "#categoryChart", histogramToArray(d.category), categories,
-        {L: 240, T: 0, W: 120, H: 300});
+        {L: 0, T: 315, W: 120, H: 290});
     locationTypeChart = new barChart(
         "locationType", "#locationTypeChart", histogramToArray(d.locationType), locationTypes,
-        {L: 360, T: 0, W: 120, H: 300});
+        {L: 120, T: 315, W: 120, H: 290});
     timeVolumeChart = new timeVolumeChart(
         "#timeVolumeChart", d.timeVolumes, // histogramToArray(d.timeVolume), 
-        {L: 0, T: 320, W: 1170, H: 100});
+        {L: 240, T: 280, W: 720, H: 100});
     machineView = new machineView();
     machineView.updateData(d.location, histogramToArray(d.location));
     $("#controlPanel").css("display", "block");

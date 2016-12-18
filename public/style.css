@@ -8,7 +8,7 @@ body {
 }
 
 #eventTable {
-  font-size: 9pt;
+  font-size: 8pt;
   table-layout: fixed;
   width: 1160px;
 }
@@ -27,15 +27,15 @@ body {
 #controlPanel {
   position: absolute;
   left: 0;
-  top: 300;
+  top: 0;
   display: none;
 }
 
 #tableView {
   font-size: 9pt;
   position: absolute;
-  left: 0;
-  top: 420;
+  left: 270;
+  top: 390;
   display: none;
 }
 
