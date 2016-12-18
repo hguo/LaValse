@@ -263,7 +263,7 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
   for (size_t i=0; i<results.topRecIDs.size(); i++) 
     jTop->Set(Number::New(isolate, i), Number::New(isolate, results.topRecIDs[i]));
   jout->Set(String::NewFromUtf8(isolate, "top"), jTop);
-  
+ 
   args.GetReturnValue().Set(jout);
 }
 

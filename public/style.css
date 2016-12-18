@@ -7,6 +7,10 @@ body {
   position: absolute;
 }
 
+#eventTable {
+  font-size: 9pt;
+}
+
 #timeVolumeChart .pane {
   fill: none;
   pointer-events: all;

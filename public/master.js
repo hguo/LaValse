@@ -72,8 +72,8 @@ function refresh() {
   d3.json("/cube?query=" + JSON.stringify(query), function (d) {
     if ("top" in d) refreshTops(d["top"]);
     
-    console.log(query);
-    console.log(d);
+    // console.log(query);
+    // console.log(d);
     severityChart.updateData(histogramToArray(d.severity));
     controlActionChart.updateData(histogramToArray(d.controlAction));
     componentChart.updateData(histogramToArray(d.component));
@@ -86,9 +86,20 @@ function refresh() {
 }
 
 function refreshTops(q) {
-  console.log("/db?query=" + JSON.stringify(q));
-  d3.json("/db?query=" + JSON.stringify(q), function(d) {
-    console.log(d);
+  d3.json("/db?query=" + JSON.stringify(q), function(data) {
+    var table = $("#eventTable tbody");
+    table.empty();
+    data.forEach(function(d) {
+      table.append(
+          "<tr><td>" + d.id + 
+          "</td><td>" + d.msgID +
+          "</td><td>" + d.jobID + 
+          "</td><td>" + d.location + 
+          "</td><td>" + d.CPU + 
+          "</td><td>" + d.block + 
+          "</td><td>" + d.message + 
+          "</td></tr>");
+    });
   });
 }
 
