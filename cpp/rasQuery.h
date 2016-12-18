@@ -3,6 +3,7 @@
 
 #include "ras.h"
 #include <cstdlib>
+#include <cstring>
 #include <thread>
 #include <sched.h>
 
