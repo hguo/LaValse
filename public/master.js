@@ -128,42 +128,27 @@ function refreshTops(q) {
           + "<br><b>serviceAction:</b> " + events[d.msgID].serviceAction
           + "<br><b>relevantDiagnosticSuites:</b> " + String(events[d.msgID].relevantDiagnosticSuites).replace(/,/g, ', ');
       });
-    tr.append("td").html(function(d) {return events[d.msgID].component;});
-    tr.append("td").html(function(d) {return events[d.msgID].category;});
+    tr.append("td").html(function(d) {return events[d.msgID].component;})
+      .attr("title", function(d) {
+        return components[events[d.msgID].component];
+      });
+    tr.append("td").html(function(d) {return events[d.msgID].category;})
+      .attr("title", function(d) {
+        return categories[events[d.msgID].category];
+      });
     tr.append("td").html(function(d) {return d.jobID;});
-    tr.append("td").html(function(d) {return d.location;});
+    tr.append("td").html(function(d) {return d.location;})
+      .attr("title", function(d) {
+        L = parseLocation(d.location);
+        return "<b>location:</b> " + L.str
+          + "<br><b>type:</b> " + locationTypes[L.type]; 
+      });
     tr.append("td").html(function(d) {return d.CPU;});
-    tr.append("td").html(function(d) {return d.block;});
+    tr.append("td").html(function(d) {return d.block;})
+      .attr("title", function(d) {return d.block;});
     tr.append("td").html(function(d) {return d.message;})
       .attr("title", function(d) {return d.message;});
   });
-
-    /*
-    var table = $("#eventTable tbody");
-    table.empty();
-    data.forEach(function(d) {
-      table.append(
-          "<tr><td>" + d.id + 
-          "</td><td>" + d.eventTime +
-          "</td><td title='<b>msgID:</b> " + d.msgID 
-            + "<br><b>severity:</b> " + events[d.msgID].severity
-            + "<br><b>description:</b> " + escape(events[d.msgID].description)
-            + "<br><b>serviceAction:</b> " + escape(events[d.msgID].serviceAction)
-            // + "<br><b>controlAction:</b> " + events[d.msgID].controlAction 
-            + "'>" 
-            + d.msgID + " (" + events[d.msgID].severity[0] + ")" +
-          // "</td><td>" + events[d.msgID].severity + 
-          "</td><td>" + events[d.msgID].component + 
-          "</td><td>" + events[d.msgID].category + 
-          "</td><td>" + d.jobID + 
-          "</td><td>" + d.location + 
-          "</td><td>" + (d.CPU == null ? "" : d.CPU) + 
-          "</td><td>" + d.block + 
-          "</td><td title='" + d.message + "'>" + d.message + 
-          "</td></tr>");
-    });
-  });
-  */
 }
 
 function histogramToArray(r) {
