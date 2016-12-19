@@ -157,6 +157,8 @@ function machineView() {
       max = d3.max([max, data[key]]);
     }
 
+    max = Math.pow(10, Math.ceil(Math.log10(max)));
+
     // var max = 1000000; // TODO
     var domain = [1, max];
     var colorScale = d3.scaleLog()
