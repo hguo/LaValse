@@ -217,7 +217,7 @@ function machineView() {
 
     var axis = d3.axisRight()
       .scale(legendScale)
-      .ticks(4).tickSize(3)
+      .ticks(3).tickSize(3)
       .tickFormat(function(d) {
         return d3.format(".2s")(d);
         // return "10" + formatPower(Math.round(Math.log10(d)));

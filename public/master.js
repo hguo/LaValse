@@ -168,3 +168,7 @@ var formatPower = function(d) {
   // var format = d3.format(".2s");
   // return format(d);
 };
+
+function ceilPow(v) {
+  return Math.pow(10, Math.ceil(Math.log10(v)));
+}

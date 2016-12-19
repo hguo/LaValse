@@ -31,6 +31,7 @@ function timeVolumeChart(id, data, geom) {
 
   var xDomain = [query.T0, query.T1];
   var yMax = d3.max(data, function(d) {return d3.max(d, function(dd) {return dd;});});
+  yMax = ceilPow(yMax);
   var yDomainLog = [1, yMax],
       yDomainLinear = [0, yMax];
 
@@ -133,6 +134,8 @@ function timeVolumeChart(id, data, geom) {
     yMax = d3.max(data, function(d) {return d3.max(d, function(dd) {return dd;});});
     if (yMax <= 1000 && useLogScale) toggleLogScale();
     if (yMax >= 10000 && !useLogScale) toggleLogScale();
+  
+    if (useLogScale) yMax = ceilPow(yMax);
     
     yDomainLog = [1, yMax];
     yDomainLinear = [0, yMax];
