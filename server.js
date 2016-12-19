@@ -7,7 +7,8 @@ const basicAuth = require('basic-auth-connect');
 const levelup = require("levelup");
 
 var mycube = new cube("raslog");
-var mydb = levelup("./db1");
+var rasdb = levelup("./db1");
+var jobdb = levelup("./db2");
 
 var app = express();
 app.use(express.static("public"));
@@ -29,7 +30,7 @@ app.get("/db", function(req, res) {
   var results = [];
 
   query.forEach(function(d) {
-    results.push(JSON.parse(getSync(mydb, d)));
+    results.push(JSON.parse(getSync(rasdb, d)));
   });
 
   res.end(JSON.stringify(results));
@@ -44,4 +45,9 @@ app.get("/db", function(req, res) {
     deasync.loopWhile(function() {return !done;});
     return data;
   }
+});
+
+app.get("/job", function(req, res) {
+  var query = JSON.parse(req.query.query);
+  res.end();
 });

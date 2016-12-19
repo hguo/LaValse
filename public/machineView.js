@@ -146,11 +146,22 @@ function machineView() {
     .append("g")
     .attr("transform", "translate(" + legendMargin.left + "," + legendMargin.top + ")");
 
+  this.toggleLogScale = function() {
+    // useLogScale = !useLogScale;
+    // var colorScale = useLogScale ? colorScaleLog : colorScaleLinear; 
+  }
+
   this.updateData = function(data) {
-    var max = 1000000; // TODO
+    var max = 10;
+    for (var key in data) {
+      max = d3.max([max, data[key]]);
+    }
+
+    // var max = 1000000; // TODO
     var domain = [1, max];
     var colorScale = d3.scaleLog()
       .domain(domain) 
+      .nice(4)
       .clamp(true)
       .range(["white", "steelblue"])
       .interpolate(d3.interpolateCubehelixLong);
@@ -204,7 +215,7 @@ function machineView() {
 
     var axis = d3.axisRight()
       .scale(legendScale)
-      .ticks(6).tickSize(3)
+      .ticks(4).tickSize(3)
       .tickFormat(function(d) {
         return d3.format(".2s")(d);
         // return "10" + formatPower(Math.round(Math.log10(d)));
