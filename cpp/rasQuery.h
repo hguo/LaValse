@@ -95,19 +95,21 @@ struct Query {
     return ++ a;
   }
   
-  inline void add1(uint32_t& a, uint32_t* recIDs, uint32_t msgID) {
+  inline void add1(uint32_t& a, uint32_t slot, uint32_t* recIDs, uint32_t recID) {
     uint32_t i = add1(a);
-    recIDs[i%MAX_EVENTS_PER_SLOT] = msgID;
+    if (i<MAX_EVENTS_PER_SLOT)
+      recIDs[slot*MAX_EVENTS_PER_SLOT + i] = recID;
+    // recIDs[slot*MAX_EVENTS_PER_SLOT + i%MAX_EVENTS_PER_SLOT] = recID;
   }
 
   inline void add1(uint32_t* timeVolumes, int nslots, int index, int t) {
     add1(timeVolumes[nslots*index+t]);
   }
   
-  inline void add1(uint32_t* timeVolumes, uint32_t* timeVolumesRecID, int nslots, int index, int t, int msgID) {
+  inline void add1(uint32_t* timeVolumes, uint32_t* timeVolumesRecID, int nslots, int index, int t, int recID) {
     uint32_t i = add1(timeVolumes[nslots*index+t]);
-    // if (i<MAX_EVENTS_PER_SLOT) timeVolumesRecID[(nslots*index+t)*MAX_EVENTS_PER_SLOT + i] = msgID;
-    timeVolumesRecID[(nslots*index+t)*MAX_EVENTS_PER_SLOT + i%MAX_EVENTS_PER_SLOT] = msgID;
+    if (i<MAX_EVENTS_PER_SLOT) timeVolumesRecID[(nslots*index+t)*MAX_EVENTS_PER_SLOT + i] = recID;
+    // timeVolumesRecID[(nslots*index+t)*MAX_EVENTS_PER_SLOT + (i%MAX_EVENTS_PER_SLOT)] = recID;
   }
 
   void crossfilter_thread(int nthreads, int tid, const std::vector<Event>& events, QueryResults& results) {
@@ -134,12 +136,12 @@ struct Query {
         case VAR_CAT: add1(results.timeVolumes, nslots, e.category(), t); break;
         case VAR_SEV: add1(results.timeVolumes, nslots, e.severity(), t); break;
 #endif
-        case VAR_NONE: add1(results.timeVolumes[t], results.timeVolumesRecID, e.msgID); break;
-        case VAR_MSGID: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.msgID, t, e.msgID); break;
-        case VAR_COMP: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.component(), t, e.msgID); break;
-        case VAR_LOC: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.locationType, t, e.msgID); break;
-        case VAR_CAT: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.category(), t, e.msgID); break;
-        case VAR_SEV: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.severity(), t, e.msgID); break;
+        case VAR_NONE: add1(results.timeVolumes[t], t, results.timeVolumesRecID, e.recID); break;
+        case VAR_MSGID: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.msgID, t, e.recID); break;
+        case VAR_COMP: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.component(), t, e.recID); break;
+        case VAR_LOC: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.locationType, t, e.recID); break;
+        case VAR_CAT: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.category(), t, e.recID); break;
+        case VAR_SEV: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.severity(), t, e.recID); break;
         default: break;
         }
       }
@@ -233,6 +235,7 @@ QueryResults::QueryResults(const Query& q)
   timeVolumes = (uint32_t*)malloc(nslots*nvolumes*4);
   timeVolumesRecID = (uint32_t*)malloc(nslots*nvolumes*MAX_EVENTS_PER_SLOT*4);
   memset(timeVolumes, 0, nslots*nvolumes*4);
+  // memset(timeVolumesRecID = (uint32_t*)malloc(nslots*nvolumes*MAX_EVENTS_PER_SLOT*4);
   
   location = (uint32_t*)malloc(nlocations[q.LOD]*4);
   locationRecID = (uint32_t*)malloc(nlocations[q.LOD]*MAX_EVENTS_PER_SLOT*4);
