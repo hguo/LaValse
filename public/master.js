@@ -113,7 +113,6 @@ function updateQueryInfo(d) {
 }
 
 function refreshRecIDs(data) {
-  return; // TODO
   timeVolumeChart.updateRecords(data);
   
   return; // TODO

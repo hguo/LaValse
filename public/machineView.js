@@ -220,6 +220,11 @@ function machineView() {
         max = d3.max([max, data[key]]);
         min = d3.min([min, data[key]]);
       }
+
+      if (max == 1 || max == 0) {
+        min = 0; 
+        max = 1;
+      }
     }
 
     colorScaleLog.domain([min, max]);

@@ -91,6 +91,9 @@ function filterRecIDs(volumes, recIDs) {
     }
   }
 
+  for (j=0; j<totalVolume.length; j++) 
+    if (totalVolume[j] > threshold) return [];
+
   var outputs = [];
   for (j=0; j<volumes[0].length; j++) {
     if (totalVolume[j] <= threshold) {

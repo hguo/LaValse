@@ -45,6 +45,11 @@ function timeVolumeChart(id, data, geom) {
     .clamp(true)
     .domain(yDomainLinear)
     .nice(8);
+  var yLinearReverse = d3.scaleLinear() 
+    .rangeRound([0, height])
+    .clamp(true)
+    .domain([0, 20])
+    .nice(8);
   var color = d3.scaleOrdinal(d3.schemeCategory10);
 
   var xAxis = d3.axisBottom().scale(x), 
@@ -88,10 +93,11 @@ function timeVolumeChart(id, data, geom) {
     .style("stroke", "black")
     .style("stroke-dasharray", "2,2");
 
+  /*
   var cursorPoint = svg.append("circle") // TODO
     .attr("class", "cursorPoint")
     .style("display", "none")
-    .attr("r", 3);
+    .attr("r", 4); */
 
   var brush = d3.brushX()
     .extent([[0, 0], [width, height]])
@@ -169,10 +175,11 @@ function timeVolumeChart(id, data, geom) {
       .data(data).enter()
       .append("circle")
       .attr("class", "glyph")
-      .attr("r", "2")
-      .style("fill", "red")
-      .attr("cx", function(d) {return d.timeSlot;})
-      .attr("cy", function(d) {return yLinear(d.y);});
+      .attr("r", "3")
+      .style("stroke", "steelblue")
+      .style("fill", "white")
+      .attr("cx", function(d) {return d.timeSlot * 2;})
+      .attr("cy", function(d) {return yLinearReverse(d.y);});
   }
 
   this.toggleLogScale = function() {
@@ -224,7 +231,8 @@ function timeVolumeChart(id, data, geom) {
     query.t1 = x.domain()[1].getTime();
     query.T0 = query.t0; 
     query.T1 = query.t1;
-    query.tg = Math.max((query.T1 - query.T0) / width, 1000); // the finest resolution is 1 second
+    // query.tg = Math.max((query.T1 - query.T0) / width, 1000); // the finest resolution is 1 second
+    query.tg = (query.T1 - query.T0) / width * 2;
     refresh();
     zoomTimer.stop();
   }
