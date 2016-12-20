@@ -3,16 +3,20 @@ function drawMachineView() {
 }
 
 function machineView() {
-  const L = 270, T = 25, W = 690, H = 258;
+  const L = 270, T = 25, W = 690, H = 300;
   const margin = {top: 0, right: 0, bottom: 0, left: 0},
         width = W - margin.left - margin.right,
         height = H - margin.top - margin.bottom;
-  const rackW = 34, rackH = 81, rackPadding = 2;
-  const midplaneW = 30, midplaneH = 30, midplaneTop = 15, midplanePadding = 2;
-  const nodeBoardW = midplaneW/4, nodeBoardH = midplaneH/4;
+  const rackW = 34, rackH = 96, rackPadding = 2;
+ 
+  const midplaneGroupL = 2, midplaneGroupT = 12;
+  const midplaneW = 30, midplaneH = 40, midplanePadding = 2;
+ 
+  const nodeBoardGroupL = 0, nodeBoardGroupT = 10, nodeBoardGroupW = 30, nodeBoardGroupH = 30;
+  const nodeBoardW = nodeBoardGroupW/4, nodeBoardH = nodeBoardGroupH/4;
 
-  const ioDrawerGroupL = 2, ioDrawerGroupT = 15, ioDrawerGroupW = 30, ioDrawerGroupH = 30;
-  const ioDrawerW = 10, ioDrawerH = 21.25;
+  const ioDrawerGroupL = 2, ioDrawerGroupT = 12, ioDrawerGroupW = 30, ioDrawerGroupH = 82;
+  const ioDrawerW = ioDrawerGroupW/3, ioDrawerH = ioDrawerGroupH/3;
 
   const legendL = L+W, legendT = T, legendW = 40, legendH = H;
   const legendMargin = {top: 20, bottom: 20, right: 30, left: 0};
@@ -36,46 +40,60 @@ function machineView() {
     .call(zoom);
 
   for (i=0; i<3; i++) {
-    // var r = mira_rows.slice(i*16, i*16+16);
     var row = svg.append("g")
       .attr("class", "row")
       .attr("transform", "translate(0," + (rackH+rackPadding*2)*i + ")")
     for (j=0; j<16; j++) {
+      var rackStr = rack2str(i, j);
       var rack = row.append("g")
-        .attr("class", "rack")
-        .attr("id", rack2str(i, j))
         .attr("transform", "translate(" + ((rackW+rackPadding*2)*j + rackPadding) + "," + rackPadding + ")");
       rack.append("rect")
-        .attr("class", "rackBox")
+        .attr("class", "c rackBox")
+        .attr("id", rackStr)
+        .attr("title", rackStr)
         .attr("width", rackW)
         .attr("height", rackH);
       rack.append("text")
         .attr("class", "rackID")
         .attr("x", rackW/2)
-        .attr("y", midplaneTop-midplanePadding)
-        .text(rack2str(i, j));
+        .attr("y", 10)
+        .text(rackStr);
+
+      var midplaneGroup = rack.append("g")
+        .attr("transform", "translate(" + midplaneGroupL + "," + midplaneGroupT + ")");
 
       for (k=0; k<2; k++) {
-        var midplane = rack.append("g")
-          .attr("class", "midplane")
+        var midplaneStr = midplane2str(i, j, k);
+        var midplane = midplaneGroup.append("g")
           .attr("id", midplane2str(i, j, k))
-          .attr("transform", "translate(" + midplanePadding + "," + (midplaneTop+(midplaneH+midplanePadding*2)*k) + ")");
+          .attr("transform", "translate(0," + (midplaneH+midplanePadding)*k + ")");
         midplane.append("rect")
-          .attr("class", "midplaneBox")
+          .attr("class", "c midplaneBox")
+          .attr("id", midplaneStr)
+          .attr("title", midplaneStr)
           .attr("width", midplaneW)
           .attr("height", midplaneH);
+        midplane.append("text")
+          .attr("class", "midplaneID")
+          .attr("title", midplaneStr)
+          .attr("x", midplaneW/2)
+          .attr("y", 9)
+          .text("M" + k)
+
+        var nodeBoardGroup = midplane.append("g")
+          .attr("transform", "translate(" + nodeBoardGroupL + "," + nodeBoardGroupT + ")");
 
         for (p=0; p<4; p++) {
           for (q=0; q<4; q++) {
             var nodeBoardID = p*4+q;
-            var nodeBoard = midplane.append("g")
-              .attr("class", "nodeBoard")
+            var nodeBoardStr = nodeBoard2str(i, j, k, nodeBoardID);
+            var nodeBoard = nodeBoardGroup.append("g")
               .attr("id", nodeBoard2str(i, j, k, nodeBoardID))
               .attr("transform", "translate(" + q*nodeBoardW + "," + p*nodeBoardH + ")");
             nodeBoard.append("rect")
-              .attr("class", "nbbox")
-              .attr("id", nodeBoard2str(i, j, k, nodeBoardID))
-              .attr("title", nodeBoard2str(i, j, k, nodeBoardID))
+              .attr("class", "c nodeBoardBox")
+              .attr("id", nodeBoardStr)
+              .attr("title", nodeBoardStr)
               .attr("width", nodeBoardW)
               .attr("height", nodeBoardH);
           }
@@ -86,17 +104,19 @@ function machineView() {
     for (j=16; j<18; j++) {
       var ioRackStr = ioRack2str(i, j);
       var ioRack = row.append("g")
-        .attr("class", "ioRack")
         .attr("id", ioRackStr)
         .attr("transform", "translate(" + ((rackW+rackPadding*2)*j + rackPadding) + "," + rackPadding + ")");
       ioRack.append("rect")
-        .attr("class", "rackBox")
+        .attr("class", "c rackBox")
+        .attr("id", ioRackStr)
+        .attr("title", ioRackStr)
         .attr("width", rackW)
         .attr("height", rackH);
       ioRack.append("text")
         .attr("class", "rackID")
+        .attr("title", ioRackStr)
         .attr("x", rackW/2)
-        .attr("y", midplaneTop-midplanePadding)
+        .attr("y", 10)
         .text(ioRackStr);
 
       var ioDrawerGroup = ioRack.append("g")
@@ -107,7 +127,7 @@ function machineView() {
           var ioDrawerID = p*3+q;
           var ioDrawerStr = ioDrawer2str(i, j, ioDrawerID);
           ioDrawerGroup.append("rect")
-            .attr("class", "nbbox") // TODO
+            .attr("class", "c ioDrawerBox")
             .attr("id", ioDrawerStr)
             .attr("title", ioDrawerStr)
             .attr("width", ioDrawerW)
@@ -123,10 +143,10 @@ function machineView() {
     .on("end", brushed);
   svg.append("g")
     .attr("class", "brush")
-    .attr("id", "machineViewBrush")
-    .call(brush);
+    .attr("id", "machineViewBrush");
+    // .call(brush);
 
-  $(".nbbox").tooltip();
+  $(".c").tooltip();
 
   var legendSvg = d3.select("#machineViewLegend").append("svg")
     .attr("class", "chart")
@@ -195,7 +215,7 @@ function machineView() {
   function updateColor(data) {
     var colorScale = useLogScale ? colorScaleLog : colorScaleLinear;
 
-    $(".nbbox").each(function() {
+    $(".c").each(function() {
       var id = $(this).attr("id");
       var val = data[id];
       var color = val == undefined ? colorScale(0) : colorScale(val);
@@ -203,7 +223,7 @@ function machineView() {
     });
 
     /* // also works
-    d3.selectAll(".nbbox").each(function(d){
+    d3.selectAll(".c").each(function(d){
       var _this = d3.select(this);
       var _id = _this.attr("id");
       var color; 
@@ -227,11 +247,10 @@ function machineView() {
         min = d3.min([min, data[key]]);
       }
 
-      if (max == 1 || max == 0) {
-        min = 0; 
-        max = 1;
-      }
+      if (max == 1 || max == 0) {min = 0; max = 1;}
+      if (min == max) {min = 0;}
     }
+    console.log(min, max);
 
     colorScaleLog.domain([min, max]);
     colorScaleLinear.domain([min, max]);
@@ -259,7 +278,7 @@ function machineView() {
     if (s != null) {
       var locations = [];
       var b0 = $("#machineViewBrush > .selection")[0].getBoundingClientRect();
-      $(".nbbox").filter(function() {
+      $(".c").filter(function() {
         var b = $(this)[0].getBoundingClientRect();
         var x = b.left, y = b.top;
         return x>=b0.left && x<=b0.right && y>=b0.top && y<=b0.bottom;
@@ -295,8 +314,8 @@ function highlightBlockAndLocation(block, location) {
 
 function highlightBlock(str) {
   var set = parseComputeBlock(str);
-  $(".nbbox").css("fill", "white");
-  $(".nbbox").filter(function() {
+  $(".c").css("fill", "white");
+  $(".c").filter(function() {
     var mpStr = $(this).attr("id").slice(0, 6);
     return set.has(mpStr);
   }).css("fill", "darkblue");
@@ -304,7 +323,7 @@ function highlightBlock(str) {
 
 function highlightNodeBoard(str) {
   var nodeBoardStr = locationStrToNodeBoardStr(str);
-  $(".nbbox#" + nodeBoardStr).css("fill", "red");
+  $(".c#" + nodeBoardStr).css("fill", "red");
 }
 
 // createMachineView();
