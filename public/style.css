@@ -3,6 +3,14 @@ body {
   font-size: 9pt;
 }
 
+svg text {
+  cursor: default;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 .chart {
   position: absolute;
 }
@@ -66,6 +74,11 @@ body {
 #machineView .midplaneID {
   text-anchor: middle;
   font-size: 7pt;
+}
+
+#machineView .nodeBoardID {
+  text-anchor: middle;
+  font-size: 0.5pt;
 }
 
 #machineView .midplaneBox {

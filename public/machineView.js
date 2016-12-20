@@ -1,4 +1,4 @@
-function drawMachineView() {
+function renderMachinesL2() {
 
 }
 
@@ -15,6 +15,9 @@ function machineView() {
   const nodeBoardGroupL = 0, nodeBoardGroupT = 10, nodeBoardGroupW = 30, nodeBoardGroupH = 30;
   const nodeBoardW = nodeBoardGroupW/4, nodeBoardH = nodeBoardGroupH/4;
 
+  const computeCardGroupL = 0, computeCardGroupT = 0, computeCardGroupW = nodeBoardW/2, computeCardGroupH = nodeBoardH/2;
+  const computeCardW = computeCardGroupW/4, computeCardH = computeCardGroupH/4;
+
   const ioDrawerGroupL = 2, ioDrawerGroupT = 12, ioDrawerGroupW = 30, ioDrawerGroupH = 82;
   const ioDrawerW = ioDrawerGroupW/3, ioDrawerH = ioDrawerGroupH/3;
 
@@ -24,7 +27,7 @@ function machineView() {
         legendHeight = legendH - legendMargin.top - legendMargin.bottom;
 
   var zoom = d3.zoom()
-    .scaleExtent([1, 40])
+    .scaleExtent([1, 160])
     .translateExtent([[0, 0], [W, H]])
     .on("zoom", zoomed);
 
@@ -96,6 +99,12 @@ function machineView() {
               .attr("title", nodeBoardStr)
               .attr("width", nodeBoardW)
               .attr("height", nodeBoardH);
+            /*
+            nodeBoard.append("text")
+              .attr("class", "nodeBoardID")
+              .attr("x", nodeBoardW/2)
+              .attr("y", 1)
+              .text("N" + pad(nodeBoardID, 10, 2)) */
           }
         }
       }
@@ -143,8 +152,7 @@ function machineView() {
     .on("end", brushed);
   svg.append("g")
     .attr("class", "brush")
-    .attr("id", "machineViewBrush");
-    // .call(brush);
+    .attr("id", "machineViewBrush"); // .call(brush);
 
   $(".c").tooltip();
 
@@ -250,7 +258,6 @@ function machineView() {
       if (max == 1 || max == 0) {min = 0; max = 1;}
       if (min == max) {min = 0;}
     }
-    console.log(min, max);
 
     colorScaleLog.domain([min, max]);
     colorScaleLinear.domain([min, max]);
