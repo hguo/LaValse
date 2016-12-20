@@ -5,6 +5,12 @@ function timeVolumeChart(id, data, geom) {
   
   var useLogScale = true;
 
+  var zoom = d3.zoom()
+    .scaleExtent([1, 10000000])
+    .translateExtent([[0, 0], [width, height]])
+    .extent([[0, 0], [width, height]])
+    .on("zoom", zoomed);
+
   $(id).html("");
   var svg = d3.select(id)
     .append("svg")
@@ -14,13 +20,8 @@ function timeVolumeChart(id, data, geom) {
     .attr("width", geom.W)
     .attr("height", geom.H)
     .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-  var zoom = d3.zoom()
-    .scaleExtent([1, 10000000])
-    .translateExtent([[0, 0], [width, height]])
-    .extent([[0, 0], [width, height]])
-    .on("zoom", zoomed);
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+    .call(zoom);
 
   var xDomain = [query.T0, query.T1];
   var yMax = d3.max(data, function(d) {return d3.max(d, function(dd) {return dd;});});
@@ -104,8 +105,7 @@ function timeVolumeChart(id, data, geom) {
     .on("end", brushed);
   svg.append("g")
     .attr("class", "brush")
-    .call(brush)
-    .call(zoom);
+    .call(brush);
 
   /*
     // .call(brush.move, x.range())
