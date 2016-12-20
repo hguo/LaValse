@@ -22,13 +22,6 @@ function barChart(name, id, data, humanReadableText, geom) {
     .attr("x", 0).attr("y", -4)
     .text(name);
 
-  var tip = d3.tip()
-    .attr("class", "d3-tip")
-    .html(function(d) {
-      return humanReadableText[d.k] + ": " + d3.format(",")(d.v);
-    });
-  svg.call(tip);
-
   var xMax = d3.max(data, function(d) {return d.v;});
   var xDomainLog = [1, xMax], 
       xDomainLinear = [0, xMax];
@@ -96,8 +89,9 @@ function barChart(name, id, data, humanReadableText, geom) {
       // return x(d.v);
     })
     .attr("height", function(d) {return y.bandwidth();})
-    .on("mouseover", tip.show)
-    .on("mouseout", tip.hide)
+    .attr("title", function(d) {
+      return humanReadableText[d.k] + ": " + d3.format(",")(d.v);
+    })
     .on("click", highlight);
   
   svg.selectAll(".mlabel").data(data)
@@ -106,9 +100,14 @@ function barChart(name, id, data, humanReadableText, geom) {
     .text(function(d) {return d.k;})
     .attr("x", function(d) {return 8;})
     .attr("y", function(d) {return y(d.k) + y.bandwidth()/2 + 4.5;})
-    .on("mouseover", tip.show)
-    .on("mouseout", tip.hide)
+    .attr("title", function(d) {
+      return humanReadableText[d.k] + ": " + d3.format(",")(d.v);
+    })
     .on("click", highlight);
+  
+  $(".barChartTitle").tooltip();
+  $(".bar").tooltip();
+  $(".mlabel").tooltip();
 
   function highlight(d) {
     if (d == undefined) {
@@ -162,6 +161,9 @@ function barChart(name, id, data, humanReadableText, geom) {
       })
       .style("fill-opacity", 0.5)
       .attr("y", function(d) {return y(d.k);})
+      .attr("title", function(d) {
+        return humanReadableText[d.k] + ": " + d3.format(",")(d.v);
+      })
       .attr("width", function(d) {
         return d.v == 0 ? 0 : x(d.v); // for log
         // return x(d.v);
@@ -181,6 +183,9 @@ function barChart(name, id, data, humanReadableText, geom) {
         else return "grey";
       })
       .text(function(d) {return d.k;})
+      .attr("title", function(d) {
+        return humanReadableText[d.k] + ": " + d3.format(",")(d.v);
+      })
       .attr("y", function(d) {return y(d.k) + y.bandwidth()/2 + 4.5;});
   
     svg.select(".axis-x")

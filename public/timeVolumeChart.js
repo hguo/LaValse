@@ -15,13 +15,6 @@ function timeVolumeChart(id, data, geom) {
     .attr("height", geom.H)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-  
-  var tip = d3.tip()
-    .attr("class", "d3-tip")
-    .html(function(d) {
-      // return d.k + ": " + d.v;
-    });
-  svg.call(tip);
 
   var zoom = d3.zoom()
     .scaleExtent([1, 10000000])
@@ -95,12 +88,10 @@ function timeVolumeChart(id, data, geom) {
     .style("stroke", "black")
     .style("stroke-dasharray", "2,2");
 
-  var cursorPoint = svg.append("circle")
+  var cursorPoint = svg.append("circle") // TODO
     .attr("class", "cursorPoint")
     .style("display", "none")
-    .attr("r", 3)
-    .on("mouseover", tip.show)
-    .on("mouseout", tip.show);
+    .attr("r", 3);
 
   var brush = d3.brushX()
     .extent([[0, 0], [width, height]])
