@@ -15,10 +15,10 @@ function machineView() {
   const legendWidth = legendW - legendMargin.left - legendMargin.right,
         legendHeight = legendH - legendMargin.top - legendMargin.bottom;
 
-  var tip = d3.select("#machineView").append("div")
-    .style("position", "absolute")
-    .style("visibility", "hidden");
-  tip.append("p").html("hello world");
+  var zoom = d3.zoom()
+    .scaleExtent([1, 40])
+    .translateExtent([[0, 0], [W, H]])
+    .on("zoom", zoomed);
 
   var svg = d3.select("#machineView").append("svg")
     .attr("class", "chart")
@@ -28,7 +28,8 @@ function machineView() {
     .attr("height", H)
     .append("g")
     .attr("id", "machineViewSvg")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+    .call(zoom);
 
   for (i=0; i<3; i++) {
     // var r = mira_rows.slice(i*16, i*16+16);
@@ -111,29 +112,13 @@ function machineView() {
     }
   }
 
-  var zoom = d3.zoom()
-    .scaleExtent([1, 40])
-    .translateExtent([[0, 0], [W, H]])
-    .on("zoom", zoomed);
-
   var brush = d3.brush()
     .extent([[0, 0], [W, H]])
     .on("end", brushed);
   svg.append("g")
     .attr("class", "brush")
     .attr("id", "machineViewBrush")
-    .call(brush)
-    .call(zoom);
-
-  /*
-  $(".nbbox").hover(function(evt) {
-    tip.style("visibility", "visible");
-    tip.select("p").html($(this).attr("id"));
-  });
-  $(".nbbox").mouseleave(function() {
-    tip.style("visibility", "hidden");
-  });
-  */
+    .call(brush);
 
   $(".nbbox").tooltip();
 
