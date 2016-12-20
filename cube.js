@@ -55,6 +55,7 @@ function translateResults(r, fullResult) {
   }
 
   r.recIDs = filterRecIDs(r.timeVolumes, r.timeVolumesRecID);
+  delete r["timeVolumesRecID"];
 
   return r;
 

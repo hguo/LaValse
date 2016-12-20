@@ -78,6 +78,7 @@ function init() {
 function refresh() {
   d3.json("/cube?query=" + JSON.stringify(query), function (d) {
     if ("top" in d) refreshTops(d["top"]);
+    if ("recIDs" in d) refreshRecIDs(d["recIDs"]);
     
     // console.log(query);
     // console.log(d);
@@ -89,7 +90,7 @@ function refresh() {
     timeVolumeChart.updateData(d.timeVolumes, 
         {L: 0, T: 400, W: 600, H: 150});
     machineView.updateData(d.location, histogramToArray(d.location));
-    
+
     updateQueryInfo(d);
   });
 }
@@ -108,6 +109,19 @@ function updateQueryInfo(d) {
   formatFloat = d3.format(".3f");
   $("#eventCount").html(formatInt(d.nMatched));
   $("#executionTime").html(formatFloat(d.queryTime) + " sec");
+}
+
+function refreshRecIDs(data) {
+  return; // TODO
+  timeVolumeChart.updateRecords(data);
+  
+  return; // TODO
+  var query = [];
+  data.forEach(function(d) {query.push(d.recID);});
+
+  d3.json("/db?query=" + JSON.stringify(query), function(d) {
+    timeVolumeChart.updateRecords(d);
+  });
 }
 
 function refreshTops(q) {

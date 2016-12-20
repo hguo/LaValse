@@ -170,6 +170,20 @@ function timeVolumeChart(id, data, geom) {
       .transition().call(yAxis)
   }
 
+  this.updateRecords = function(data) {
+    if (useLogScale) toggleLogScale();
+
+    svg.selectAll(".glyph").remove(); // TODO: transition
+    svg.selectAll(".glyph")
+      .data(data).enter()
+      .append("circle")
+      .attr("class", "glyph")
+      .attr("r", "2")
+      .style("fill", "red")
+      .attr("cx", function(d) {return d.timeSlot;})
+      .attr("cy", function(d) {return yLinear(d.y);});
+  }
+
   this.toggleLogScale = function() {
     useLogScale = !useLogScale;
 
