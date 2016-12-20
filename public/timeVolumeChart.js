@@ -224,7 +224,7 @@ function timeVolumeChart(id, data, geom) {
     query.t1 = x.domain()[1].getTime();
     query.T0 = query.t0; 
     query.T1 = query.t1;
-    query.tg = (query.T1 - query.T0) / width;
+    query.tg = Math.max((query.T1 - query.T0) / width, 1000); // the finest resolution is 1 second
     refresh();
     zoomTimer.stop();
   }
