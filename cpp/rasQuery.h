@@ -65,7 +65,7 @@ struct Query {
   }
 
   inline static bool checkTime(uint64_t t, uint64_t t0, uint64_t t1) {
-    return (t >= t0 && t <= t1);
+    return (t >= t0 && t < t1);
   }
   
   inline static bool checkBits(uint16_t b0, uint16_t b1) {return b0 & b1;}
@@ -96,10 +96,9 @@ struct Query {
   }
   
   inline void add1(uint32_t& a, uint32_t slot, uint32_t* recIDs, uint32_t recID) {
-    uint32_t i = add1(a);
-    if (i<MAX_EVENTS_PER_SLOT)
-      recIDs[slot*MAX_EVENTS_PER_SLOT + i] = recID;
-    // recIDs[slot*MAX_EVENTS_PER_SLOT + i%MAX_EVENTS_PER_SLOT] = recID;
+    if (a<MAX_EVENTS_PER_SLOT)
+      recIDs[slot*MAX_EVENTS_PER_SLOT + a] = recID;
+    add1(a);
   }
 
   inline void add1(uint32_t* timeVolumes, int nslots, int index, int t) {
@@ -107,15 +106,15 @@ struct Query {
   }
   
   inline void add1(uint32_t* timeVolumes, uint32_t* timeVolumesRecID, int nslots, int index, int t, int recID) {
-    uint32_t i = add1(timeVolumes[nslots*index+t]);
+    uint32_t &i = timeVolumes[nslots*index+t];
     if (i<MAX_EVENTS_PER_SLOT) timeVolumesRecID[(nslots*index+t)*MAX_EVENTS_PER_SLOT + i] = recID;
-    // timeVolumesRecID[(nslots*index+t)*MAX_EVENTS_PER_SLOT + (i%MAX_EVENTS_PER_SLOT)] = recID;
+    add1(i);
   }
 
   void crossfilter_thread(int nthreads, int tid, const std::vector<Event>& events, QueryResults& results) {
-    typedef std::chrono::high_resolution_clock clock;
-    auto t0 = clock::now();
-    set_affinity(tid);
+    // typedef std::chrono::high_resolution_clock clock;
+    // auto t0 = clock::now();
+    // set_affinity(tid);
     
     const int ndims = 8;
     const int nslots = results.nslots;
@@ -176,8 +175,8 @@ struct Query {
       }
     }
     
-    auto t1 = clock::now();
-    float elapsed = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count() / 1000.0; 
+    // auto t1 = clock::now();
+    // float elapsed = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count() / 1000.0; 
     // fprintf(stderr, "%f\n", elapsed); 
   }
 
@@ -235,7 +234,7 @@ QueryResults::QueryResults(const Query& q)
   timeVolumes = (uint32_t*)malloc(nslots*nvolumes*4);
   timeVolumesRecID = (uint32_t*)malloc(nslots*nvolumes*MAX_EVENTS_PER_SLOT*4);
   memset(timeVolumes, 0, nslots*nvolumes*4);
-  // memset(timeVolumesRecID = (uint32_t*)malloc(nslots*nvolumes*MAX_EVENTS_PER_SLOT*4);
+  // memset(timeVolumesRecID, 0, nslots*nvolumes*MAX_EVENTS_PER_SLOT*4);
   
   location = (uint32_t*)malloc(nlocations[q.LOD]*4);
   locationRecID = (uint32_t*)malloc(nlocations[q.LOD]*MAX_EVENTS_PER_SLOT*4);

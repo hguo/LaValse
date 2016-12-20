@@ -54,6 +54,8 @@ function translateResults(r, fullResult) {
     r.controlAction = completeMissingResults(r.controlAction, fullResult.controlAction);
   }
 
+  r.recIDs = filterRecIDs(r.timeVolumes, r.timeVolumesRecID);
+
   return r;
 
   function translateIndicesToNames(src, bimap) { // src is [], book is {}
@@ -74,6 +76,38 @@ function translateResults(r, fullResult) {
         dst[key] = 0;
     return dst;
   }
+}
+
+function filterRecIDs(volumes, recIDs) {
+  const threshold = 20;
+  var totalVolume = []; 
+  for (j=0; j<volumes[0].length; j++) 
+    totalVolume.push(0);
+  
+  for (i=0; i<volumes.length; i++) {
+    for (j=0; j<volumes[i].length; j++) {
+      totalVolume[j] = totalVolume[j] + volumes[i][j];
+    }
+  }
+
+  var outputs = [];
+  for (j=0; j<volumes[0].length; j++) {
+    if (totalVolume[j] <= threshold) {
+      // console.log(j, totalVolume[j])
+      for (i=0; i<volumes.length; i++) {
+        for (k=0; k<volumes[i][j]; k++) {
+          outputs.push({
+            recID: recIDs[i][j][k], 
+            timeSlot: j, 
+            y: k
+          });
+        }
+      }
+    }
+  }
+
+  // console.log(outputs);
+  return outputs;
 }
 
 function cube(filename) {
