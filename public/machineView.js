@@ -1,3 +1,7 @@
+function drawMachineView() {
+
+}
+
 function machineView() {
   const L = 270, T = 25, W = 690, H = 258;
   const margin = {top: 0, right: 0, bottom: 0, left: 0},
@@ -80,9 +84,10 @@ function machineView() {
     }
 
     for (j=16; j<18; j++) {
+      var ioRackStr = ioRack2str(i, j);
       var ioRack = row.append("g")
         .attr("class", "ioRack")
-        .attr("id", ioRack2str(i, j))
+        .attr("id", ioRackStr)
         .attr("transform", "translate(" + ((rackW+rackPadding*2)*j + rackPadding) + "," + rackPadding + ")");
       ioRack.append("rect")
         .attr("class", "rackBox")
@@ -92,7 +97,7 @@ function machineView() {
         .attr("class", "rackID")
         .attr("x", rackW/2)
         .attr("y", midplaneTop-midplanePadding)
-        .text(ioRack2str(i, j));
+        .text(ioRackStr);
 
       var ioDrawerGroup = ioRack.append("g")
         .attr("transform", "translate(" + ioDrawerGroupL + "," + ioDrawerGroupT + ")");
@@ -100,10 +105,11 @@ function machineView() {
       for (p=0; p<3; p++) {
         for (q=0; q<3; q++) {
           var ioDrawerID = p*3+q;
+          var ioDrawerStr = ioDrawer2str(i, j, ioDrawerID);
           ioDrawerGroup.append("rect")
             .attr("class", "nbbox") // TODO
-            .attr("id", ioDrawer2str(i, j, ioDrawerID))
-            .attr("title", ioDrawer2str(i, j, ioDrawerID))
+            .attr("id", ioDrawerStr)
+            .attr("title", ioDrawerStr)
             .attr("width", ioDrawerW)
             .attr("height", ioDrawerH)
             .attr("transform", "translate(" + q*ioDrawerW + "," + p*ioDrawerH + ")");
