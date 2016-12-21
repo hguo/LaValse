@@ -134,13 +134,14 @@ struct Query {
         case VAR_LOC: add1(results.timeVolumes, nslots, e.locationType, t); break;
         case VAR_CAT: add1(results.timeVolumes, nslots, e.category(), t); break;
         case VAR_SEV: add1(results.timeVolumes, nslots, e.severity(), t); break;
-#endif
+#else
         case VAR_NONE: add1(results.timeVolumes[t], t, results.timeVolumesRecID, e.recID); break;
         case VAR_MSGID: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.msgID, t, e.recID); break;
         case VAR_COMP: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.component(), t, e.recID); break;
         case VAR_LOC: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.locationType, t, e.recID); break;
         case VAR_CAT: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.category(), t, e.recID); break;
         case VAR_SEV: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.severity(), t, e.recID); break;
+#endif
         default: break;
         }
       }

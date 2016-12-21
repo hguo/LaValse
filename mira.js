@@ -630,9 +630,10 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 
 /*
 var locations = enumerateL2Locations();
-console.log(locations.length);
+// console.log(locations.length);
 for (var i=0; i<locations.length; i++) {
   console.log(locations[i]);
   // var L = parseLocation(locations[i]);
   // console.log(locations[i], locationToL4Location(L));
-}*/
+}
+*/

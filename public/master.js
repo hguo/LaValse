@@ -96,7 +96,7 @@ function refresh() {
 }
 
 function toggleLogScale() {
-  machineView.toggleLogScale();
+  // machineView.toggleLogScale();
   timeVolumeChart.toggleLogScale();
   severityChart.toggleLogScale();
   componentChart.toggleLogScale();

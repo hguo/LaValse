@@ -27,7 +27,9 @@ int main(int argc, char **argv) {
   memset(query.locationType, 1, ras::NUM_LOCTYPE);
   memset(query.category, 1, ras::NUM_CAT);
   memset(query.severity, 1, ras::NUM_SEV);
-  memset(query.location, 1, ras::MAX_NUM_LOC);
+  // memset(query.location, 1, ras::MAX_NUM_LOC);
+  memset(query.location, 0, ras::MAX_NUM_LOC);
+  query.location[1] = 1;
   query.controlActions = 0x0002;
   // query.category[ras::CAT_BQC] = true;
   // query.severity[ras::SEV_FATAL] = true;

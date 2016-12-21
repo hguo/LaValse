@@ -152,7 +152,7 @@ function machineView() {
     .on("end", brushed);
   svg.append("g")
     .attr("class", "brush")
-    .attr("id", "machineViewBrush"); // .call(brush);
+    .attr("id", "machineViewBrush").call(brush);
 
   $(".c").tooltip();
 
