@@ -1,19 +1,16 @@
-function renderMachinesL2() {
-
-}
-
 function machineView() {
-  const L = 270, T = 25, W = 690, H = 300;
+  const L = 270, T = 25, W = 690, H = 336;
   const margin = {top: 0, right: 0, bottom: 0, left: 0},
         width = W - margin.left - margin.right,
         height = H - margin.top - margin.bottom;
-  const rackW = 34, rackH = 96, rackPadding = 2;
+  
+  const rackW = 34, rackH = 108, rackPadding = 2;
  
   const midplaneGroupL = 2, midplaneGroupT = 12;
-  const midplaneW = 30, midplaneH = 40, midplanePadding = 2;
+  const midplaneW = 30, midplaneH = 46, midplanePadding = 2;
  
   const nodeBoardGroupL = 0, nodeBoardGroupT = 10, nodeBoardGroupW = 30, nodeBoardGroupH = 30;
-  const nodeBoardW = nodeBoardGroupW/4, nodeBoardH = nodeBoardGroupH/4;
+  const nodeBoardW = 7.5, nodeBoardH = 9;
 
   const computeCardGroupL = 0, computeCardGroupT = 0, computeCardGroupW = nodeBoardW/2, computeCardGroupH = nodeBoardH/2;
   const computeCardW = computeCardGroupW/4, computeCardH = computeCardGroupH/4;
@@ -42,110 +39,7 @@ function machineView() {
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
     .call(zoom);
 
-  for (i=0; i<3; i++) {
-    var row = svg.append("g")
-      .attr("class", "row")
-      .attr("transform", "translate(0," + (rackH+rackPadding*2)*i + ")")
-    for (j=0; j<16; j++) {
-      var rackStr = rack2str(i, j);
-      var rack = row.append("g")
-        .attr("transform", "translate(" + ((rackW+rackPadding*2)*j + rackPadding) + "," + rackPadding + ")");
-      rack.append("rect")
-        .attr("class", "c rackBox")
-        .attr("id", rackStr)
-        .attr("title", rackStr)
-        .attr("width", rackW)
-        .attr("height", rackH);
-      rack.append("text")
-        .attr("class", "rackID")
-        .attr("x", rackW/2)
-        .attr("y", 10)
-        .text(rackStr);
-
-      var midplaneGroup = rack.append("g")
-        .attr("transform", "translate(" + midplaneGroupL + "," + midplaneGroupT + ")");
-
-      for (k=0; k<2; k++) {
-        var midplaneStr = midplane2str(i, j, k);
-        var midplane = midplaneGroup.append("g")
-          .attr("id", midplane2str(i, j, k))
-          .attr("transform", "translate(0," + (midplaneH+midplanePadding)*k + ")");
-        midplane.append("rect")
-          .attr("class", "c midplaneBox")
-          .attr("id", midplaneStr)
-          .attr("title", midplaneStr)
-          .attr("width", midplaneW)
-          .attr("height", midplaneH);
-        midplane.append("text")
-          .attr("class", "midplaneID")
-          .attr("title", midplaneStr)
-          .attr("x", midplaneW/2)
-          .attr("y", 9)
-          .text("M" + k)
-
-        var nodeBoardGroup = midplane.append("g")
-          .attr("transform", "translate(" + nodeBoardGroupL + "," + nodeBoardGroupT + ")");
-
-        for (p=0; p<4; p++) {
-          for (q=0; q<4; q++) {
-            var nodeBoardID = p*4+q;
-            var nodeBoardStr = nodeBoard2str(i, j, k, nodeBoardID);
-            var nodeBoard = nodeBoardGroup.append("g")
-              .attr("id", nodeBoard2str(i, j, k, nodeBoardID))
-              .attr("transform", "translate(" + q*nodeBoardW + "," + p*nodeBoardH + ")");
-            nodeBoard.append("rect")
-              .attr("class", "c nodeBoardBox")
-              .attr("id", nodeBoardStr)
-              .attr("title", nodeBoardStr)
-              .attr("width", nodeBoardW)
-              .attr("height", nodeBoardH);
-            /*
-            nodeBoard.append("text")
-              .attr("class", "nodeBoardID")
-              .attr("x", nodeBoardW/2)
-              .attr("y", 1)
-              .text("N" + pad(nodeBoardID, 10, 2)) */
-          }
-        }
-      }
-    }
-
-    for (j=16; j<18; j++) {
-      var ioRackStr = ioRack2str(i, j);
-      var ioRack = row.append("g")
-        .attr("id", ioRackStr)
-        .attr("transform", "translate(" + ((rackW+rackPadding*2)*j + rackPadding) + "," + rackPadding + ")");
-      ioRack.append("rect")
-        .attr("class", "c rackBox")
-        .attr("id", ioRackStr)
-        .attr("title", ioRackStr)
-        .attr("width", rackW)
-        .attr("height", rackH);
-      ioRack.append("text")
-        .attr("class", "rackID")
-        .attr("title", ioRackStr)
-        .attr("x", rackW/2)
-        .attr("y", 10)
-        .text(ioRackStr);
-
-      var ioDrawerGroup = ioRack.append("g")
-        .attr("transform", "translate(" + ioDrawerGroupL + "," + ioDrawerGroupT + ")");
-
-      for (p=0; p<3; p++) {
-        for (q=0; q<3; q++) {
-          var ioDrawerID = p*3+q;
-          var ioDrawerStr = ioDrawer2str(i, j, ioDrawerID);
-          ioDrawerGroup.append("rect")
-            .attr("class", "c ioDrawerBox")
-            .attr("id", ioDrawerStr)
-            .attr("title", ioDrawerStr)
-            .attr("width", ioDrawerW)
-            .attr("height", ioDrawerH)
-            .attr("transform", "translate(" + q*ioDrawerW + "," + p*ioDrawerH + ")");
-        }
-      }
-    }
-  }
+  renderMachinesL2();
 
   var brush = d3.brush()
     .extent([[0, 0], [W, H]])
@@ -311,6 +205,114 @@ function machineView() {
     svg.select(".brush")
       .call(brush.move, null)
       .call(zoom.transform, d3.zoomIdentity);
+  }
+
+
+  function renderMachinesL2() {
+    for (i=0; i<3; i++) {
+      var row = svg.append("g")
+        .attr("class", "row")
+        .attr("transform", "translate(0," + (rackH+rackPadding*2)*i + ")")
+      for (j=0; j<16; j++) {
+        var rackStr = rack2str(i, j);
+        var rack = row.append("g")
+          .attr("transform", "translate(" + ((rackW+rackPadding*2)*j + rackPadding) + "," + rackPadding + ")");
+        rack.append("rect")
+          .attr("class", "c rackBox")
+          .attr("id", rackStr)
+          .attr("title", rackStr)
+          .attr("width", rackW)
+          .attr("height", rackH);
+        rack.append("text")
+          .attr("class", "rackID")
+          .attr("x", rackW/2)
+          .attr("y", 10)
+          .text(rackStr);
+
+        var midplaneGroup = rack.append("g")
+          .attr("transform", "translate(" + midplaneGroupL + "," + midplaneGroupT + ")");
+
+        for (k=0; k<2; k++) {
+          var midplaneStr = midplane2str(i, j, k);
+          var midplane = midplaneGroup.append("g")
+            .attr("id", midplane2str(i, j, k))
+            .attr("transform", "translate(0," + (midplaneH+midplanePadding)*k + ")");
+          midplane.append("rect")
+            .attr("class", "c midplaneBox")
+            .attr("id", midplaneStr)
+            .attr("title", midplaneStr)
+            .attr("width", midplaneW)
+            .attr("height", midplaneH);
+          midplane.append("text")
+            .attr("class", "midplaneID")
+            .attr("title", midplaneStr)
+            .attr("x", midplaneW/2)
+            .attr("y", 9)
+            .text("M" + k)
+
+          var nodeBoardGroup = midplane.append("g")
+            .attr("transform", "translate(" + nodeBoardGroupL + "," + nodeBoardGroupT + ")");
+
+          for (p=0; p<4; p++) {
+            for (q=0; q<4; q++) {
+              var nodeBoardID = p*4+q;
+              var nodeBoardStr = nodeBoard2str(i, j, k, nodeBoardID);
+              var nodeBoard = nodeBoardGroup.append("g")
+                .attr("id", nodeBoard2str(i, j, k, nodeBoardID))
+                .attr("transform", "translate(" + q*nodeBoardW + "," + p*nodeBoardH + ")");
+              nodeBoard.append("rect")
+                .attr("class", "c nodeBoardBox")
+                .attr("id", nodeBoardStr)
+                .attr("title", nodeBoardStr)
+                .attr("width", nodeBoardW)
+                .attr("height", nodeBoardH);
+              /*
+              nodeBoard.append("text")
+                .attr("class", "nodeBoardID")
+                .attr("x", nodeBoardW/2)
+                .attr("y", 1)
+                .text("N" + pad(nodeBoardID, 10, 2)) */
+            }
+          }
+        }
+      }
+
+      for (j=16; j<18; j++) {
+        var ioRackStr = ioRack2str(i, j);
+        var ioRack = row.append("g")
+          .attr("id", ioRackStr)
+          .attr("transform", "translate(" + ((rackW+rackPadding*2)*j + rackPadding) + "," + rackPadding + ")");
+        ioRack.append("rect")
+          .attr("class", "c rackBox")
+          .attr("id", ioRackStr)
+          .attr("title", ioRackStr)
+          .attr("width", rackW)
+          .attr("height", rackH);
+        ioRack.append("text")
+          .attr("class", "rackID")
+          .attr("title", ioRackStr)
+          .attr("x", rackW/2)
+          .attr("y", 10)
+          .text(ioRackStr);
+
+        var ioDrawerGroup = ioRack.append("g")
+          .attr("transform", "translate(" + ioDrawerGroupL + "," + ioDrawerGroupT + ")");
+
+        for (p=0; p<3; p++) {
+          for (q=0; q<3; q++) {
+            var ioDrawerID = p*3+q;
+            var ioDrawerStr = ioDrawer2str(i, j, ioDrawerID);
+            ioDrawerGroup.append("rect")
+              .attr("class", "c ioDrawerBox")
+              .attr("id", ioDrawerStr)
+              .attr("title", ioDrawerStr)
+              .attr("width", ioDrawerW)
+              .attr("height", ioDrawerH)
+              .attr("transform", "translate(" + q*ioDrawerW + "," + p*ioDrawerH + ")");
+          }
+        }
+      }
+    }
   }
 }
 

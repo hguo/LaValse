@@ -44,7 +44,7 @@ function init() {
         {L: 120, T: 315, W: 120, H: 290});
     timeVolumeChart = new timeVolumeChart(
         "#timeVolumeChart", d.timeVolumes, // histogramToArray(d.timeVolume), 
-        {L: 240, T: 320, W: 720, H: 120});
+        {L: 240, T: 360, W: 720, H: 120});
     machineView = new machineView();
     machineView.updateData(d.location, histogramToArray(d.location));
     $("#controlPanel").css("display", "block");
