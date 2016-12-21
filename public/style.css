@@ -73,7 +73,7 @@ svg text {
 
 #machineView .midplaneID {
   text-anchor: middle;
-  font-size: 7pt;
+  font-size: 3pt;
 }
 
 #machineView .nodeBoardID {
@@ -90,6 +90,12 @@ svg text {
 #machineView .nodeBoardBox {
   fill: white;
   stroke-width: 0.25;
+  stroke: steelblue;
+}
+
+#machineView .computeCardBox {
+  fill: white;
+  stroke-width: 0.1;
   stroke: steelblue;
 }
 

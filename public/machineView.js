@@ -4,16 +4,18 @@ function machineView() {
         width = W - margin.left - margin.right,
         height = H - margin.top - margin.bottom;
   
-  const rackW = 34, rackH = 108, rackPadding = 2;
+  const rackW = 34, rackH = 98, rackPadding = 2;
  
   const midplaneGroupL = 2, midplaneGroupT = 12;
-  const midplaneW = 30, midplaneH = 46, midplanePadding = 2;
+  const midplaneW = 30, midplaneH = 41, midplanePadding = 2;
  
-  const nodeBoardGroupL = 0, nodeBoardGroupT = 10, nodeBoardGroupW = 30, nodeBoardGroupH = 30;
+  const nodeBoardGroupL = 0, nodeBoardGroupT = 5, nodeBoardGroupW = 30, nodeBoardGroupH = 30;
   const nodeBoardW = 7.5, nodeBoardH = 9;
 
-  const computeCardGroupL = 0, computeCardGroupT = 0, computeCardGroupW = nodeBoardW/2, computeCardGroupH = nodeBoardH/2;
-  const computeCardW = computeCardGroupW/4, computeCardH = computeCardGroupH/4;
+  const judoGroupL = 0, judoGroupT = 1.5, judoGroupW = 7.5, judoGroupH = 7.5;
+
+  const computeCardGroupL = 0, computeCardGroupT = 0, computeCardGroupW = judoGroupW/2, computeCardGroupH = judoGroupH/2;
+  const computeCardW = computeCardGroupW/8, computeCardH = computeCardGroupH/4;
 
   const ioDrawerGroupL = 2, ioDrawerGroupT = 12, ioDrawerGroupW = 30, ioDrawerGroupH = 82;
   const ioDrawerW = ioDrawerGroupW/3, ioDrawerH = ioDrawerGroupH/3;
@@ -136,19 +138,21 @@ function machineView() {
   }
 
   function updateColorScale(data) {
-    var min, max;
+    var min = 1e12; max = 0;
+    for (var key in data) {
+      max = d3.max([max, data[key]]);
+      min = d3.min([min, data[key]]);
+    }
+
+    // console.log(min, max);
+
+    if (max/min>10 || max>10000) useLogScale = true;
+    if (max<1000) useLogScale = false;
 
     if (useLogScale) {
-      min = 1; max = 10;
-      for (var key in data) {max = d3.max([max, data[key]]);}
+      min = 1; 
       max = Math.pow(10, Math.ceil(Math.log10(max)));
     } else {
-      min = 1e12; max = 0;
-      for (var key in data) {
-        max = d3.max([max, data[key]]);
-        min = d3.min([min, data[key]]);
-      }
-
       if (max == 1 || max == 0) {min = 0; max = 1;}
       if (min == max) {min = 0;}
     }
@@ -243,12 +247,13 @@ function machineView() {
             .attr("title", midplaneStr)
             .attr("width", midplaneW)
             .attr("height", midplaneH);
+          /*
           midplane.append("text")
             .attr("class", "midplaneID")
             .attr("title", midplaneStr)
             .attr("x", midplaneW/2)
-            .attr("y", 9)
-            .text("M" + k)
+            .attr("y", 4)
+            .text(midplaneStr)*/
 
           var nodeBoardGroup = midplane.append("g")
             .attr("transform", "translate(" + nodeBoardGroupL + "," + nodeBoardGroupT + ")");
@@ -258,7 +263,7 @@ function machineView() {
               var nodeBoardID = p*4+q;
               var nodeBoardStr = nodeBoard2str(i, j, k, nodeBoardID);
               var nodeBoard = nodeBoardGroup.append("g")
-                .attr("id", nodeBoard2str(i, j, k, nodeBoardID))
+                // .attr("id", nodeBoard2str(i, j, k, nodeBoardID))
                 .attr("transform", "translate(" + q*nodeBoardW + "," + p*nodeBoardH + ")");
               nodeBoard.append("rect")
                 .attr("class", "c nodeBoardBox")
@@ -266,12 +271,35 @@ function machineView() {
                 .attr("title", nodeBoardStr)
                 .attr("width", nodeBoardW)
                 .attr("height", nodeBoardH);
+             
               /*
               nodeBoard.append("text")
                 .attr("class", "nodeBoardID")
                 .attr("x", nodeBoardW/2)
                 .attr("y", 1)
-                .text("N" + pad(nodeBoardID, 10, 2)) */
+                .text(nodeBoardStr);
+
+              var judoGroup = nodeBoard.append("g")
+                .attr("transform", "translate(" + judoGroupL + "," + judoGroupT + ")");
+
+              var computeCardGroup = judoGroup.append("g")
+                .attr("transform", "translate(" + computeCardGroupL + "," + computeCardGroupT + ")");
+
+              for (u=0; u<4; u++) {
+                for (v=0; v<8; v++) {
+                  var computeCardID = u*8+v; 
+                  var computeCardStr = computeCard2str(i, j, k, nodeBoardID, computeCardID);
+                  var computeCard = computeCardGroup.append("g")
+                    .attr("transform", "translate(" + v*computeCardW + "," + u*computeCardH + ")");
+                  computeCard.append("rect")
+                    .attr("class", "c computeCardBox")
+                    .attr("id", computeCardStr)
+                    .attr("title", computeCardStr)
+                    .attr("width", computeCardW)
+                    .attr("height", computeCardH);
+                }
+              }
+              */
             }
           }
         }
