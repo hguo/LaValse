@@ -228,8 +228,38 @@ function machineView() {
   }
 
   function renderMachinesL4(svg) {
+    renderRacks(svg);
+  }
+
+  function renderMachinesL3(parent) {
+    type = parent.attr("_type");
+    
+    if (type == "rack") {
+      renderMidplanes(parent);
+    } else if (type == "ioRack") {
+      renderIODrawers(parent);
+    }
+  }
+
+  function renderMachinesL2(parent) {
+    var type = parent.attr("_type");
+
+    if (type == "mp") {
+      renderNodeBoards(parent);
+    }
+  }
+
+  function renderMachinesL1(nodeBoard) {
+    i = +nodeBoard.attr("_i");
+    j = +nodeBoard.attr("_j");
+    k = +nodeBoard.attr("_k");
+    l = +nodeBoard.attr("_l");
+    // console.log(i, j, k, l);
+  }
+
+  function renderRacks(parent) {
     for (row=0; row<3; row++) {
-      var rowGroup = svg.append("g")
+      var rowGroup = parent.append("g")
         .attr("class", "row")
         .attr("transform", "translate(0," + (rackH+rackPadding*2)*row + ")")
       for (col=0; col<16; col++) {
@@ -275,32 +305,6 @@ function machineView() {
           .text(ioRackStr);
       }
     }
-  }
-
-  function renderMachinesL3(parent) {
-    type = parent.attr("_type");
-    
-    if (type == "rack") {
-      renderMidplanes(parent);
-    } else if (type == "ioRack") {
-      renderIODrawers(parent);
-    }
-  }
-
-  function renderMachinesL2(parent) {
-    var type = parent.attr("_type");
-
-    if (type == "mp") {
-      renderNodeBoards(parent);
-    }
-  }
-
-  function renderMachinesL1(nodeBoard) {
-    i = +nodeBoard.attr("_i");
-    j = +nodeBoard.attr("_j");
-    k = +nodeBoard.attr("_k");
-    l = +nodeBoard.attr("_l");
-    // console.log(i, j, k, l);
   }
 
   function renderMidplanes(rack) {
@@ -383,137 +387,6 @@ function machineView() {
           .attr("title", nodeBoardStr)
           .attr("width", nodeBoardW)
           .attr("height", nodeBoardH);
-      }
-    }
-  }
-
-  function renderMachinesL2Legacy() {
-    for (i=0; i<3; i++) {
-      var row = svg.append("g")
-        .attr("class", "row")
-        .attr("transform", "translate(0," + (rackH+rackPadding*2)*i + ")")
-      for (j=0; j<16; j++) {
-        var rackStr = rack2str(i, j);
-        var rack = row.append("g")
-          .attr("transform", "translate(" + ((rackW+rackPadding*2)*j + rackPadding) + "," + rackPadding + ")");
-        rack.append("rect")
-          .attr("class", "c rackBox")
-          .attr("id", rackStr)
-          .attr("title", rackStr)
-          .attr("width", rackW)
-          .attr("height", rackH);
-        rack.append("text")
-          .attr("class", "rackID")
-          .attr("x", rackW/2)
-          .attr("y", 10)
-          .text(rackStr);
-
-        var midplaneGroup = rack.append("g")
-          .attr("transform", "translate(" + midplaneGroupL + "," + midplaneGroupT + ")");
-
-        for (k=0; k<2; k++) {
-          var midplaneStr = midplane2str(i, j, k);
-          var midplane = midplaneGroup.append("g")
-            .attr("id", midplane2str(i, j, k))
-            .attr("transform", "translate(0," + (midplaneH+midplanePadding)*k + ")");
-          midplane.append("rect")
-            .attr("class", "c midplaneBox")
-            .attr("id", midplaneStr)
-            .attr("title", midplaneStr)
-            .attr("width", midplaneW)
-            .attr("height", midplaneH);
-          /*
-          midplane.append("text")
-            .attr("class", "midplaneID")
-            .attr("title", midplaneStr)
-            .attr("x", midplaneW/2)
-            .attr("y", 4)
-            .text(midplaneStr)*/
-
-          var nodeBoardGroup = midplane.append("g")
-            .attr("transform", "translate(" + nodeBoardGroupL + "," + nodeBoardGroupT + ")");
-
-          for (p=0; p<4; p++) {
-            for (q=0; q<4; q++) {
-              var nodeBoardID = p*4+q;
-              var nodeBoardStr = nodeBoard2str(i, j, k, nodeBoardID);
-              var nodeBoard = nodeBoardGroup.append("g")
-                // .attr("id", nodeBoard2str(i, j, k, nodeBoardID))
-                .attr("transform", "translate(" + q*nodeBoardW + "," + p*nodeBoardH + ")");
-              nodeBoard.append("rect")
-                .attr("class", "c nodeBoardBox")
-                .attr("id", nodeBoardStr)
-                .attr("title", nodeBoardStr)
-                .attr("width", nodeBoardW)
-                .attr("height", nodeBoardH);
-             
-              /*
-              nodeBoard.append("text")
-                .attr("class", "nodeBoardID")
-                .attr("x", nodeBoardW/2)
-                .attr("y", 1)
-                .text(nodeBoardStr);
-
-              var judoGroup = nodeBoard.append("g")
-                .attr("transform", "translate(" + judoGroupL + "," + judoGroupT + ")");
-
-              var computeCardGroup = judoGroup.append("g")
-                .attr("transform", "translate(" + computeCardGroupL + "," + computeCardGroupT + ")");
-
-              for (u=0; u<4; u++) {
-                for (v=0; v<8; v++) {
-                  var computeCardID = u*8+v; 
-                  var computeCardStr = computeCard2str(i, j, k, nodeBoardID, computeCardID);
-                  var computeCard = computeCardGroup.append("g")
-                    .attr("transform", "translate(" + v*computeCardW + "," + u*computeCardH + ")");
-                  computeCard.append("rect")
-                    .attr("class", "c computeCardBox")
-                    .attr("id", computeCardStr)
-                    .attr("title", computeCardStr)
-                    .attr("width", computeCardW)
-                    .attr("height", computeCardH);
-                }
-              }
-              */
-            }
-          }
-        }
-      }
-
-      for (j=16; j<18; j++) {
-        var ioRackStr = ioRack2str(i, j);
-        var ioRack = row.append("g")
-          .attr("id", ioRackStr)
-          .attr("transform", "translate(" + ((rackW+rackPadding*2)*j + rackPadding) + "," + rackPadding + ")");
-        ioRack.append("rect")
-          .attr("class", "c rackBox")
-          .attr("id", ioRackStr)
-          .attr("title", ioRackStr)
-          .attr("width", rackW)
-          .attr("height", rackH);
-        ioRack.append("text")
-          .attr("class", "rackID")
-          .attr("title", ioRackStr)
-          .attr("x", rackW/2)
-          .attr("y", 10)
-          .text(ioRackStr);
-
-        var ioDrawerGroup = ioRack.append("g")
-          .attr("transform", "translate(" + ioDrawerGroupL + "," + ioDrawerGroupT + ")");
-
-        for (p=0; p<3; p++) {
-          for (q=0; q<3; q++) {
-            var ioDrawerID = p*3+q;
-            var ioDrawerStr = ioDrawer2str(i, j, ioDrawerID);
-            ioDrawerGroup.append("rect")
-              .attr("class", "c ioDrawerBox")
-              .attr("id", ioDrawerStr)
-              .attr("title", ioDrawerStr)
-              .attr("width", ioDrawerW)
-              .attr("height", ioDrawerH)
-              .attr("transform", "translate(" + q*ioDrawerW + "," + p*ioDrawerH + ")");
-          }
-        }
       }
     }
   }
