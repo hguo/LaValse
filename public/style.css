@@ -61,17 +61,27 @@ svg text {
   font-size: 9pt;
 }
 
-#machineView .rackBox {
+#machineView .RBox {
   fill: none;
   stroke: black;
 }
 
-#machineView .rackID {
+#machineView .RID {
   text-anchor: left;
   font-size: 6pt;
 }
 
-#machineView .midplaneID {
+#machineView .QBox {
+  fill: none;
+  stroke: black;
+}
+
+#machineView .QID {
+  text-anchor: left;
+  font-size: 6pt;
+}
+
+#machineView .RMID {
   text-anchor: left;
   font-size: 3pt;
 }
@@ -81,13 +91,13 @@ svg text {
   font-size: 0.5pt;
 }
 
-#machineView .midplaneBox {
+#machineView .RMBox {
   fill: none;
   stroke-width: 0.5;
   stroke: steelblue;
 }
 
-#machineView .nodeBoardBox {
+#machineView .RMNBox {
   fill: white;
   stroke-width: 0.25;
   stroke: steelblue;
@@ -123,7 +133,7 @@ svg text {
   stroke: steelblue;
 }
 
-#machineView .ioDrawerBox {
+#machineView .QIBox {
   fill: white;
   stroke-width: 0.5;
   stroke: steelblue;

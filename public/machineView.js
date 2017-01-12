@@ -56,7 +56,8 @@ function machineView() {
   renderMachinesL4();
   renderMachinesL3();
   renderMachinesL2();
-  // renderMachinesL1();
+  renderMachinesL1();
+  renderMachinesL0();
 
   var brush = d3.brush()
     .extent([[0, 0], [W, H]])
@@ -235,30 +236,39 @@ function machineView() {
   }
 
   function renderMachinesL3() {
-    $("#machineView .rack").each(function() {
+    $("#machineView .R").each(function() {
       renderMidplanes(d3.select(this));
     });
   }
 
-  function renderMachinesL2(svg) {
-    $("#machineView .ioRack").each(function() {
+  function renderMachinesL2() {
+    $("#machineView .Q").each(function() {
       renderIODrawers(d3.select(this));
     })
 
-    $("#machineView .midplane").each(function() {
+    $("#machineView .RM").each(function() {
       renderNodeBoards(d3.select(this));
     })
   }
 
-  function renderMachinesL1(parent) {
-    $("#machineView .rack").each(function() {
+  function renderMachinesL1() {
+    $("#machineView .R").each(function() {
       renderBulkPowerSupply(d3.select(this));
       renderClockCard(d3.select(this));
       renderCoolantMonitor(d3.select(this));
     });
 
-    $("#machineView .midplane").each(function() {
+    $("#machineView .RM").each(function() {
       renderServiceCard(d3.select(this));
+    })
+  }
+
+  function renderMachinesL0() {
+    $("#machineView .RMN").each(function() {
+      renderComputeCards(d3.select(this));
+      renderLinkModules(d3.select(this));
+      renderOpticalModules(d3.select(this));
+      renderDCAs(d3.select(this));
     })
   }
 
@@ -271,17 +281,17 @@ function machineView() {
         var rackStr = rack2str(row, col);
         var rack = rowGroup.append("g")
           .attr("transform", "translate(" + ((rackW+rackPadding*2)*col + rackPadding) + "," + rackPadding + ")")
-          .attr("class", "rack")
+          .attr("class", "R")
           .attr("_row", row)
           .attr("_col", col);
         rack.append("rect")
-          .attr("class", "c rackBox")
+          .attr("class", "c RBox")
           .attr("id", rackStr)
           .attr("title", rackStr)
           .attr("width", rackW)
           .attr("height", rackH);
         rack.append("text")
-          .attr("class", "rackID")
+          .attr("class", "RID")
           .attr("x", 2)
           .attr("y", 8)
           .text(rackStr);
@@ -291,17 +301,17 @@ function machineView() {
         var ioRackStr = ioRack2str(row, col);
         var ioRack = rowGroup.append("g")
           .attr("transform", "translate(" + ((rackW+rackPadding*2)*col + rackPadding) + "," + rackPadding + ")")
-          .attr("class", "ioRack")
+          .attr("class", "Q")
           .attr("_row", row)
           .attr("_col", col);
         ioRack.append("rect")
-          .attr("class", "c rackBox")
+          .attr("class", "c QBox")
           .attr("id", ioRackStr)
           .attr("title", ioRackStr)
           .attr("width", rackW)
           .attr("height", rackH);
         ioRack.append("text")
-          .attr("class", "rackID")
+          .attr("class", "QID")
           .attr("title", ioRackStr)
           .attr("x", 2)
           .attr("y", 8)
@@ -322,18 +332,18 @@ function machineView() {
       var midplane = midplaneGroup.append("g")
         .attr("id", midplaneStr)
         .attr("transform", "translate(0," + (midplaneH+midplanePadding)*mp + ")")
-        .attr("class", "midplane")
+        .attr("class", "RM")
         .attr("_row", row)
         .attr("_col", col)
         .attr("_mp", mp);
       midplane.append("rect")
-        .attr("class", "c midplaneBox")
+        .attr("class", "c RMBox")
         .attr("id", midplaneStr)
         .attr("title", midplaneStr)
         .attr("width", midplaneW)
         .attr("height", midplaneH);
       midplane.append("text")
-        .attr("class", "midplaneID")
+        .attr("class", "RMID")
         .attr("title", midplaneStr)
         .attr("x", 2)
         .attr("y", 4)
@@ -353,7 +363,7 @@ function machineView() {
         var ioDrawerID = p*3+q;
         var ioDrawerStr = ioDrawer2str(row, col, ioDrawerID);
         ioDrawerGroup.append("rect")
-          .attr("class", "c ioDrawerBox")
+          .attr("class", "c QIBox")
           .attr("id", ioDrawerStr)
           .attr("title", ioDrawerStr)
           .attr("width", ioDrawerW)
@@ -378,13 +388,13 @@ function machineView() {
         var nodeBoard = nodeBoardGroup.append("g")
           .attr("id", nodeBoardStr)
           .attr("transform", "translate(" + q*nodeBoardW + "," + p*nodeBoardH + ")")
-          .attr("class", "nodeBoard")
+          .attr("class", "RMN")
           .attr("_row", row)
           .attr("_col", col)
           .attr("_mp", mp)
           .attr("_nb", nodeBoardID);
         nodeBoard.append("rect")
-          .attr("class", "c nodeBoardBox")
+          .attr("class", "c RMNBox")
           .attr("id", nodeBoardStr)
           .attr("title", nodeBoardStr)
           .attr("width", nodeBoardW)
@@ -464,6 +474,18 @@ function machineView() {
       .attr("id", serviceCardStr)
       .attr("width", serviceCardW)
       .attr("height", serviceCardH);
+  }
+
+  function renderComputeCards(nodeBoard) {
+  }
+
+  function renderLinkModules(nodeBoard) {
+  }
+
+  function renderOpticalModules(nodeBoard) {
+  }
+
+  function renderDCAs(nodeBoard) {
   }
 }
 
