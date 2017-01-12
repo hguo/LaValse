@@ -21,6 +21,7 @@ int main(int argc, char **argv) {
   query.tg = ras::TIME_DAY;
   // query.t0 = 1436184000000;
   // query.t1 = 1436936400000;
+  query.nthreads = 1;
   query.LOD = 2;
   memset(query.msgID, 1, ras::NUM_MSGID);
   memset(query.component, 1, ras::NUM_COMP);

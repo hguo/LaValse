@@ -91,8 +91,12 @@ struct Query {
   }
 
   inline uint32_t add1(uint32_t& a) {
-    // __sync_fetch_and_add(&a, 1);
+#if 0
+    __sync_fetch_and_add(&a, 1);
+    return a;
+#else 
     return ++ a;
+#endif
   }
   
   inline void add1(uint32_t& a, uint32_t slot, uint32_t* recIDs, uint32_t recID) {

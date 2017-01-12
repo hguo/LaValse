@@ -1,5 +1,5 @@
 function machineView() {
-  const L = 270, T = 25, W = 690, H = 336;
+  const L = 270, T = 25, W = 690, H = 306;
   const margin = {top: 0, right: 0, bottom: 0, left: 0},
         width = W - margin.left - margin.right,
         height = H - margin.top - margin.bottom;
@@ -41,7 +41,19 @@ function machineView() {
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
     .call(zoom);
 
-  renderMachinesL2();
+  renderMachinesL4(svg);
+  svg.selectAll(".L4").each(function(d) {
+    var rack = d3.select(this);
+    renderMachinesL3(rack);
+  });
+  svg.selectAll(".L3").each(function(d) {
+    var midplane = d3.select(this);
+    renderMachinesL2(midplane);
+  });
+  //svg.selectAll(".L2").each(function(d) {
+  //  var nodeBoard = d3.select(this);
+  //  renderMachinesL1(nodeBoard);
+  //});
 
   var brush = d3.brush()
     .extent([[0, 0], [W, H]])
@@ -211,8 +223,171 @@ function machineView() {
       .call(zoom.transform, d3.zoomIdentity);
   }
 
+  function updateLOD(currentLevel) {
+    // remove 
+  }
 
-  function renderMachinesL2() {
+  function renderMachinesL4(svg) {
+    for (row=0; row<3; row++) {
+      var rowGroup = svg.append("g")
+        .attr("class", "row")
+        .attr("transform", "translate(0," + (rackH+rackPadding*2)*row + ")")
+      for (col=0; col<16; col++) {
+        var rackStr = rack2str(row, col);
+        var rack = rowGroup.append("g")
+          .attr("transform", "translate(" + ((rackW+rackPadding*2)*col + rackPadding) + "," + rackPadding + ")")
+          .attr("class", "L4")
+          .attr("_row", row)
+          .attr("_col", col)
+          .attr("_type", "rack")
+        rack.append("rect")
+          .attr("class", "c rackBox")
+          .attr("id", rackStr)
+          .attr("title", rackStr)
+          .attr("width", rackW)
+          .attr("height", rackH);
+        rack.append("text")
+          .attr("class", "rackID")
+          .attr("x", rackW/2)
+          .attr("y", 10)
+          .text(rackStr);
+      }
+
+      for (col=16; col<18; col++) {
+        var ioRackStr = ioRack2str(row, col);
+        var ioRack = rowGroup.append("g")
+          .attr("transform", "translate(" + ((rackW+rackPadding*2)*col + rackPadding) + "," + rackPadding + ")")
+          .attr("class", "L4")
+          .attr("_row", row)
+          .attr("_col", col)
+          .attr("_type", "ioRack");
+        ioRack.append("rect")
+          .attr("class", "c rackBox")
+          .attr("id", ioRackStr)
+          .attr("title", ioRackStr)
+          .attr("width", rackW)
+          .attr("height", rackH);
+        ioRack.append("text")
+          .attr("class", "rackID")
+          .attr("title", ioRackStr)
+          .attr("x", rackW/2)
+          .attr("y", 10)
+          .text(ioRackStr);
+      }
+    }
+  }
+
+  function renderMachinesL3(parent) {
+    type = parent.attr("_type");
+    
+    if (type == "rack") {
+      renderMidplanes(parent);
+    } else if (type == "ioRack") {
+      renderIODrawers(parent);
+    }
+  }
+
+  function renderMachinesL2(parent) {
+    var type = parent.attr("_type");
+
+    if (type == "mp") {
+      renderNodeBoards(parent);
+    }
+  }
+
+  function renderMachinesL1(nodeBoard) {
+    i = +nodeBoard.attr("_i");
+    j = +nodeBoard.attr("_j");
+    k = +nodeBoard.attr("_k");
+    l = +nodeBoard.attr("_l");
+    // console.log(i, j, k, l);
+  }
+
+  function renderMidplanes(rack) {
+    var row = +rack.attr("_row");
+    var col = +rack.attr("_col");
+
+    var midplaneGroup = rack.append("g")
+      .attr("transform", "translate(" + midplaneGroupL + "," + midplaneGroupT + ")");
+
+    for (mp=0; mp<2; mp++) {
+      var midplaneStr = midplane2str(row, col, mp);
+      var midplane = midplaneGroup.append("g")
+        .attr("id", midplaneStr)
+        .attr("transform", "translate(0," + (midplaneH+midplanePadding)*mp + ")")
+        .attr("class", "L3")
+        .attr("_row", row)
+        .attr("_col", col)
+        .attr("_mp", mp)
+        .attr("_type", "mp");
+      midplane.append("rect")
+        .attr("class", "c midplaneBox")
+        .attr("id", midplaneStr)
+        .attr("title", midplaneStr)
+        .attr("width", midplaneW)
+        .attr("height", midplaneH);
+      midplane.append("text")
+        .attr("class", "midplaneID")
+        .attr("title", midplaneStr)
+        .attr("x", midplaneW/2)
+        .attr("y", 4)
+        .text(midplaneStr);
+    }
+  }
+
+  function renderIODrawers(ioRack) {
+    var row = +ioRack.attr("_row");
+    var col = +ioRack.attr("_col");
+
+    var ioDrawerGroup = ioRack.append("g")
+      .attr("transform", "translate(" + ioDrawerGroupL + "," + ioDrawerGroupT + ")");
+
+    for (p=0; p<3; p++) {
+      for (q=0; q<3; q++) {
+        var ioDrawerID = p*3+q;
+        var ioDrawerStr = ioDrawer2str(row, col, ioDrawerID);
+        ioDrawerGroup.append("rect")
+          .attr("class", "c ioDrawerBox")
+          .attr("id", ioDrawerStr)
+          .attr("title", ioDrawerStr)
+          .attr("width", ioDrawerW)
+          .attr("height", ioDrawerH)
+          .attr("transform", "translate(" + q*ioDrawerW + "," + p*ioDrawerH + ")");
+      }
+    }
+  }
+
+  function renderNodeBoards(midplane) {
+    var row = +midplane.attr("_row");
+    var col = +midplane.attr("_col");
+    var mp = +midplane.attr("_mp");
+
+    var nodeBoardGroup = midplane.append("g")
+      .attr("transform", "translate(" + nodeBoardGroupL + "," + nodeBoardGroupT + ")");
+
+    for (p=0; p<4; p++) {
+      for (q=0; q<4; q++) {
+        var nodeBoardID = p*4+q;
+        var nodeBoardStr = nodeBoard2str(row, col, mp, nodeBoardID);
+        var nodeBoard = nodeBoardGroup.append("g")
+          .attr("id", nodeBoardStr)
+          .attr("transform", "translate(" + q*nodeBoardW + "," + p*nodeBoardH + ")")
+          .attr("class", "L2")
+          .attr("_row", row)
+          .attr("_col", col)
+          .attr("_mp", mp)
+          .attr("_nb", nodeBoardID);
+        nodeBoard.append("rect")
+          .attr("class", "c nodeBoardBox")
+          .attr("id", nodeBoardStr)
+          .attr("title", nodeBoardStr)
+          .attr("width", nodeBoardW)
+          .attr("height", nodeBoardH);
+      }
+    }
+  }
+
+  function renderMachinesL2Legacy() {
     for (i=0; i<3; i++) {
       var row = svg.append("g")
         .attr("class", "row")
