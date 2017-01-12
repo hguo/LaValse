@@ -67,12 +67,12 @@ svg text {
 }
 
 #machineView .rackID {
-  text-anchor: middle;
-  font-size: 8pt;
+  text-anchor: left;
+  font-size: 6pt;
 }
 
 #machineView .midplaneID {
-  text-anchor: middle;
+  text-anchor: left;
   font-size: 3pt;
 }
 
@@ -88,6 +88,30 @@ svg text {
 }
 
 #machineView .nodeBoardBox {
+  fill: white;
+  stroke-width: 0.25;
+  stroke: steelblue;
+}
+
+#machineView .bulkPowerSupplyBox {
+  fill: white;
+  stroke-width: 0.25;
+  stroke: steelblue;
+}
+
+#machineView .clockCardBox {
+  fill: white;
+  stroke-width: 0.25;
+  stroke: steelblue;
+}
+
+#machineView .coolantMonitorBox {
+  fill: white;
+  stroke-width: 0.25;
+  stroke: steelblue;
+}
+
+#machineView .serviceCardBox {
   fill: white;
   stroke-width: 0.25;
   stroke: steelblue;

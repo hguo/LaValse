@@ -134,6 +134,14 @@ function rack2str(row, column) {
   return "R" + pad(row, 32, 1) + pad(column, 32, 1);
 }
 
+function clockCard2str(row, col) {
+  return rack2str(row, col) + "-K";
+}
+
+function coolantMonitor2str(row, col) {
+  return rack2str(row, col) + "-L";
+}
+
 function bulkPowerSupply2str(row, column, bulkPowerSupply) {
   return rack2str(row, column) + "-B" + bulkPowerSupply;
 }
@@ -144,6 +152,10 @@ function powerModule2str(row, column, bulkPowerSupply, powerModule) {
 
 function midplane2str(row, column, midplane) { // midplane is either 0 or 1
   return rack2str(row, column) + "-M" + midplane;
+}
+
+function serviceCard2str(row, col, mp) {
+  return midplane2str(row, col, mp) + "-S";
 }
 
 function nodeBoard2str(row, column, midplane, nodeBoard) {

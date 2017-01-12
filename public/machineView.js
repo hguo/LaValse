@@ -4,9 +4,9 @@ function machineView() {
         width = W - margin.left - margin.right,
         height = H - margin.top - margin.bottom;
   
-  const rackW = 34, rackH = 98, rackPadding = 2;
+  const rackW = 34, rackH = 96, rackPadding = 2;
  
-  const midplaneGroupL = 2, midplaneGroupT = 12;
+  const midplaneGroupL = 2, midplaneGroupT = 10;
   const midplaneW = 30, midplaneH = 41, midplanePadding = 2;
  
   const nodeBoardGroupL = 0, nodeBoardGroupT = 5, nodeBoardGroupW = 30, nodeBoardGroupH = 30;
@@ -19,6 +19,18 @@ function machineView() {
 
   const ioDrawerGroupL = 2, ioDrawerGroupT = 12, ioDrawerGroupW = 30, ioDrawerGroupH = 82;
   const ioDrawerW = ioDrawerGroupW/3, ioDrawerH = ioDrawerGroupH/3;
+
+  const bulkPowerSupplyGroupL = 19.75, bulkPowerSupplyGroupT = 2;
+  const bulkPowerSupplyW = 3, bulkPowerSupplyH = 3;
+
+  const clockCardL = 25.75, clockCardT = 2;
+  const clockCardW = 3, clockCardH = 6;
+
+  const coolantMonitorL = 28.75, coolantMonitorT = 2;
+  const coolantMonitorW = 3, coolantMonitorH = 6;
+
+  const serviceCardL = 21, serviceCardT = 1;
+  const serviceCardW = 8, serviceCardH = 3;
 
   const legendL = L+W, legendT = T, legendW = 40, legendH = H;
   const legendMargin = {top: 20, bottom: 20, right: 30, left: 0};
@@ -41,19 +53,10 @@ function machineView() {
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
     .call(zoom);
 
-  renderMachinesL4(svg);
-  svg.selectAll(".L4").each(function(d) {
-    var rack = d3.select(this);
-    renderMachinesL3(rack);
-  });
-  svg.selectAll(".L3").each(function(d) {
-    var midplane = d3.select(this);
-    renderMachinesL2(midplane);
-  });
-  //svg.selectAll(".L2").each(function(d) {
-  //  var nodeBoard = d3.select(this);
-  //  renderMachinesL1(nodeBoard);
-  //});
+  renderMachinesL4();
+  renderMachinesL3();
+  renderMachinesL2();
+  // renderMachinesL1();
 
   var brush = d3.brush()
     .extent([[0, 0], [W, H]])
@@ -227,34 +230,36 @@ function machineView() {
     // remove 
   }
 
-  function renderMachinesL4(svg) {
+  function renderMachinesL4() {
     renderRacks(svg);
   }
 
-  function renderMachinesL3(parent) {
-    type = parent.attr("_type");
-    
-    if (type == "rack") {
-      renderMidplanes(parent);
-    } else if (type == "ioRack") {
-      renderIODrawers(parent);
-    }
+  function renderMachinesL3() {
+    $("#machineView .rack").each(function() {
+      renderMidplanes(d3.select(this));
+    });
   }
 
-  function renderMachinesL2(parent) {
-    var type = parent.attr("_type");
+  function renderMachinesL2(svg) {
+    $("#machineView .ioRack").each(function() {
+      renderIODrawers(d3.select(this));
+    })
 
-    if (type == "mp") {
-      renderNodeBoards(parent);
-    }
+    $("#machineView .midplane").each(function() {
+      renderNodeBoards(d3.select(this));
+    })
   }
 
-  function renderMachinesL1(nodeBoard) {
-    i = +nodeBoard.attr("_i");
-    j = +nodeBoard.attr("_j");
-    k = +nodeBoard.attr("_k");
-    l = +nodeBoard.attr("_l");
-    // console.log(i, j, k, l);
+  function renderMachinesL1(parent) {
+    $("#machineView .rack").each(function() {
+      renderBulkPowerSupply(d3.select(this));
+      renderClockCard(d3.select(this));
+      renderCoolantMonitor(d3.select(this));
+    });
+
+    $("#machineView .midplane").each(function() {
+      renderServiceCard(d3.select(this));
+    })
   }
 
   function renderRacks(parent) {
@@ -266,10 +271,9 @@ function machineView() {
         var rackStr = rack2str(row, col);
         var rack = rowGroup.append("g")
           .attr("transform", "translate(" + ((rackW+rackPadding*2)*col + rackPadding) + "," + rackPadding + ")")
-          .attr("class", "L4")
+          .attr("class", "rack")
           .attr("_row", row)
-          .attr("_col", col)
-          .attr("_type", "rack")
+          .attr("_col", col);
         rack.append("rect")
           .attr("class", "c rackBox")
           .attr("id", rackStr)
@@ -278,8 +282,8 @@ function machineView() {
           .attr("height", rackH);
         rack.append("text")
           .attr("class", "rackID")
-          .attr("x", rackW/2)
-          .attr("y", 10)
+          .attr("x", 2)
+          .attr("y", 8)
           .text(rackStr);
       }
 
@@ -287,10 +291,9 @@ function machineView() {
         var ioRackStr = ioRack2str(row, col);
         var ioRack = rowGroup.append("g")
           .attr("transform", "translate(" + ((rackW+rackPadding*2)*col + rackPadding) + "," + rackPadding + ")")
-          .attr("class", "L4")
+          .attr("class", "ioRack")
           .attr("_row", row)
-          .attr("_col", col)
-          .attr("_type", "ioRack");
+          .attr("_col", col);
         ioRack.append("rect")
           .attr("class", "c rackBox")
           .attr("id", ioRackStr)
@@ -300,8 +303,8 @@ function machineView() {
         ioRack.append("text")
           .attr("class", "rackID")
           .attr("title", ioRackStr)
-          .attr("x", rackW/2)
-          .attr("y", 10)
+          .attr("x", 2)
+          .attr("y", 8)
           .text(ioRackStr);
       }
     }
@@ -319,11 +322,10 @@ function machineView() {
       var midplane = midplaneGroup.append("g")
         .attr("id", midplaneStr)
         .attr("transform", "translate(0," + (midplaneH+midplanePadding)*mp + ")")
-        .attr("class", "L3")
+        .attr("class", "midplane")
         .attr("_row", row)
         .attr("_col", col)
-        .attr("_mp", mp)
-        .attr("_type", "mp");
+        .attr("_mp", mp);
       midplane.append("rect")
         .attr("class", "c midplaneBox")
         .attr("id", midplaneStr)
@@ -333,7 +335,7 @@ function machineView() {
       midplane.append("text")
         .attr("class", "midplaneID")
         .attr("title", midplaneStr)
-        .attr("x", midplaneW/2)
+        .attr("x", 2)
         .attr("y", 4)
         .text(midplaneStr);
     }
@@ -376,7 +378,7 @@ function machineView() {
         var nodeBoard = nodeBoardGroup.append("g")
           .attr("id", nodeBoardStr)
           .attr("transform", "translate(" + q*nodeBoardW + "," + p*nodeBoardH + ")")
-          .attr("class", "L2")
+          .attr("class", "nodeBoard")
           .attr("_row", row)
           .attr("_col", col)
           .attr("_mp", mp)
@@ -389,6 +391,79 @@ function machineView() {
           .attr("height", nodeBoardH);
       }
     }
+  }
+
+  function renderBulkPowerSupply(rack) {
+    var row = +rack.attr("_row");
+    var col = +rack.attr("_col");
+
+    var bulkPowerSupplyGroup = rack.append("g")
+      .attr("transform", "translate(" + bulkPowerSupplyGroupL + "," + bulkPowerSupplyGroupT + ")");
+
+    for (p=0; p<2; p++) {
+      for (q=0; q<2; q++) {
+        var bulkPowerSupplyID = p*2+q;
+        var bulkPowerSupplyStr = bulkPowerSupply2str(row, col, bulkPowerSupplyID);
+        var bulkPowerSupply = bulkPowerSupplyGroup.append("g")
+          .attr("id", bulkPowerSupplyStr)
+          .attr("transform", "translate(" + q*bulkPowerSupplyW + "," + p*bulkPowerSupplyH + ")")
+          .attr("class", "L1 RB")
+          .attr("_row", row)
+          .attr("_col", col)
+          .attr("_bulkPowerSupply", bulkPowerSupplyID);
+        bulkPowerSupply.append("rect")
+          .attr("class", "c bulkPowerSupplyBox")
+          .attr("id", bulkPowerSupplyStr)
+          .attr("width", bulkPowerSupplyW)
+          .attr("height", bulkPowerSupplyH);
+      }
+    }
+  }
+
+  function renderClockCard(rack) {
+    var row = +rack.attr("_row");
+    var col = +rack.attr("_col");
+
+    var clockCardStr = clockCard2str(row, col);
+    var clockCard = rack.append("g")
+      .attr("transform", "translate(" + clockCardL + "," + clockCardT + ")")
+      .attr("class", "L1 RK");
+    clockCard.append("rect")
+      .attr("class", "c clockCardBox")
+      .attr("id", clockCardStr)
+      .attr("width", clockCardW)
+      .attr("height", clockCardH);
+  }
+
+  function renderCoolantMonitor(rack) {
+    var row = +rack.attr("_row");
+    var col = +rack.attr("_col");
+
+    var coolantMonitorStr = coolantMonitor2str(row, col);
+    var coolantMonitor = rack.append("g")
+      .attr("transform", "translate(" + coolantMonitorL + "," + coolantMonitorT + ")")
+      .attr("class", "L1 RL");
+    coolantMonitor.append("rect")
+      .attr("class", "c coolantMonitorBox")
+      .attr("id", coolantMonitorStr)
+      .attr("width", coolantMonitorW)
+      .attr("height", coolantMonitorH);
+  }
+
+  function renderServiceCard(midplane) {
+    var row = +midplane.attr("_row");
+    var col = +midplane.attr("_col");
+    var mp = +midplane.attr("_mp");
+
+    var serviceCardStr = serviceCard2str(row, col, mp);
+    var serviceCard = midplane.append("g")
+      .attr("transform", "translate(" + serviceCardL + "," + serviceCardT + ")")
+      .attr("class", "L1 RMS");
+    serviceCard.append("rect")
+      .attr("class", "c serviceCardBox")
+      .attr("id", serviceCardStr)
+      .attr("width", serviceCardW)
+      .attr("height", serviceCardH);
   }
 }
 
