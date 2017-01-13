@@ -71,6 +71,12 @@ svg text {
   font-size: 6pt;
 }
 
+#machineView .RMNJText {
+  text-anchor: middle;
+  stroke: black;
+  font-size: 0.1pt;
+}
+
 #machineView .QBox {
   fill: none;
   stroke: black;
@@ -103,31 +109,49 @@ svg text {
   stroke: steelblue;
 }
 
-#machineView .bulkPowerSupplyBox {
+#machineView .RBBox {
   fill: white;
   stroke-width: 0.25;
   stroke: steelblue;
 }
 
-#machineView .clockCardBox {
+#machineView .RKBox {
   fill: white;
   stroke-width: 0.25;
   stroke: steelblue;
 }
 
-#machineView .coolantMonitorBox {
+#machineView .RLBox {
   fill: white;
   stroke-width: 0.25;
   stroke: steelblue;
 }
 
-#machineView .serviceCardBox {
+#machineView .RMSBox {
   fill: white;
   stroke-width: 0.25;
   stroke: steelblue;
 }
 
-#machineView .computeCardBox {
+#machineView .RMNJBox {
+  fill: white;
+  stroke-width: 0.1;
+  stroke: steelblue;
+}
+
+#machineView .RMNUBox {
+  fill: white;
+  stroke-width: 0.1;
+  stroke: steelblue;
+}
+
+#machineView .RMNOBox {
+  fill: white;
+  stroke-width: 0.1;
+  stroke: steelblue;
+}
+
+#machineView .RMNDBox {
   fill: white;
   stroke-width: 0.1;
   stroke: steelblue;

@@ -12,10 +12,17 @@ function machineView() {
   const nodeBoardGroupL = 0, nodeBoardGroupT = 5, nodeBoardGroupW = 30, nodeBoardGroupH = 30;
   const nodeBoardW = 7.5, nodeBoardH = 9;
 
-  const judoGroupL = 0, judoGroupT = 1.5, judoGroupW = 7.5, judoGroupH = 7.5;
+  const computeCardGroupL = 0, computeCardGroupT = 1.5;
+  const computeCardW = 0.9375, computeCardH = 0.9375;
 
-  const computeCardGroupL = 0, computeCardGroupT = 0, computeCardGroupW = judoGroupW/2, computeCardGroupH = judoGroupH/2;
-  const computeCardW = computeCardGroupW/8, computeCardH = computeCardGroupH/4;
+  const linkModuleGroupL = 0, linkModuleGroupT = 5.25;
+  const linkModuleW = 1.25, linkModuleH = 1.25;
+
+  const opticalModuleGroupL = 3.75, opticalModuleGroupT = 5.25;
+  const opticalModuleW = 0.625, opticalModuleH = 0.625;
+
+  const DCAGroupL = 3.75, DCAGroupT = 0.25;
+  const DCAW = 1.75, DCAH = 1;
 
   const ioDrawerGroupL = 2, ioDrawerGroupT = 12, ioDrawerGroupW = 30, ioDrawerGroupH = 82;
   const ioDrawerW = ioDrawerGroupW/3, ioDrawerH = ioDrawerGroupH/3;
@@ -56,8 +63,8 @@ function machineView() {
   renderMachinesL4();
   renderMachinesL3();
   renderMachinesL2();
-  renderMachinesL1();
-  renderMachinesL0();
+  // renderMachinesL1();
+  // renderMachinesL0();
 
   var brush = d3.brush()
     .extent([[0, 0], [W, H]])
@@ -244,11 +251,11 @@ function machineView() {
   function renderMachinesL2() {
     $("#machineView .Q").each(function() {
       renderIODrawers(d3.select(this));
-    })
+    });
 
     $("#machineView .RM").each(function() {
       renderNodeBoards(d3.select(this));
-    })
+    });
   }
 
   function renderMachinesL1() {
@@ -260,7 +267,7 @@ function machineView() {
 
     $("#machineView .RM").each(function() {
       renderServiceCard(d3.select(this));
-    })
+    });
   }
 
   function renderMachinesL0() {
@@ -269,7 +276,11 @@ function machineView() {
       renderLinkModules(d3.select(this));
       renderOpticalModules(d3.select(this));
       renderDCAs(d3.select(this));
-    })
+    });
+
+    $("machineView .RB").each(function() {
+      renderPowerModules(d3.select(this));
+    });
   }
 
   function renderRacks(parent) {
@@ -422,7 +433,7 @@ function machineView() {
           .attr("_col", col)
           .attr("_bulkPowerSupply", bulkPowerSupplyID);
         bulkPowerSupply.append("rect")
-          .attr("class", "c bulkPowerSupplyBox")
+          .attr("class", "c RBBox")
           .attr("id", bulkPowerSupplyStr)
           .attr("width", bulkPowerSupplyW)
           .attr("height", bulkPowerSupplyH);
@@ -439,7 +450,7 @@ function machineView() {
       .attr("transform", "translate(" + clockCardL + "," + clockCardT + ")")
       .attr("class", "L1 RK");
     clockCard.append("rect")
-      .attr("class", "c clockCardBox")
+      .attr("class", "c RKBox")
       .attr("id", clockCardStr)
       .attr("width", clockCardW)
       .attr("height", clockCardH);
@@ -454,7 +465,7 @@ function machineView() {
       .attr("transform", "translate(" + coolantMonitorL + "," + coolantMonitorT + ")")
       .attr("class", "L1 RL");
     coolantMonitor.append("rect")
-      .attr("class", "c coolantMonitorBox")
+      .attr("class", "c RLBox")
       .attr("id", coolantMonitorStr)
       .attr("width", coolantMonitorW)
       .attr("height", coolantMonitorH);
@@ -470,22 +481,142 @@ function machineView() {
       .attr("transform", "translate(" + serviceCardL + "," + serviceCardT + ")")
       .attr("class", "L1 RMS");
     serviceCard.append("rect")
-      .attr("class", "c serviceCardBox")
+      .attr("class", "c RMSBox")
       .attr("id", serviceCardStr)
       .attr("width", serviceCardW)
       .attr("height", serviceCardH);
   }
 
   function renderComputeCards(nodeBoard) {
+    var row = +nodeBoard.attr("_row");
+    var col = +nodeBoard.attr("_col");
+    var mp = +nodeBoard.attr("_mp");
+    var nb = +nodeBoard.attr("_nb");
+
+    var computeCardGroup = nodeBoard.append("g")
+      .attr("transform", "translate(" + computeCardGroupL + "," + computeCardGroupT + ")");
+
+    for (p=0; p<4; p++) {
+      for (q=0; q<8; q++) {
+        var computeCardID = p*8+q;
+        var computeCardStr = computeCard2str(row, col, mp, nb, computeCardID);
+        var computeCard = computeCardGroup.append("g")
+          .attr("id", computeCardStr)
+          .attr("transform", "translate(" + q*computeCardW + "," + p*computeCardH + ")")
+          .attr("class", "L1 RMNJ");
+        computeCard.append("rect")
+          .attr("class", "c RMNJBox")
+          .attr("id", computeCardStr)
+          .attr("width", computeCardW)
+          .attr("height", computeCardH);
+        /* computeCard.append("text")
+          .attr("class", "c RMNJText")
+          .attr("x", 0)
+          .attr("y", 0)
+          .text("J" + pad(computeCardID, 10, 2));*/
+      }
+    }
   }
 
   function renderLinkModules(nodeBoard) {
+    var row = +nodeBoard.attr("_row");
+    var col = +nodeBoard.attr("_col");
+    var mp = +nodeBoard.attr("_mp");
+    var nb = +nodeBoard.attr("_nb");
+
+    var linkModuleGroup = nodeBoard.append("g")
+      .attr("transform", "translate(" + linkModuleGroupL + "," + linkModuleGroupT + ")");
+
+    for (p=0; p<3; p++) {
+      for (q=0; q<3; q++) {
+        var linkModuleID = p*3+q;
+        var linkModuleStr = linkModule2str(row, col, mp, nb, linkModuleID);
+        var linkModule = linkModuleGroup.append("g")
+          .attr("id", linkModuleStr)
+          .attr("transform", "translate(" + q*linkModuleW + "," + p*linkModuleH + ")")
+          .attr("class", "L1 RMNU");
+        linkModule.append("rect")
+          .attr("class", "c RMNUBox")
+          .attr("id", linkModuleStr)
+          .attr("width", linkModuleW)
+          .attr("height", linkModuleH);
+      }
+    }
   }
 
   function renderOpticalModules(nodeBoard) {
+    var row = +nodeBoard.attr("_row");
+    var col = +nodeBoard.attr("_col");
+    var mp = +nodeBoard.attr("_mp");
+    var nb = +nodeBoard.attr("_nb");
+
+    var opticalModuleGroup = nodeBoard.append("g")
+      .attr("transform", "translate(" + opticalModuleGroupL + "," + opticalModuleGroupT + ")");
+
+    for (p=0; p<6; p++) {
+      for (q=0; q<6; q++) {
+        var opticalModuleID = p*6+q;
+        var opticalModuleStr = opticalModule2str(row, col, mp, nb, opticalModuleID);
+        var opticalModule = opticalModuleGroup.append("g")
+          .attr("id", opticalModuleStr)
+          .attr("transform", "translate(" + q*opticalModuleW + "," + p*opticalModuleH + ")")
+          .attr("class", "L1 RMNO");
+        opticalModule.append("rect")
+          .attr("class", "c RMNOBox")
+          .attr("id", opticalModuleStr)
+          .attr("width", opticalModuleW)
+          .attr("height", opticalModuleH);
+      }
+    }
   }
 
   function renderDCAs(nodeBoard) {
+    var row = +nodeBoard.attr("_row");
+    var col = +nodeBoard.attr("_col");
+    var mp = +nodeBoard.attr("_mp");
+    var nb = +nodeBoard.attr("_nb");
+
+    var DCAGroup = nodeBoard.append("g")
+      .attr("transform", "translate(" + DCAGroupL + "," + DCAGroupT + ")");
+
+    for (p=0; p<2; p++) {
+      var DCAID = p;
+      var DCAStr = DCA2str(row, col, mp, nb, DCAID);
+      var DCA = DCAGroup.append("g")
+        .attr("id", DCAStr)
+        .attr("transform", "translate(" + p*DCAW + ",0)")
+        .attr("class", "L1 RMND");
+      DCA.append("rect")
+        .attr("class", "c RMNDBox")
+        .attr("id", DCAStr)
+        .attr("width", DCAW)
+        .attr("height", DCAH);
+    }
+  }
+
+  function renderPowerModules(bulkPowerSupply) {
+    var row = +nodeBoard.attr("_row");
+    var col = +nodeBoard.attr("_col");
+    var bps = +bulkPowerSupply("_bps");
+
+    var powerModuleGroup = bulkPowerSupply.append("g")
+      .attr("transform", "translate(" + powerModuleGroupL + "," + powerModuleGroupT + ")");
+
+    for (p=0; p<3; p++) {
+      for (q=0; q<3; q++) {
+        var powerModuleID = p*3+q;
+        var powerModuleStr = powerModule2str(row, col, bps, powerModuleID);
+        var powerModule = powerModuleGroup.append("g")
+          .attr("id", opticalModuleStr)
+          .attr("transform", "translate(" + q*powerModuleW + "," + p*powerModuleH + ")")
+          .attr("class", "L1 RMND");
+        powerModule.append("rect")
+          .attr("class", "c RMNDBox")
+          .attr("id", powerModuleStr)
+          .attr("width", powerModuleW)
+          .attr("height", powerModuleH);
+      }
+    }
   }
 }
 
