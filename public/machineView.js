@@ -1,3 +1,30 @@
+var AABB = {
+  collide: function (el1, el2) {
+    var rect1 = el1.getBoundingClientRect();
+    var rect2 = el2.getBoundingClientRect();
+
+    return !(
+      rect1.top > rect2.bottom ||
+      rect1.right < rect2.left ||
+      rect1.bottom < rect2.top ||
+      rect1.left > rect2.right
+    );
+  },
+
+  inside: function (el1, el2) {
+    var rect1 = el1.getBoundingClientRect();
+    var rect2 = el2.getBoundingClientRect();
+    console.log(el1, el2);
+
+    return (
+      ((rect2.top <= rect1.top) && (rect1.top <= rect2.bottom)) &&
+      ((rect2.top <= rect1.bottom) && (rect1.bottom <= rect2.bottom)) &&
+      ((rect2.left <= rect1.left) && (rect1.left <= rect2.right)) &&
+      ((rect2.left <= rect1.right) && (rect1.right <= rect2.right))
+    );
+  }
+};
+
 function machineView() {
   const L = 270, T = 25, W = 690, H = 306;
   const margin = {top: 0, right: 0, bottom: 0, left: 0},
@@ -30,6 +57,9 @@ function machineView() {
   const bulkPowerSupplyGroupL = 19.75, bulkPowerSupplyGroupT = 2;
   const bulkPowerSupplyW = 3, bulkPowerSupplyH = 3;
 
+  const powerModuleGroupL = 0, powerModuleGroupT = 0;
+  const powerModuleW = 1, powerModuleH = 1;
+
   const clockCardL = 25.75, clockCardT = 2;
   const clockCardW = 3, clockCardH = 6;
 
@@ -51,12 +81,12 @@ function machineView() {
 
   var svg = d3.select("#machineView").append("svg")
     .attr("class", "chart")
+    .attr("id", "machineViewSvg")
     .style("left", L)
     .style("top", T)
     .attr("width", W)
     .attr("height", H)
     .append("g")
-    .attr("id", "machineViewSvg")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
     .call(zoom);
 
@@ -65,6 +95,8 @@ function machineView() {
   renderMachinesL2();
   // renderMachinesL1();
   // renderMachinesL0();
+  // $(".L1").remove();
+  // $(".L0").remove();
 
   var brush = d3.brush()
     .extent([[0, 0], [W, H]])
@@ -223,19 +255,62 @@ function machineView() {
     }
   }
 
+  var zoomTimer = d3.timer(function() {zoomTimer.stop();});
+  var currentZoom = 1.0;
+  var currentLOD = 2;
+
   function zoomed() {
     svg.attr("transform", d3.event.transform);
-    // console.log("zoomed");
+    zoom = d3.event.transform.k;
+    zoomTimer.restart(zoomTimedOut, 300);
+  }
+
+  function zoomTimedOut() {
+    // console.log("zoomed", zoom);
+    zoomTimer.stop();
+    updateZoom(zoom);
+  }
+
+  function updateZoom(zoom) {
+    if (zoom > 6) targetLOD = 0;
+    else if (zoom > 2) targetLOD = 1;
+    else targetLOD = 2;
+
+    updateLOD(targetLOD);
+  }
+
+  function updateLOD(targetLOD) {
+    if (currentLOD == 2) {
+      if (targetLOD == 1) {
+        renderMachinesL1();
+      } else if (targetLOD == 0) {
+        renderMachinesL1();
+        renderMachinesL0();
+      }
+    }
+    if (currentLOD == 1) {
+      if (targetLOD == 2) {
+        $(".L1").remove();
+      } else if (targetLOD == 0) {
+        renderMachinesL0();
+      }
+    }
+    if (currentLOD == 0) {
+      if (targetLOD == 1) {
+        $(".L0").remove();
+      } else if (targetLOD == 2) {
+        $(".L0").remove();
+        $(".L1").remove();
+      }
+    }
+
+    currentLOD = targetLOD;
   }
 
   this.reset = function() {
     svg.select(".brush")
       .call(brush.move, null)
       .call(zoom.transform, d3.zoomIdentity);
-  }
-
-  function updateLOD(currentLevel) {
-    // remove 
   }
 
   function renderMachinesL4() {
@@ -249,36 +324,48 @@ function machineView() {
   }
 
   function renderMachinesL2() {
-    $("#machineView .Q").each(function() {
+    $("#machineView .Q").filter(function() {
+      return AABB.collide($(this)[0], $("#machineViewSvg")[0]);
+    }).each(function() {
       renderIODrawers(d3.select(this));
     });
 
-    $("#machineView .RM").each(function() {
+    $("#machineView .RM").filter(function() {
+      return AABB.collide($(this)[0], $("#machineViewSvg")[0]);
+    }).each(function() {
       renderNodeBoards(d3.select(this));
     });
   }
 
   function renderMachinesL1() {
-    $("#machineView .R").each(function() {
+    $("#machineView .R").filter(function() {
+      return AABB.collide($(this)[0], $("#machineViewSvg")[0]);
+    }).each(function() {
       renderBulkPowerSupply(d3.select(this));
       renderClockCard(d3.select(this));
       renderCoolantMonitor(d3.select(this));
     });
 
-    $("#machineView .RM").each(function() {
+    $("#machineView .RM").filter(function() {
+      return AABB.collide($(this)[0], $("#machineViewSvg")[0]);
+    }).each(function() {
       renderServiceCard(d3.select(this));
     });
   }
 
   function renderMachinesL0() {
-    $("#machineView .RMN").each(function() {
+    $("#machineView .RMN").filter(function() {
+      return AABB.collide($(this)[0], $("#machineViewSvg")[0]);
+    }).each(function() {
       renderComputeCards(d3.select(this));
       renderLinkModules(d3.select(this));
       renderOpticalModules(d3.select(this));
       renderDCAs(d3.select(this));
     });
 
-    $("machineView .RB").each(function() {
+    $("#machineView .RB").filter(function() {
+      return AABB.collide($(this)[0], $("#machineViewSvg")[0]);
+    }).each(function() {
       renderPowerModules(d3.select(this));
     });
   }
@@ -292,7 +379,7 @@ function machineView() {
         var rackStr = rack2str(row, col);
         var rack = rowGroup.append("g")
           .attr("transform", "translate(" + ((rackW+rackPadding*2)*col + rackPadding) + "," + rackPadding + ")")
-          .attr("class", "R")
+          .attr("class", "R L4")
           .attr("_row", row)
           .attr("_col", col);
         rack.append("rect")
@@ -312,7 +399,7 @@ function machineView() {
         var ioRackStr = ioRack2str(row, col);
         var ioRack = rowGroup.append("g")
           .attr("transform", "translate(" + ((rackW+rackPadding*2)*col + rackPadding) + "," + rackPadding + ")")
-          .attr("class", "Q")
+          .attr("class", "Q L4")
           .attr("_row", row)
           .attr("_col", col);
         ioRack.append("rect")
@@ -336,7 +423,8 @@ function machineView() {
     var col = +rack.attr("_col");
 
     var midplaneGroup = rack.append("g")
-      .attr("transform", "translate(" + midplaneGroupL + "," + midplaneGroupT + ")");
+      .attr("transform", "translate(" + midplaneGroupL + "," + midplaneGroupT + ")")
+      .attr("class", "L3");
 
     for (mp=0; mp<2; mp++) {
       var midplaneStr = midplane2str(row, col, mp);
@@ -367,7 +455,8 @@ function machineView() {
     var col = +ioRack.attr("_col");
 
     var ioDrawerGroup = ioRack.append("g")
-      .attr("transform", "translate(" + ioDrawerGroupL + "," + ioDrawerGroupT + ")");
+      .attr("transform", "translate(" + ioDrawerGroupL + "," + ioDrawerGroupT + ")")
+      .attr("class", "L2");
 
     for (p=0; p<3; p++) {
       for (q=0; q<3; q++) {
@@ -390,7 +479,8 @@ function machineView() {
     var mp = +midplane.attr("_mp");
 
     var nodeBoardGroup = midplane.append("g")
-      .attr("transform", "translate(" + nodeBoardGroupL + "," + nodeBoardGroupT + ")");
+      .attr("transform", "translate(" + nodeBoardGroupL + "," + nodeBoardGroupT + ")")
+      .attr("class", "L2");
 
     for (p=0; p<4; p++) {
       for (q=0; q<4; q++) {
@@ -419,7 +509,8 @@ function machineView() {
     var col = +rack.attr("_col");
 
     var bulkPowerSupplyGroup = rack.append("g")
-      .attr("transform", "translate(" + bulkPowerSupplyGroupL + "," + bulkPowerSupplyGroupT + ")");
+      .attr("transform", "translate(" + bulkPowerSupplyGroupL + "," + bulkPowerSupplyGroupT + ")")
+      .attr("class", "L1")
 
     for (p=0; p<2; p++) {
       for (q=0; q<2; q++) {
@@ -428,10 +519,10 @@ function machineView() {
         var bulkPowerSupply = bulkPowerSupplyGroup.append("g")
           .attr("id", bulkPowerSupplyStr)
           .attr("transform", "translate(" + q*bulkPowerSupplyW + "," + p*bulkPowerSupplyH + ")")
-          .attr("class", "L1 RB")
+          .attr("class", "RB")
           .attr("_row", row)
           .attr("_col", col)
-          .attr("_bulkPowerSupply", bulkPowerSupplyID);
+          .attr("_bps", bulkPowerSupplyID);
         bulkPowerSupply.append("rect")
           .attr("class", "c RBBox")
           .attr("id", bulkPowerSupplyStr)
@@ -448,7 +539,7 @@ function machineView() {
     var clockCardStr = clockCard2str(row, col);
     var clockCard = rack.append("g")
       .attr("transform", "translate(" + clockCardL + "," + clockCardT + ")")
-      .attr("class", "L1 RK");
+      .attr("class", "RK L1");
     clockCard.append("rect")
       .attr("class", "c RKBox")
       .attr("id", clockCardStr)
@@ -463,7 +554,7 @@ function machineView() {
     var coolantMonitorStr = coolantMonitor2str(row, col);
     var coolantMonitor = rack.append("g")
       .attr("transform", "translate(" + coolantMonitorL + "," + coolantMonitorT + ")")
-      .attr("class", "L1 RL");
+      .attr("class", "RL L1");
     coolantMonitor.append("rect")
       .attr("class", "c RLBox")
       .attr("id", coolantMonitorStr)
@@ -479,7 +570,7 @@ function machineView() {
     var serviceCardStr = serviceCard2str(row, col, mp);
     var serviceCard = midplane.append("g")
       .attr("transform", "translate(" + serviceCardL + "," + serviceCardT + ")")
-      .attr("class", "L1 RMS");
+      .attr("class", "RMS L1");
     serviceCard.append("rect")
       .attr("class", "c RMSBox")
       .attr("id", serviceCardStr)
@@ -494,7 +585,8 @@ function machineView() {
     var nb = +nodeBoard.attr("_nb");
 
     var computeCardGroup = nodeBoard.append("g")
-      .attr("transform", "translate(" + computeCardGroupL + "," + computeCardGroupT + ")");
+      .attr("transform", "translate(" + computeCardGroupL + "," + computeCardGroupT + ")")
+      .attr("class", "L0");
 
     for (p=0; p<4; p++) {
       for (q=0; q<8; q++) {
@@ -503,7 +595,7 @@ function machineView() {
         var computeCard = computeCardGroup.append("g")
           .attr("id", computeCardStr)
           .attr("transform", "translate(" + q*computeCardW + "," + p*computeCardH + ")")
-          .attr("class", "L1 RMNJ");
+          .attr("class", "RMNJ");
         computeCard.append("rect")
           .attr("class", "c RMNJBox")
           .attr("id", computeCardStr)
@@ -525,7 +617,8 @@ function machineView() {
     var nb = +nodeBoard.attr("_nb");
 
     var linkModuleGroup = nodeBoard.append("g")
-      .attr("transform", "translate(" + linkModuleGroupL + "," + linkModuleGroupT + ")");
+      .attr("transform", "translate(" + linkModuleGroupL + "," + linkModuleGroupT + ")")
+      .attr("class", "L0");
 
     for (p=0; p<3; p++) {
       for (q=0; q<3; q++) {
@@ -534,7 +627,7 @@ function machineView() {
         var linkModule = linkModuleGroup.append("g")
           .attr("id", linkModuleStr)
           .attr("transform", "translate(" + q*linkModuleW + "," + p*linkModuleH + ")")
-          .attr("class", "L1 RMNU");
+          .attr("class", "RMNU");
         linkModule.append("rect")
           .attr("class", "c RMNUBox")
           .attr("id", linkModuleStr)
@@ -551,7 +644,8 @@ function machineView() {
     var nb = +nodeBoard.attr("_nb");
 
     var opticalModuleGroup = nodeBoard.append("g")
-      .attr("transform", "translate(" + opticalModuleGroupL + "," + opticalModuleGroupT + ")");
+      .attr("transform", "translate(" + opticalModuleGroupL + "," + opticalModuleGroupT + ")")
+      .attr("class", "L0");
 
     for (p=0; p<6; p++) {
       for (q=0; q<6; q++) {
@@ -560,7 +654,7 @@ function machineView() {
         var opticalModule = opticalModuleGroup.append("g")
           .attr("id", opticalModuleStr)
           .attr("transform", "translate(" + q*opticalModuleW + "," + p*opticalModuleH + ")")
-          .attr("class", "L1 RMNO");
+          .attr("class", "RMNO");
         opticalModule.append("rect")
           .attr("class", "c RMNOBox")
           .attr("id", opticalModuleStr)
@@ -577,7 +671,8 @@ function machineView() {
     var nb = +nodeBoard.attr("_nb");
 
     var DCAGroup = nodeBoard.append("g")
-      .attr("transform", "translate(" + DCAGroupL + "," + DCAGroupT + ")");
+      .attr("transform", "translate(" + DCAGroupL + "," + DCAGroupT + ")")
+      .attr("class", "L0");
 
     for (p=0; p<2; p++) {
       var DCAID = p;
@@ -585,7 +680,7 @@ function machineView() {
       var DCA = DCAGroup.append("g")
         .attr("id", DCAStr)
         .attr("transform", "translate(" + p*DCAW + ",0)")
-        .attr("class", "L1 RMND");
+        .attr("class", "RMND");
       DCA.append("rect")
         .attr("class", "c RMNDBox")
         .attr("id", DCAStr)
@@ -595,21 +690,22 @@ function machineView() {
   }
 
   function renderPowerModules(bulkPowerSupply) {
-    var row = +nodeBoard.attr("_row");
-    var col = +nodeBoard.attr("_col");
-    var bps = +bulkPowerSupply("_bps");
+    var row = +bulkPowerSupply.attr("_row");
+    var col = +bulkPowerSupply.attr("_col");
+    var bps = +bulkPowerSupply.attr("_bps");
 
     var powerModuleGroup = bulkPowerSupply.append("g")
-      .attr("transform", "translate(" + powerModuleGroupL + "," + powerModuleGroupT + ")");
+      .attr("transform", "translate(" + powerModuleGroupL + "," + powerModuleGroupT + ")")
+      .attr("class", "L0");
 
     for (p=0; p<3; p++) {
       for (q=0; q<3; q++) {
         var powerModuleID = p*3+q;
         var powerModuleStr = powerModule2str(row, col, bps, powerModuleID);
         var powerModule = powerModuleGroup.append("g")
-          .attr("id", opticalModuleStr)
+          .attr("id", powerModuleStr)
           .attr("transform", "translate(" + q*powerModuleW + "," + p*powerModuleH + ")")
-          .attr("class", "L1 RMND");
+          .attr("class", "RMND L0");
         powerModule.append("rect")
           .attr("class", "c RMNDBox")
           .attr("id", powerModuleStr)

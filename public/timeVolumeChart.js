@@ -223,7 +223,7 @@ function timeVolumeChart(id, data, geom) {
     svg.select(".axis-x").call(xAxis);
     svg.selectAll(".line").attr("d", line);
 
-    zoomTimer.restart(zoomTimedOut, 300);
+    zoomTimer.restart(zoomTimedOut, 100);
   }
 
   function zoomTimedOut() {
