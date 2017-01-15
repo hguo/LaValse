@@ -46,7 +46,8 @@ function torusView(id, geom) {
   background.strokeStyle = "rgba(0, 0, 0, 0.00)";
 
   var foreground = $("#foreground")[0].getContext("2d");
-  foreground.strokeStyle = "rgba(0, 100, 160, 0.8)";
+  foreground.strokeStyle = "rgba(0, 100, 160, 1)";
+  foreground.globalAlpha = 0.5;
 
   var ndims = 4;
   var dimensions = [0, 1, 2, 3];
@@ -83,6 +84,9 @@ function torusView(id, geom) {
     axes.push(
       d3.axisLeft()
         .ticks(torusDimensions[d])
+        .tickFormat(function(d) {
+          return d.toString(16).toUpperCase();
+        })
         .scale(y[d])
     );
   })
