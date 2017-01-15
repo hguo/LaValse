@@ -163,3 +163,7 @@ svg text {
   stroke: steelblue;
 }
 
+.torusLine {
+  fill: none;
+  stroke: steelblue;
+}

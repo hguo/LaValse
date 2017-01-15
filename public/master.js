@@ -50,7 +50,9 @@ function init() {
     $("#controlPanel").css("display", "block");
     $("#tableView").css("display", "block");
     $("#tabs").css("display", "block");
-   
+  
+    // torusView = new torusView("#tabs-0", {L: 0, T: 0, W: 360, H: 360});
+
     updateQueryInfo(d);
   });
   
