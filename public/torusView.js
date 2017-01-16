@@ -49,26 +49,28 @@ function torusView(id, geom) {
   foreground.strokeStyle = "rgba(0, 100, 160, 1)";
   foreground.globalAlpha = 0.5;
 
-  var ndims = 4;
-  var dimensions = [0, 1, 2, 3];
-  var dimensionNames = ["A", "B", "C", "D"]
-  var torusDimensions = [8, 12, 16, 16];
+  var ndims = 5;
+  var dimensions = [0, 1, 2, 3, 4];
+  var dimensionNames = ["A", "B", "C", "D", "E"]
+  var torusDimensions = [8, 12, 16, 16, 2];
   // var torusDimensions = [2, 2, 2, 2];
-  var lbs = [0, 0, 0, 0], ubs = [8, 12, 16, 16];
+  var lbs = [0, 0, 0, 0, 0], ubs = [8, 12, 16, 16, 2];
 
   var nbs = [];
   for (var a=0; a<torusDimensions[0]; a++) {
     for (var b=0; b<torusDimensions[1]; b++) {
       for (var c=0; c<torusDimensions[2]; c++) {
         for (var d=0; d<torusDimensions[3]; d++) {
-          nbs.push([a, b, c, d]);
+          for (var e=0; e<torusDimensions[4]; e++) {
+            nbs.push([a, b, c, d, e]);
+          }
         }
       }
     }
   }
 
   var x = d3.scaleLinear()
-    .domain([0, 3])
+    .domain([0, ndims-1])
     .range([0, width])
   var y = [];
 
