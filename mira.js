@@ -636,7 +636,8 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     locationToL2Location: locationToL2Location,
     locationToL3Location: locationToL3Location,
     locationToL4Location: locationToL4Location,
-    locationToLODLocation: locationToLODLocation
+    locationToLODLocation: locationToLODLocation,
+    computeCard2str: computeCard2str
   };
 }
 
