@@ -56,8 +56,9 @@ app.get("/cobalt", function(req, res) {
 
   MongoClient.connect(url, function(err, db) {
     db.collection("cobalt").find({
-      "startTimestamp": {$gte: new Date("2015-04-22T23:52:14.380Z")},
-      "runTimeSeconds": {$gte: 86400}
+      "endTimestamp": {$gte: new Date(query.T0)}, 
+      "startTimestamp": {$lte: new Date(query.T1)},
+      "runTimeSeconds": {$gte: query.minRunTimeSeconds}
     }).toArray(function(err, docs) {
       res.end(JSON.stringify(docs));
     });

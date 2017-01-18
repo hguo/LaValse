@@ -25,13 +25,13 @@ svg text {
   display: none;
 }
 
-#eventTable {
+.tableView {
   font-size: 8pt;
   table-layout: fixed;
   width: 1160px;
 }
 
-#eventTable td {
+.tableView td {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -54,6 +54,14 @@ svg text {
   position: absolute;
   left: 270;
   top: 480;
+  display: none;
+}
+
+#cobaltTableView {
+  font-size: 9pt;
+  position: absolute;
+  left: 270;
+  top: 640;
   display: none;
 }
 

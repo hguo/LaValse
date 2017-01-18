@@ -49,11 +49,18 @@ function init() {
     machineView.updateData(d.location, histogramToArray(d.location));
     $("#controlPanel").css("display", "block");
     $("#tableView").css("display", "block");
+    $("#cobaltTableView").css("display", "block");
     $("#tabs").css("display", "block");
   
     torusView = new torusView("#tabs-0", {L: 0, T: 0, W: 360, H: 360});
 
     updateQueryInfo(d);
+  });
+
+  refreshCobaltLog({
+    minRunTimeSeconds: 27587, 
+    T0: query.T0, 
+    T1: query.T1
   });
   
   $("#volumeBy").change(function() {
@@ -123,6 +130,12 @@ function refreshRecIDs(data) {
 
   d3.json("/db?query=" + JSON.stringify(query), function(d) {
     timeVolumeChart.updateRecords(d);
+  });
+}
+
+function refreshCobaltLog(q) {
+  d3.json("/cobalt?query=" + JSON.stringify(q), function(data) {
+    console.log(data);
   });
 }
 
