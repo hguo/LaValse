@@ -5,6 +5,7 @@ const cube = require("./cube").cube;
 const deasync = require("deasync");
 const basicAuth = require('basic-auth-connect');
 const levelup = require("levelup");
+const MongoClient = require("mongodb").MongoClient;
 
 var mycube = new cube("raslog");
 var rasdb = levelup("./db1");
@@ -27,27 +28,37 @@ app.get("/cube", function(req, res, next) {
 
 app.get("/db", function(req, res) {
   var query = JSON.parse(req.query.query); // query should be an array
-  var results = [];
+  var results = {};
+  var resultsArray = [];
 
-  query.forEach(function(d) {
-    results.push(JSON.parse(getSync(rasdb, d)));
+  query.forEach(function(key) {
+    rasdb.get(key, function(err, val) {
+      results[key] = val;
+      callback();
+    });
   });
 
-  res.end(JSON.stringify(results));
-
-  function getSync(db, key) {
-    var done = false;
-    var data;
-    db.get(key, function(err, val) {
-      data = val;
-      done = true;
-    });
-    deasync.loopWhile(function() {return !done;});
-    return data;
+  var count = 0;
+  function callback() {
+    count ++;
+    if (count == query.length) {
+      query.forEach(function(key) {
+        resultsArray.push(JSON.parse(results[key]));
+      });
+      res.end(JSON.stringify(resultsArray));
+    }
   }
 });
 
-app.get("/job", function(req, res) {
+app.get("/cobalt", function(req, res) {
   var query = JSON.parse(req.query.query);
-  res.end();
+  const url = "mongodb://localhost:27017/catalog";
+
+  MongoClient.connect(url, function(err, db) {
+    db.collection("cobalt").find({
+      "WALLTIME_SECONDS": {$gte: 86400}
+    }).toArray(function(err, docs) {
+      res.end(JSON.stringify(docs));
+    });
+  });
 });
