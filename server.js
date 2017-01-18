@@ -51,12 +51,13 @@ app.get("/db", function(req, res) {
 });
 
 app.get("/cobalt", function(req, res) {
-  var query = JSON.parse(req.query.query);
+  var query = JSON.parse(req.query.query); // fields in query: T0, T1, minRunTimeSeconds
   const url = "mongodb://localhost:27017/catalog";
 
   MongoClient.connect(url, function(err, db) {
     db.collection("cobalt").find({
-      "WALLTIME_SECONDS": {$gte: 86400}
+      "startTimestamp": {$gte: new Date("2015-04-22T23:52:14.380Z")},
+      "runTimeSeconds": {$gte: 86400}
     }).toArray(function(err, docs) {
       res.end(JSON.stringify(docs));
     });
