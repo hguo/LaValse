@@ -6,7 +6,7 @@ function timeVolumeChart(id, data, geom) {
   var useLogScale = true;
 
   var zoom = d3.zoom()
-    .scaleExtent([1, 10000000])
+    .scaleExtent([1, 100000000])
     .translateExtent([[0, 0], [width, height]])
     .extent([[0, 0], [width, height]])
     .on("zoom", zoomed);
@@ -178,7 +178,8 @@ function timeVolumeChart(id, data, geom) {
       .attr("r", "3")
       .style("stroke", "steelblue")
       .style("fill", "white")
-      .attr("cx", function(d) {return d.timeSlot * 2;})
+      // .attr("cx", function(d) {return d.timeSlot * 2;})
+      .attr("cx", function(d) {return x(d.eventTime);})
       .attr("cy", function(d) {return yLinearReverse(d.y);});
   }
 
@@ -247,6 +248,9 @@ function timeVolumeChart(id, data, geom) {
     svg.select(".axis-x").call(xAxis);
     svg.selectAll(".line").attr("d", line);
     
+    svg.selectAll(".glyph")
+      .attr("cx", function(d) {return x(d.eventTime);})
+
     svg.selectAll(".cobalt")
       .attr("x", function(d) {return x(d.startTimestamp);})
       .attr("width", function(d) {return x(d.endTimestamp) - x(d.startTimestamp);})

@@ -122,15 +122,21 @@ function updateQueryInfo(d) {
 }
 
 function refreshRecIDs(data) {
-  timeVolumeChart.updateRecords(data);
-  
-  return; // TODO
-  var query = [];
-  data.forEach(function(d) {query.push(d.recID);});
+  if (data.length == 0) {
+    timeVolumeChart.updateRecords([]);
+    return;
+  } else {
+    var query = [];
+    data.forEach(function(d) {query.push(d.recID);});
 
-  d3.json("/db?query=" + JSON.stringify(query), function(d) {
-    timeVolumeChart.updateRecords(d);
-  });
+    d3.json("/db?query=" + JSON.stringify(query), function(data1) {
+      for (var i=0; i<data1.length; i++) {
+        data1[i].eventTime = new Date(data1[i].eventTime);
+        data1[i].y = data[i].y;
+      }
+      timeVolumeChart.updateRecords(data1);
+    });
+  }
 }
 
 function refreshCobaltLog(q) {
