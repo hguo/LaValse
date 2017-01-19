@@ -284,33 +284,6 @@ function torusCoordsToMidplane(x, y, z, w) {
   function C(w_4) {const table = [0, 1, 1, 0]; return table[w_4];}
 }
 
-function parseComputeBlock(str) {
-  // if (str.slice( == "_DIAGS_")
-
-  var substrings = str.split("-");
-  if (substrings[0] != "MIR") return new Set(); // empty set
-
-  var s = parseTorusCoords(substrings[1]), 
-      t = parseTorusCoords(substrings[2]);
-  var nodeCount = parseInt(substrings[3]);
-  var midplaneDict = {};
-  var set = new Set();
-
-  for (a=s.a; a<=t.a; a++) {
-    for (b=s.b; b<=t.b; b++) {
-      for (c=s.c; c<=t.c; c++) {
-        for (d=s.d; d<=t.d; d++) {
-          var mp = torusCoordsToMidplane(a, b, c, d);
-          // midplaneDict[midplane2str(mp.row, mp.column, mp.midplane)] = 1;
-          set.add(midplane2str(mp.row, mp.column, mp.midplane));
-        }
-      }
-    }
-  }
-
-  return set;
-}
-
 function locationToL0Location(L) {
   return L.str;
 }
@@ -617,12 +590,57 @@ function enumerateL4Locations() {
   return locations;
 }
 
+function partitionParser() {
+  var cache = {};
+
+  this.parse = function(str) {
+    if (str in cache) {
+      return cache[str];
+    } else {
+      var result = this.parse1(str);
+      cache[str] = result;
+      return result;
+    }
+  }
+
+  this.parse1 = function(str) {
+    var substrings = str.split("-");
+    var midplanes = new Array(96);
+    for (var i=0; i<midplanes.length; i++) midplanes[i] = false;
+
+    if (substrings[0] != "MIR") return midplanes;
+
+    var s = parseTorusCoords(substrings[1]), 
+        t = parseTorusCoords(substrings[2]);
+    var nodeCount = parseInt(substrings[3]); // FIXME
+    // var set = new Set();
+
+    for (a=s.a; a<=t.a; a++) {
+      for (b=s.b; b<=t.b; b++) {
+        for (c=s.c; c<=t.c; c++) {
+          for (d=s.d; d<=t.d; d++) {
+            var mp = torusCoordsToMidplane(a, b, c, d);
+            var idx = (mp.row * 16 + mp.column) * 2 + mp.midplane;
+            midplanes[idx] = true;
+            // set.add(midplane2str(mp.row, mp.column, mp.midplane));
+          }
+        }
+      }
+    }
+
+    return midplanes;
+  }
+}
+
+// var parser = new partitionParser;
+// console.log(parser.parse("MIR-08000-7BFF1-0010-12288"));
 // console.log(enumerateRMNLocations().length);
 // console.log(parseLocation("R1A-M1-N13"));
 // parseComputeBlock("MIR-00000-73FF1-16384");
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
   module.exports = {
+    partitionParser: partitionParser,
     parseLocation: parseLocation,
     parseLocationType: parseLocationType,
     parseLocationTypeInt: parseLocationTypeInt,

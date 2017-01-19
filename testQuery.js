@@ -111,14 +111,17 @@ var aggregateDocument = function(db, callback) {
   // var group = {"$group": {"_id": "$messageID", "count": {$sum: 1}}};
   
   var a1 = collection
+    .find({})
+    /*
     .aggregate([
         {
           // $group: {"_id": "$cobaltProjectName", count: {$sum: 1}}
           $group: {"_id": "$machinePartition", count: {$sum: 1}}
         }
-    ])
+    ])*/
     // .find(query)
     .toArray(function(err, docs) {
+      console.log(err);
       docs.forEach(function(d) {
         console.log(d);
       });
