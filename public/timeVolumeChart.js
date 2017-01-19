@@ -182,6 +182,30 @@ function timeVolumeChart(id, data, geom) {
       .attr("cy", function(d) {return yLinearReverse(d.y);});
   }
 
+  this.updateCobaltData = function(data) {
+    var yCobalt = d3.scaleBand()
+      .rangeRound([height, 0])
+      .padding(0.01)
+      .domain(data.map(function(d) {return d.machinePartition;}));
+    var colorCobalt = d3.scaleOrdinal(d3.schemeCategory10)
+      .domain(data.map(function(d) {return d._id;}));
+    // console.log(yCobalt.domain());
+    // return;
+
+    svg.selectAll(".cobalt").remove();
+    svg.selectAll(".cobalt")
+      .data(data).enter()
+      .append("rect")
+      .attr("class", "cobalt")
+      .style("stroke", "black")
+      .style("opacity", "0.4")
+      .attr("x", function(d) {return x(d.startTimestamp);})
+      .attr("y", function(d) {return yCobalt(d.machinePartition);})
+      .attr("width", function(d) {return x(d.endTimestamp) - x(d.startTimestamp);})
+      // .attr("height", function(d) {return yCobalt.bandwidth();});
+      .attr("height", function(d) {return Math.max(1, yCobalt.bandwidth());}); 
+  }
+
   this.toggleLogScale = function() {
     useLogScale = !useLogScale;
 
@@ -222,6 +246,10 @@ function timeVolumeChart(id, data, geom) {
     x.domain(t.rescaleX(x0).domain());
     svg.select(".axis-x").call(xAxis);
     svg.selectAll(".line").attr("d", line);
+    
+    svg.selectAll(".cobalt")
+      .attr("x", function(d) {return x(d.startTimestamp);})
+      .attr("width", function(d) {return x(d.endTimestamp) - x(d.startTimestamp);})
 
     zoomTimer.restart(zoomTimedOut, 100);
   }
@@ -234,6 +262,14 @@ function timeVolumeChart(id, data, geom) {
     // query.tg = Math.max((query.T1 - query.T0) / width, 1000); // the finest resolution is 1 second
     query.tg = (query.T1 - query.T0) / width * 2;
     refresh();
+
+    var cobaltQuery = {
+      minRunTimeSeconds: query.tg * 2 / 1000, // ms to s
+      T0: query.T0, 
+      T1: query.T1
+    };
+    refreshCobaltLog(cobaltQuery);
+
     zoomTimer.stop();
   }
 }

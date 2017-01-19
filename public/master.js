@@ -58,7 +58,7 @@ function init() {
   });
 
   refreshCobaltLog({
-    minRunTimeSeconds: 27587, 
+    minRunTimeSeconds: 55174,
     T0: query.T0, 
     T1: query.T1
   });
@@ -134,7 +134,13 @@ function refreshRecIDs(data) {
 }
 
 function refreshCobaltLog(q) {
-  d3.json("/cobalt?query=" + JSON.stringify(q), function(allData) {
+  return; // TODO
+  d3.json("/cobalt?query=" + JSON.stringify(q), function(data) {
+    for (var i=0; i<data.length; i++) {
+      data[i].startTimestamp = new Date(data[i].startTimestamp);
+      data[i].endTimestamp = new Date(data[i].endTimestamp);
+    }
+    timeVolumeChart.updateCobaltData(data);
     /*
     var data = allData.slice(0, 5);
 

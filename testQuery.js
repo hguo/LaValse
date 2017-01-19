@@ -5,7 +5,7 @@ var url = "mongodb://localhost:27017/catalog";
 
 MongoClient.connect(url, function(err, db) {
   assert.equal(null, err);
-  console.log("connected.");
+  // console.log("connected.");
 
   // findDocument(db, function() {
   aggregateDocument(db, function() {
@@ -29,10 +29,10 @@ var findDocument = function(db, callback) {
       severity: "FATAL",
       eventTime: {$gte: new Date("8/20/2015"), $lt: new Date("8/30/2015")}
     }).toArray(function(err, docs) {
-    assert.equal(err, null);
-    console.log(docs);
-    callback(docs);
-  });
+      assert.equal(err, null);
+      console.log(docs);
+      callback(docs);
+    });
 }
 
 var updateDocument = function(db, callback) {
@@ -57,7 +57,7 @@ var removeDocument = function(db) {
 }
 
 var aggregateDocument = function(db, callback) {
-  var collection = db.collection("mira");
+  var collection = db.collection("cobalt");
   /* 
   collection.aggregate([ // aggregate by messageID
       {$match: {"severity": "FATAL"}}, 
@@ -107,14 +107,22 @@ var aggregateDocument = function(db, callback) {
     callback(result);
   });
   */
-  var query = {"$match": {"severity": "FATAL"}};
-  var group = {"$group": {"_id": "$messageID", "count": {$sum: 1}}};
-
-  var a1 = collection.aggregate([query, group]).toArray();
-  // function(err, docs) {
-  //   console.log(docs);
-  // });
-  console.log(a1);
+  // var query = {"$match": {"severity": "FATAL"}};
+  // var group = {"$group": {"_id": "$messageID", "count": {$sum: 1}}};
+  
+  var a1 = collection
+    .aggregate([
+        {
+          // $group: {"_id": "$cobaltProjectName", count: {$sum: 1}}
+          $group: {"_id": "$machinePartition", count: {$sum: 1}}
+        }
+    ])
+    // .find(query)
+    .toArray(function(err, docs) {
+      docs.forEach(function(d) {
+        console.log(d);
+      });
+    });
 
   callback();
 }
