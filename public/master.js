@@ -11,6 +11,26 @@ var query = {
 var severityChart, componentChart, categoryChart, locationTypeChart, controlActionChart, timeVolumeChart;
 var machineView;
 
+var torusRMNJMap = new function() {
+  var torusMap = {};
+  var RMNJMap = {};
+
+  d3.csv("/torusRMNJ.csv", function(err, data) {
+    data.forEach(function(d) {
+      torusMap[d.torus] = d.RMNJ;
+      RMNJMap[d.RMNJ] = d.torus;
+    });
+  });
+
+  this.torus = function(RMNJ) {
+    return RMNJMap[RMNJ];
+  }
+  
+  this.RMNJ = function(torus) {
+    return torusMap[torus];
+  }
+}
+
 $(function() {
   $("#tabs").tabs();
   $(document).tooltip({
@@ -200,6 +220,7 @@ function refreshTops(q) {
         return "<b>location:</b> " + L.str
           + "<br><b>type:</b> " + locationTypes[L.type]; 
       });
+    tr.append("td").html(function(d) {return torusRMNJMap.torus(d.location);}); 
     tr.append("td").html(function(d) {return d.CPU;});
     tr.append("td").html(function(d) {return d.block;})
       .attr("title", function(d) {return d.block;});

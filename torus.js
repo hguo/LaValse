@@ -101,7 +101,7 @@ for (var a=0; a<8; a++) {
           var key = torusCoordsToStr(a, b, c, d, e);
           var loc = globalTorusCoordsToRMNJ(a, b, c, d, e);
           var str = mira.computeCard2str(loc.row, loc.column, loc.midplane, loc.nodeBoard, loc.computeCard);
-          console.log(key, str);
+          console.log('"' + key + '","' + str + '"');
         }
       }
     }
