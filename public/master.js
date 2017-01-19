@@ -64,7 +64,7 @@ function init() {
         {L: 120, T: 315, W: 120, H: 290});
     timeVolumeChart = new timeVolumeChart(
         "#timeVolumeChart", d.timeVolumes, // histogramToArray(d.timeVolume), 
-        {L: 240, T: 360, W: 720, H: 120});
+        {L: 240, T: 330, W: 720, H: 150});
     machineView = new machineView();
     machineView.updateData(d.location, histogramToArray(d.location));
     $("#controlPanel").css("display", "block");
@@ -160,7 +160,6 @@ function refreshRecIDs(data) {
 }
 
 function refreshCobaltLog(q) {
-  return; // TODO
   d3.json("/cobalt?query=" + JSON.stringify(q), function(data) {
     for (var i=0; i<data.length; i++) {
       data[i].startTimestamp = new Date(data[i].startTimestamp);

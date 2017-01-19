@@ -1,7 +1,9 @@
 function timeVolumeChart(id, data, geom) {
-  const margin = {top: 10, right: 10, bottom: 25, left: 30},
+  const margin = {top: 5, right: 10, bottom: 25, left: 30},
         width = geom.W - margin.left - margin.right,
         height = geom.H - margin.top - margin.bottom;
+  const alpha = 0.6;
+  const volumeHeight = height * alpha, cobaltHeight = height * (1-alpha);
   
   var useLogScale = true;
 
@@ -23,6 +25,10 @@ function timeVolumeChart(id, data, geom) {
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
     .call(zoom);
 
+  var svgVolume = svg.append("g")
+    .attr("transform", "translate(0," + cobaltHeight + ")");
+  var svgCobalt = svg.append("g");
+
   var xDomain = [query.T0, query.T1];
   var yMax = d3.max(data, function(d) {return d3.max(d, function(dd) {return dd;});});
   yMax = ceilPow(yMax);
@@ -37,17 +43,17 @@ function timeVolumeChart(id, data, geom) {
     .rangeRound([0, width])
     .domain(xDomain);
   var yLog = d3.scaleLog()
-    .rangeRound([height, 0])
+    .rangeRound([volumeHeight, 0])
     .clamp(true)
     .domain(yDomainLog)
     .nice(4);
   var yLinear = d3.scaleLinear() 
-    .rangeRound([height, 0])
+    .rangeRound([volumeHeight, 0])
     .clamp(true)
     .domain(yDomainLinear)
     .nice(8);
   var yLinearReverse = d3.scaleLinear() 
-    .rangeRound([0, height])
+    .rangeRound([0, volumeHeight])
     .clamp(true)
     .domain([0, 20])
     .nice(8);
@@ -68,16 +74,16 @@ function timeVolumeChart(id, data, geom) {
     .x(function(d, i) {return x(query.T0 + query.tg * i);})
     .y(function(d) {return yLinear(d);});
 
-  svg.append("g")
+  svgVolume.append("g")
     .attr("class", "axis axis-x")
-    .attr("transform", "translate(0," + height + ")")
+    .attr("transform", "translate(0," + volumeHeight + ")")
     .call(xAxis);
 
-  svg.append("g")
+  svgVolume.append("g")
     .attr("class", "axis axis-y")
     .call(yAxis);
 
-  svg.selectAll(".line")
+  svgVolume.selectAll(".line")
     .data(data)
     .enter()
     .append("path")
@@ -87,10 +93,10 @@ function timeVolumeChart(id, data, geom) {
     .style("stroke", function(d, i) {return color(i);})
     .attr("d", function(d) {return lineLog(d);});
 
-  var cursor = svg.append("line")
+  var cursor = svgVolume.append("line")
     .attr("class", "cursor")
     .style("display", "none")
-    .attr("x1", 0).attr("y1", 0).attr("x2", 0).attr("y2", height)
+    .attr("x1", 0).attr("y1", 0).attr("x2", 0).attr("y2", volumeHeight)
     .style("stroke", "black")
     .style("stroke-dasharray", "2,2");
 
@@ -141,8 +147,8 @@ function timeVolumeChart(id, data, geom) {
     
     var line = useLogScale ? lineLog : lineLinear;
  
-    svg.selectAll(".line").remove();
-    svg.selectAll(".line")
+    svgVolume.selectAll(".line").remove();
+    svgVolume.selectAll(".line")
       .data(data)
       .enter()
       .append("path")
@@ -152,7 +158,7 @@ function timeVolumeChart(id, data, geom) {
       .style("stroke", function(d, i) {return color(i);})
       .attr("d", function(d) {return line(d);});
 
-    svg.selectAll(".line")
+    svgVolume.selectAll(".line")
       .data(data)
       // .datum(data)
       // .transition()
@@ -160,18 +166,18 @@ function timeVolumeChart(id, data, geom) {
         return line(d);
       });
 
-    svg.select(".axis-x")
+    svgVolume.select(".axis-x")
       .transition().call(xAxis);
     
-    svg.select(".axis-y")
+    svgVolume.select(".axis-y")
       .transition().call(yAxis)
   }
 
   this.updateRecords = function(data) {
     if (useLogScale) toggleLogScale();
 
-    svg.selectAll(".glyph").remove(); // TODO: transition
-    svg.selectAll(".glyph")
+    svgVolume.selectAll(".glyph").remove(); // TODO: transition
+    svgVolume.selectAll(".glyph")
       .data(data).enter()
       .append("circle")
       .attr("class", "glyph")
@@ -180,12 +186,15 @@ function timeVolumeChart(id, data, geom) {
       .style("fill", "white")
       // .attr("cx", function(d) {return d.timeSlot * 2;})
       .attr("cx", function(d) {return x(d.eventTime);})
-      .attr("cy", function(d) {return yLinearReverse(d.y);});
+      .attr("cy", function(d) {return yLinearReverse(d.y);})
+      .attr("title", function(d) {
+        // TODO
+      });
   }
 
   this.updateCobaltData = function(data) {
     var yCobalt = d3.scaleBand()
-      .rangeRound([height, 0])
+      .rangeRound([cobaltHeight, 0])
       .padding(0.01)
       .domain(data.map(function(d) {return d.machinePartition;}));
     var colorCobalt = d3.scaleOrdinal(d3.schemeCategory10)
@@ -193,8 +202,8 @@ function timeVolumeChart(id, data, geom) {
     // console.log(yCobalt.domain());
     // return;
 
-    svg.selectAll(".cobalt").remove();
-    svg.selectAll(".cobalt")
+    svgCobalt.selectAll(".cobalt").remove();
+    svgCobalt.selectAll(".cobalt")
       .data(data).enter()
       .append("rect")
       .attr("class", "cobalt")
@@ -203,7 +212,6 @@ function timeVolumeChart(id, data, geom) {
       .attr("x", function(d) {return x(d.startTimestamp);})
       .attr("y", function(d) {return yCobalt(d.machinePartition);})
       .attr("width", function(d) {return x(d.endTimestamp) - x(d.startTimestamp);})
-      // .attr("height", function(d) {return yCobalt.bandwidth();});
       .attr("height", function(d) {return Math.max(1, yCobalt.bandwidth());}); 
   }
 
@@ -213,10 +221,10 @@ function timeVolumeChart(id, data, geom) {
     var line = useLogScale ? lineLog : lineLinear;
     var y = useLogScale ? yLog : yLinear;
 
-    svg.selectAll(".line")
+    svgVolume.selectAll(".line")
       .transition()
       .attr("d", function(d) {return line(d);});
-    svg.select(".axis-y")
+    svgVolume.select(".axis-y")
       .transition()
       .call(yAxis.scale(y));
   }
@@ -245,13 +253,13 @@ function timeVolumeChart(id, data, geom) {
     
     var t = d3.event.transform;
     x.domain(t.rescaleX(x0).domain());
-    svg.select(".axis-x").call(xAxis);
-    svg.selectAll(".line").attr("d", line);
+    svgVolume.select(".axis-x").call(xAxis);
+    svgVolume.selectAll(".line").attr("d", line);
     
-    svg.selectAll(".glyph")
+    svgVolume.selectAll(".glyph")
       .attr("cx", function(d) {return x(d.eventTime);})
 
-    svg.selectAll(".cobalt")
+    svgCobalt.selectAll(".cobalt")
       .attr("x", function(d) {return x(d.startTimestamp);})
       .attr("width", function(d) {return x(d.endTimestamp) - x(d.startTimestamp);})
 
