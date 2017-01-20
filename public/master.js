@@ -172,6 +172,7 @@ function refreshCobaltLog(q) {
 
 function updateCobaltTable(allData) {
   var data = allData.slice(0, 5);
+  // var data = allData;
 
   var tbody = d3.select("#cobaltTable tbody");
   tbody.selectAll("tr").remove();

@@ -194,6 +194,9 @@ function timeVolumeChart(id, data, geom) {
 
   this.updateCobaltData = function(data) {
     const unitHeight = cobaltHeight / 96;
+    var cobaltColor = d3.scaleOrdinal(d3.schemeCategory20)
+      .domain([0, 29]);
+
     svgCobalt.selectAll(".cobalt").remove();
     svgCobalt.selectAll(".cobalt")
       .data(data).enter()
@@ -205,13 +208,16 @@ function timeVolumeChart(id, data, geom) {
       var components = partitionParser.components(data[i].machinePartition);
       const x_ = x(data[i].startTimestamp);
       const width_ = x(data[i].endTimestamp) - x(data[i].startTimestamp);
+      var color = cobaltColor((+data[i]._id)%20);
+      
       svgCobalt.select("#job" + i)
         .selectAll(".cobaltBox")
         .data(components).enter()
         .append("rect")
         .attr("class", "cobaltBox")
-        .style("stroke", "black")
-        .style("opacity", "0.5")
+        .style("stroke", "none")
+        .style("fill", color)
+        .style("opacity", "0.75")
         .attr("x", x_)
         .attr("y", function(d, i) {return d[0] * unitHeight;}) 
         .attr("width", width_)
@@ -281,7 +287,7 @@ function timeVolumeChart(id, data, geom) {
     refresh();
 
     var cobaltQuery = {
-      minRunTimeSeconds: query.tg * 2 / 1000, // ms to s
+      minRunTimeSeconds: query.tg/2 / 1000, // ms to s
       T0: query.T0, 
       T1: query.T1
     };
