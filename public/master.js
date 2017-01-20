@@ -166,24 +166,26 @@ function refreshCobaltLog(q) {
       data[i].endTimestamp = new Date(data[i].endTimestamp);
     }
     timeVolumeChart.updateCobaltData(data);
-    /*
-    var data = allData.slice(0, 5);
-
-    var tbody = d3.select("#cobaltTable tbody");
-    tbody.selectAll("tr").remove();
-    var tr = tbody.selectAll("tr").data(data)
-      .enter().append("tr");
-
-    tr.append("td").html(function(d) {return d._id;});
-    tr.append("td").html(function(d) {return d.startTimestamp;});
-    tr.append("td").html(function(d) {return d.endTimestamp;});
-    tr.append("td").html(function(d) {return d.runTimeSeconds;});
-    tr.append("td").html(function(d) {return d.machinePartition;});
-    tr.append("td").html(function(d) {return d.exitCode;});
-    tr.append("td").html(function(d) {return d.projectName;});
-    tr.append("td").html(function(d) {return d.cobaltUserName;});
-    */
+    updateCobaltTable(data);
   });
+}
+
+function updateCobaltTable(allData) {
+  var data = allData.slice(0, 5);
+
+  var tbody = d3.select("#cobaltTable tbody");
+  tbody.selectAll("tr").remove();
+  var tr = tbody.selectAll("tr").data(data)
+    .enter().append("tr");
+
+  tr.append("td").html(function(d) {return d._id;});
+  tr.append("td").html(function(d) {return d.startTimestamp;});
+  tr.append("td").html(function(d) {return d.endTimestamp;});
+  tr.append("td").html(function(d) {return d.runTimeSeconds;});
+  tr.append("td").html(function(d) {return d.machinePartition;});
+  tr.append("td").html(function(d) {return d.exitCode;});
+  tr.append("td").html(function(d) {return d.projectName;});
+  tr.append("td").html(function(d) {return d.cobaltUserName;});
 }
 
 function refreshTops(q) {

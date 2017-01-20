@@ -193,26 +193,30 @@ function timeVolumeChart(id, data, geom) {
   }
 
   this.updateCobaltData = function(data) {
-    var yCobalt = d3.scaleBand()
-      .rangeRound([cobaltHeight, 0])
-      .padding(0.01)
-      .domain(data.map(function(d) {return d.machinePartition;}));
-    var colorCobalt = d3.scaleOrdinal(d3.schemeCategory10)
-      .domain(data.map(function(d) {return d._id;}));
-    // console.log(yCobalt.domain());
-    // return;
-
+    const unitHeight = cobaltHeight / 96;
     svgCobalt.selectAll(".cobalt").remove();
     svgCobalt.selectAll(".cobalt")
       .data(data).enter()
-      .append("rect")
+      .append("g")
       .attr("class", "cobalt")
-      .style("stroke", "black")
-      .style("opacity", "0.4")
-      .attr("x", function(d) {return x(d.startTimestamp);})
-      .attr("y", function(d) {return yCobalt(d.machinePartition);})
-      .attr("width", function(d) {return x(d.endTimestamp) - x(d.startTimestamp);})
-      .attr("height", function(d) {return Math.max(1, yCobalt.bandwidth());}); 
+      .attr("id", function(d, i) {return "job" + i;});
+
+    for (var i=0; i<data.length; i++) {
+      var components = partitionParser.components(data[i].machinePartition);
+      const x_ = x(data[i].startTimestamp);
+      const width_ = x(data[i].endTimestamp) - x(data[i].startTimestamp);
+      svgCobalt.select("#job" + i)
+        .selectAll(".cobaltBox")
+        .data(components).enter()
+        .append("rect")
+        .attr("class", "cobaltBox")
+        .style("stroke", "black")
+        .style("opacity", "0.5")
+        .attr("x", x_)
+        .attr("y", function(d, i) {return d[0] * unitHeight;}) 
+        .attr("width", width_)
+        .attr("height", function(d) {return d[1] * unitHeight;}); 
+    }
   }
 
   this.toggleLogScale = function() {
@@ -259,9 +263,10 @@ function timeVolumeChart(id, data, geom) {
     svgVolume.selectAll(".glyph")
       .attr("cx", function(d) {return x(d.eventTime);})
 
+    /*
     svgCobalt.selectAll(".cobalt")
       .attr("x", function(d) {return x(d.startTimestamp);})
-      .attr("width", function(d) {return x(d.endTimestamp) - x(d.startTimestamp);})
+      .attr("width", function(d) {return x(d.endTimestamp) - x(d.startTimestamp);})*/
 
     zoomTimer.restart(zoomTimedOut, 100);
   }

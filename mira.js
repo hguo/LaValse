@@ -590,8 +590,9 @@ function enumerateL4Locations() {
   return locations;
 }
 
-function partitionParser() {
+var partitionParser = new function() {
   var cache = {};
+  var cacheComponents = {};
 
   this.parse = function(str) {
     if (str in cache) {
@@ -601,6 +602,42 @@ function partitionParser() {
       cache[str] = result;
       return result;
     }
+  }
+
+  this.components = function(str) {
+    if (str in cache) {
+      return cacheComponents[str];
+    } else {
+      var result = this.components1(str);
+      cacheComponents[str] = result;
+      return result;
+    }
+  }
+
+  this.components1 = function(str) {
+    const N = 96;
+    var array = this.parse(str);
+    var results = [];
+    
+    for (var i=0; i<N; i++) {
+      if (array[i]) {
+        for (var j=i+1; j<N; j++) {
+          if (array[j]) {
+            if (j>=N-1) {
+              results.push([i, j-i+1]);
+              i = j+1;
+              break;
+            } else continue;
+          } else {
+            results.push([i, j-i]);
+            i = j+1;
+            break;
+          }
+        }
+      }
+    }
+
+    return results;
   }
 
   this.parse1 = function(str) {
