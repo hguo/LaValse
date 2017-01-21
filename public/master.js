@@ -183,6 +183,7 @@ function updateCobaltTable(allData) {
   tr.append("td").html(function(d) {return d.startTimestamp;});
   tr.append("td").html(function(d) {return d.endTimestamp;});
   tr.append("td").html(function(d) {return d.runTimeSeconds;});
+  tr.append("td").html(function(d) {return d.mode;});
   tr.append("td").html(function(d) {return d.machinePartition;});
   tr.append("td").html(function(d) {return d.exitCode;});
   tr.append("td").html(function(d) {return d.projectName;});

@@ -2,6 +2,7 @@ const fs = require("fs");
 const csv = require("fast-csv");
 const MongoClient = require("mongodb").MongoClient;
 const assert = require("assert");
+const randomColor = require("randomcolor");
 
 const url = "mongodb://localhost:27017/catalog";
 
@@ -38,7 +39,8 @@ MongoClient.connect(url, function(err, db) {
         mode: d.MODE,
         resID: +d.RESID,
         deletedBy: d.DELETED_BY_GENID,
-        projectName: d.PROJECT_NAME_GENID
+        projectName: d.PROJECT_NAME_GENID,
+        color: randomColor.randomColor({luminosity: "dark"})
       };
       // console.log(data);
       collection.insertOne(data);
