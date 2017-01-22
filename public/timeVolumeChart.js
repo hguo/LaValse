@@ -2,8 +2,14 @@ function timeVolumeChart(id, data, geom) {
   const margin = {top: 5, right: 10, bottom: 25, left: 30},
         width = geom.W - margin.left - margin.right,
         height = geom.H - margin.top - margin.bottom;
-  const alpha = 0.6;
-  const volumeHeight = height * alpha, cobaltHeight = height * (1-alpha);
+ 
+  const cobaltRatio = 0.35, volumeRatio = 0.35, overviewRatio = 0.3;
+  const cobaltTop = 0, 
+        volumeTop = cobaltRatio * height, 
+        overviewTop = (cobaltRatio + volumeRatio) * height;
+  const cobaltHeight = cobaltRatio * height, 
+        volumeHeight = volumeRatio * height, 
+        overviewHeight = overviewRatio * height;
   
   var useLogScale = true;
 
@@ -25,9 +31,12 @@ function timeVolumeChart(id, data, geom) {
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
     .call(zoom);
 
+  var svgCobalt = svg.append("g")
+    .attr("transform", "translate(0," + cobaltTop + ")");
   var svgVolume = svg.append("g")
-    .attr("transform", "translate(0," + cobaltHeight + ")");
-  var svgCobalt = svg.append("g");
+    .attr("transform", "translate(0," + volumeTop + ")");
+  var svgOverview = svg.append("g")
+    .attr("transform", "translate(0," + overviewTop + ")");
 
   var xDomain = [query.T0, query.T1];
   var yMax = d3.max(data, function(d) {return d3.max(d, function(dd) {return dd;});});
