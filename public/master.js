@@ -40,6 +40,16 @@ $(function() {
     }
   });
   init();
+
+  window.addEventListener("resize", function() {
+    const timeVolumeChartHeight = 300;
+    timeVolumeChart.resize({
+      L: 0, 
+      T: window.innerHeight - timeVolumeChartHeight,
+      W: window.innerWidth, 
+      H: timeVolumeChartHeight
+    });
+  });
 });
 
 function init() {
@@ -63,8 +73,9 @@ function init() {
         "locationType", "#locationTypeChart", histogramToArray(d.locationType), locationTypes,
         {L: 120, T: 315, W: 120, H: 290});
     timeVolumeChart = new timeVolumeChart(
-        "#timeVolumeChart", d.timeVolumes, // histogramToArray(d.timeVolume), 
+        "#timeVolumeChart", // d.timeVolumes, 
         {L: 240, T: 330, W: 720, H: 150});
+    timeVolumeChart.updateData(d.timeVolumes);
     machineView = new machineView();
     machineView.updateData(d.location, histogramToArray(d.location));
     $("#controlPanel").css("display", "block");

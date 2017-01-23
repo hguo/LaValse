@@ -60,6 +60,8 @@ struct Query {
        category[NUM_CAT], severity[NUM_SEV], location[MAX_NUM_LOC];
   uint16_t controlActions; // bits
 
+  std::vector<uint64_t> jobIDs; // TODO
+
   Query()
   {
   }

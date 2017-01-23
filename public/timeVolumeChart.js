@@ -1,4 +1,4 @@
-function timeVolumeChart(id, data, geom) {
+function timeVolumeChart(id, geom) {
   const margin = {top: 5, right: 10, bottom: 25, left: 30},
         width = geom.W - margin.left - margin.right,
         height = geom.H - margin.top - margin.bottom;
@@ -39,7 +39,7 @@ function timeVolumeChart(id, data, geom) {
     .attr("transform", "translate(0," + overviewTop + ")");
 
   var xDomain = [query.T0, query.T1];
-  var yMax = d3.max(data, function(d) {return d3.max(d, function(dd) {return dd;});});
+  var yMax = 1; // = d3.max(data, function(d) {return d3.max(d, function(dd) {return dd;});});
   yMax = ceilPow(yMax);
   var yDomainLog = [1, yMax],
       yDomainLinear = [0, yMax];
@@ -92,16 +92,6 @@ function timeVolumeChart(id, data, geom) {
     .attr("class", "axis axis-y")
     .call(yAxis);
 
-  svgVolume.selectAll(".line")
-    .data(data)
-    .enter()
-    .append("path")
-    .attr("class", "line")
-    .style("fill", "none")
-    // .style("stroke", "steelblue")
-    .style("stroke", function(d, i) {return color(i);})
-    .attr("d", function(d) {return lineLog(d);});
-
   var cursor = svgVolume.append("line")
     .attr("class", "cursor")
     .style("display", "none")
@@ -141,6 +131,10 @@ function timeVolumeChart(id, data, geom) {
       cursorPoint.attr("transform", "translate(" + x(mx) + "," + y(data[i].v) + ")");
     });
   */
+
+  this.resize = function(geom) {
+    console.log(geom);
+  }
 
   this.updateData = function(data) {
     yMax = d3.max(data, function(d) {return d3.max(d, function(dd) {return dd;});});
