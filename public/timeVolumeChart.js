@@ -1,5 +1,8 @@
 function timeVolumeChart(geom) {
   const margin = {top: 5, right: 10, bottom: 25, left: 30};
+  const O0 = 1420070400000, // 2015-01-01
+        Og = 86400000; // milliseconds in a day
+
   var width, height; 
   var cobaltTop, volumeTop, overviewTop;
   var cobaltHeight, volumeHeight, overviewHeight;
@@ -33,9 +36,14 @@ function timeVolumeChart(geom) {
   var X0 = d3.scaleTime() // the overview
     .domain(xDomain);
   var X = d3.scaleTime()
+    .domain(xDomain)
     .clamp(true);
 
   var yLog = d3.scaleLog()
+    .clamp(true)
+    .domain(yDomainLog)
+    .nice(4);
+  var YLog = d3.scaleLog()
     .clamp(true)
     .domain(yDomainLog)
     .nice(4);
@@ -67,6 +75,10 @@ function timeVolumeChart(geom) {
   var lineLinear = d3.line() 
     .x(function(d, i) {return x(query.T0 + query.tg * i);})
     .y(function(d) {return yLinear(d);});
+
+  var overviewLineLog = d3.line()
+    .x(function(d, i) {return X(O0 + Og*i);})
+    .y(function(d) {console.log(YLog(d)); return YLog(d);});
   
   svgVolume.append("g")
     .attr("class", "axis axis-x");
@@ -125,12 +137,13 @@ function timeVolumeChart(geom) {
 
     x0.rangeRound([0, width]);
     x.rangeRound([0, width]);
-    X0.rangeRound([0, width]); // TODO
-    X.rangeRound([0, width]); // TODO
+    X0.rangeRound([0, width]); 
+    X.rangeRound([0, width]); 
 
     yLog.rangeRound([volumeHeight, 0]);
     yLinear.rangeRound([volumeHeight, 0]);
     yLinearReverse.rangeRound([0, volumeHeight]);
+    YLog.rangeRound([overviewHeight, 0]);
 
     svgVolume.select(".axis-x")
       .attr("transform", "translate(0," + volumeHeight + ")")
@@ -149,6 +162,10 @@ function timeVolumeChart(geom) {
     var line = useLogScale ? lineLog : lineLinear;
     svgVolume.selectAll(".line")
       .attr("d", function(d) {return line(d);});
+
+    /*
+    svgOverview.selectAll(".line")
+      .attr("d", function(d) {return overviewLineLog(d);});*/
 
     svgCobalt.selectAll(".cobalt")
       .style("transform", function(d) {
@@ -192,19 +209,39 @@ function timeVolumeChart(geom) {
       .style("stroke", function(d, i) {return color(i);})
       .attr("d", function(d) {return line(d);});
 
+    /*
     svgVolume.selectAll(".line")
       .data(data)
       // .datum(data)
       // .transition()
       .attr("d", function(d) {
         return line(d);
-      });
+      });*/
 
     svgVolume.select(".axis-x")
       .transition().call(xAxis);
     
     svgVolume.select(".axis-y")
       .transition().call(yAxis)
+  }
+
+  this.updateOverviewVolume = function(data) {
+    YMax = d3.max(data, function(d) {return d;});
+    YLog.domain([1, YMax]);
+    console.log(YMax);
+
+    svgOverview.append("path")
+      .datum(data)
+      .attr("class", "line")
+      .style("fill", "none")
+      .style("stroke", "steelblue")
+      .attr("d", overviewLineLog);
+
+    svgOverview.select(".axis-X")
+      .transition().call(xAxis);
+
+    svgOverview.select(".axis-Y")
+      .transition().call(yAxis);
   }
 
   this.updateRecords = function(data) {

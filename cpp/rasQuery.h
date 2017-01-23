@@ -34,13 +34,14 @@ enum {
 };
 
 struct QueryResults {
-  uint32_t nvolumes;
-  uint32_t nslots; // time slots
+  uint32_t nVolumes;
+  uint32_t nTimeSlots, nOverviewSlots; // time slots
   uint32_t nmatched = 0;
   uint32_t msgID[NUM_MSGID], component[NUM_COMP], locationType[NUM_LOCTYPE], 
            category[NUM_CAT], severity[NUM_SEV], controlAction[NUM_CTLACT];
   uint32_t *location, *locationRecID; 
   uint32_t *timeVolumes, *timeVolumesRecID;
+  uint32_t *overviewVolume;  // the second time volume for overview
 
   std::vector<uint32_t> topRecIDs;
 
@@ -51,6 +52,8 @@ struct QueryResults {
 struct Query {
   uint64_t T0 = 1420070400000, T1 = 1451606400000; // time scope
   uint64_t t0 = 1420070400000, t1 = 1451606400000, tg = TIME_HOUR; // tg is time granularity
+  uint64_t O0 = 1420070400000, O1 = 1451606400000, og = TIME_DAY; // overview time scope and granularity
+
   uint8_t volumeBy = VAR_NONE;
   int LOD = 2;
   int top = 100; // return top n recIDs
@@ -123,7 +126,7 @@ struct Query {
     // set_affinity(tid);
     
     const int ndims = 8;
-    const int nslots = results.nslots;
+    const int nslots = results.nTimeSlots;
     bool b[ndims], c[ndims];
     int ntop = 0;
 
@@ -131,7 +134,7 @@ struct Query {
       const Event& e = events[i];
       crossfilter_kernel(e, b, c);
       if (c[0]) {
-        uint32_t t = e.aggregateTime(T0, tg); 
+        uint32_t t = e.aggregateTime(T0, tg);
         switch (volumeBy) {
 #if 0
         case VAR_NONE: add1(results.timeVolumes[t]); break;
@@ -150,6 +153,8 @@ struct Query {
 #endif
         default: break;
         }
+        uint32_t o = e.aggregateTime(O0, og);
+        add1(results.overviewVolume[o]);
       }
       if (c[1]) add1(results.msgID[e.msgID]);
       if (c[2]) add1(results.component[e.component()]);
@@ -235,14 +240,18 @@ struct Query {
 
 QueryResults::QueryResults(const Query& q)
 {
-  nslots = (q.T1 - q.T0) / q.tg;
-  nvolumes = ras::nvolumes[q.volumeBy];
+  nTimeSlots = (q.T1 - q.T0) / q.tg;
+  nVolumes = ras::nvolumes[q.volumeBy];
   
-  timeVolumes = (uint32_t*)malloc(nslots*nvolumes*4);
-  timeVolumesRecID = (uint32_t*)malloc(nslots*nvolumes*MAX_EVENTS_PER_SLOT*4);
-  memset(timeVolumes, 0, nslots*nvolumes*4);
+  timeVolumes = (uint32_t*)malloc(nTimeSlots*nVolumes*4);
+  timeVolumesRecID = (uint32_t*)malloc(nTimeSlots*nVolumes*MAX_EVENTS_PER_SLOT*4);
+  memset(timeVolumes, 0, nTimeSlots*nVolumes*4);
   // memset(timeVolumesRecID, 0, nslots*nvolumes*MAX_EVENTS_PER_SLOT*4);
-  
+
+  nOverviewSlots = (q.O1 - q.O0) / q.og;
+  overviewVolume = (uint32_t*)malloc(nOverviewSlots*4);
+  memset(overviewVolume, 0, nOverviewSlots*4);
+
   location = (uint32_t*)malloc(nlocations[q.LOD]*4);
   locationRecID = (uint32_t*)malloc(nlocations[q.LOD]*MAX_EVENTS_PER_SLOT*4);
   memset(location, 0, nlocations[q.LOD]*4);
@@ -261,6 +270,7 @@ QueryResults::~QueryResults()
 {
   free(timeVolumes);
   free(timeVolumesRecID);
+  free(overviewVolume);
   free(location);
   free(locationRecID);
 }

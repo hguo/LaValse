@@ -207,17 +207,17 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
   
   Local<Array> jTimeVolumes = Array::New(isolate);
   Local<Array> jTimeVolumesRecID = Array::New(isolate); 
-  for (uint32_t i=0; i<results.nvolumes; i++) {
+  for (uint32_t i=0; i<results.nVolumes; i++) {
     Local<Array> jTimeVolume = Array::New(isolate);
     Local<Array> jTimeVolumeRecID = Array::New(isolate);
-    for (uint32_t j=0; j<results.nslots; j++) {
-      uint32_t count = results.timeVolumes[i*results.nslots + j];
+    for (uint32_t j=0; j<results.nTimeSlots; j++) {
+      uint32_t count = results.timeVolumes[i*results.nTimeSlots + j];
       jTimeVolume->Set(Number::New(isolate, j), Number::New(isolate, count));
       
       Local<Array> jRecID = Array::New(isolate);
       count = std::min(count, (uint32_t)MAX_EVENTS_PER_SLOT);
       for (uint32_t k=0; k<count; k++) {
-        uint32_t recID = results.timeVolumesRecID[(i*results.nslots+j)*ras::MAX_EVENTS_PER_SLOT + k];
+        uint32_t recID = results.timeVolumesRecID[(i*results.nTimeSlots+j)*ras::MAX_EVENTS_PER_SLOT + k];
         // fprintf(stderr, "%d, %d, %d, %u\n", i, j, k, recID);
         jRecID->Set(Number::New(isolate, k), Number::New(isolate, recID));
       }
@@ -228,6 +228,12 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
   }
   jout->Set(String::NewFromUtf8(isolate, "timeVolumes"), jTimeVolumes);
   jout->Set(String::NewFromUtf8(isolate, "timeVolumesRecID"), jTimeVolumesRecID);
+
+  Local<Array> jOverviewVolume = Array::New(isolate);
+  for (uint32_t i=0; i<results.nOverviewSlots; i++) {
+    jOverviewVolume->Set(Number::New(isolate, i), Number::New(isolate, results.overviewVolume[i]));
+  }
+  jout->Set(String::NewFromUtf8(isolate, "overviewVolume"), jOverviewVolume);
 
   Local<Object> jMsgID = Object::New(isolate);
   for (int i=0; i<NUM_MSGID; i++)

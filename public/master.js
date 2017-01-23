@@ -84,6 +84,7 @@ function init() {
     }; */
     timeVolumeChart = new timeVolumeChart(geom);
     timeVolumeChart.updateVolume(d.timeVolumes);
+    timeVolumeChart.updateOverviewVolume(d.overviewVolume);
 
     machineView = new machineView();
     machineView.updateData(d.location, histogramToArray(d.location));
