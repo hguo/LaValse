@@ -1,13 +1,12 @@
 function timeVolumeChart(geom) {
   const margin = {top: 5, right: 10, bottom: 25, left: 30};
   var width, height; 
-  var cobaltRatio, volumeRatio, overviewRatio;
   var cobaltTop, volumeTop, overviewTop;
   var cobaltHeight, volumeHeight, overviewHeight;
   var useLogScale = true;
 
-  var zoom = d3.zoom()
-    .on("zoom", zoomed);
+  var volumeZoom = d3.zoom()
+    .on("zoom", volumeZoomed);
   
   var svg = d3.select("body")
     .append("svg")
@@ -31,9 +30,10 @@ function timeVolumeChart(geom) {
   var x = d3.scaleTime()
     .clamp(true)
     .domain(xDomain);
-  var x1 = d3.scaleTime()
-    .clamp(true)
+  var X0 = d3.scaleTime() // the overview
     .domain(xDomain);
+  var X = d3.scaleTime()
+    .clamp(true);
 
   var yLog = d3.scaleLog()
     .clamp(true)
@@ -57,6 +57,10 @@ function timeVolumeChart(geom) {
           // else return d3.format(".2s")(d);
         });
 
+  var XAxis = d3.axisBottom().scale(X),
+      YAxis = d3.axisLeft().scale(yLog).ticks(3)
+        .tickFormat(function(d) {return d3.format(".2s")(d);});
+
   var lineLog = d3.line() // .curve(d3.curveBasis)
     .x(function(d, i) {return x(query.T0 + query.tg * i);})
     .y(function(d) {return yLog(d);});
@@ -70,9 +74,16 @@ function timeVolumeChart(geom) {
   svgVolume.append("g")
     .attr("class", "axis axis-y");
 
-  var brush = d3.brushX()
-    .on("end", brushed);
+  svgOverview.append("g")
+    .attr("class", "axis axis-X");
+
+  svgOverview.append("g")
+    .attr("class", "axis axis-Y");
+
+  var volumeBrush = d3.brushX()
+    .on("end", volumeBrushed);
   svg.append("g")
+    .attr("id", "volumeBrush")
     .attr("class", "brush");
   
   this.resize = function(geom) {
@@ -87,7 +98,7 @@ function timeVolumeChart(geom) {
     width = geom.W - margin.left - margin.right,
     height = geom.H - margin.top - margin.bottom;
    
-    const cobaltRatio = 0.35, volumeRatio = 0.35, overviewRatio = 0.3;
+    const cobaltRatio = 0.4, volumeRatio = 0.4, overviewRatio = 0.2;
 
     cobaltTop = 0;
     volumeTop = cobaltRatio * height;
@@ -97,18 +108,25 @@ function timeVolumeChart(geom) {
     volumeHeight = volumeRatio * height; 
     overviewHeight = overviewRatio * height;
 
-    zoom.scaleExtent([1, 100000000])
-      .translateExtent([[0, 0], [width, height]])
-      .extent([[0, 0], [width, height]]);
-    svg.call(zoom);
+    volumeZoom.scaleExtent([1, 100000000])
+      .translateExtent([[0, volumeTop], [width, volumeHeight]])
+      .extent([[0, volumeTop], [width, volumeHeight]]);
+    svgVolume.call(volumeZoom);
 
     svgCobalt.attr("transform", "translate(0," + cobaltTop + ")");
     svgVolume.attr("transform", "translate(0," + volumeTop + ")");
     svgOverview.attr("transform", "translate(0," + overviewTop + ")");
 
+    svgVolume.append("rect") // for zooming
+      .attr("width", width)
+      .attr("height", volumeHeight)
+      .style("fill", "white")
+      .style("opacity", "0");
+
     x0.rangeRound([0, width]);
     x.rangeRound([0, width]);
-    x1.rangeRound([0, width]); // TODO
+    X0.rangeRound([0, width]); // TODO
+    X.rangeRound([0, width]); // TODO
 
     yLog.rangeRound([volumeHeight, 0]);
     yLinear.rangeRound([volumeHeight, 0]);
@@ -119,6 +137,13 @@ function timeVolumeChart(geom) {
       .call(xAxis);
 
     svgVolume.select(".axis-y")
+      .call(yAxis);
+
+    svgOverview.select(".axis-X")
+      .attr("transform", "translate(0," + overviewHeight + ")")
+      .call(xAxis);
+
+    svgOverview.select(".axis-Y")
       .call(yAxis);
 
     var line = useLogScale ? lineLog : lineLinear;
@@ -133,9 +158,11 @@ function timeVolumeChart(geom) {
         return translate + scale;
       });
 
-    brush.extent([[0, 0], [width, height]]);
-    svg.select(".brush")
-      .call(brush);
+    /*
+    volumeBrush.extent([[0, 0], [width, height]]);
+    svg.select("#volumeBrush")
+      .call(volumeBrushed);
+    */
   }
 
   this.resize(geom);
@@ -247,25 +274,25 @@ function timeVolumeChart(geom) {
 
   this.reset = function() {
     useLogScale = true;
-    svg.select(".brush")
-      .call(brush.move, null)
-      .call(zoom.transform, d3.zoomIdentity);
+    svg.select("#volumeBrush")
+      .call(volumeBrush.move, null)
+      .call(volumeZoom.transform, d3.zoomIdentity);
   }
 
-  function brushed() {
+  function volumeBrushed() {
     var s = d3.event.selection || x.range();
     query.t0 = x.invert(s[0]).getTime();
     query.t1 = x.invert(s[1]).getTime();
     refresh();
   }
 
-  var zoomTimer = d3.timer(function() {zoomTimer.stop()});
+  var volumeZoomTimer = d3.timer(function() {volumeZoomTimer.stop()});
 
-  function zoomed() { // TODO
+  function volumeZoomed() { // TODO
     var line = useLogScale ? lineLog : lineLinear;
    
-    // svg.select(".brush")
-    //   .call(brush.move, null);
+    // svg.select("#volumeBrush")
+    //   .call(volumeBrush.move, null);
     
     var t = d3.event.transform;
     x.domain(t.rescaleX(x0).domain());
@@ -283,10 +310,10 @@ function timeVolumeChart(geom) {
         return translate + scale;
       });
 
-    zoomTimer.restart(zoomTimedOut, 100);
+    volumeZoomTimer.restart(volumeZoomTimedOut, 100);
   }
 
-  function zoomTimedOut() {
+  function volumeZoomTimedOut() {
     query.t0 = x.domain()[0].getTime();
     query.t1 = x.domain()[1].getTime();
     query.T0 = query.t0; 
@@ -302,6 +329,6 @@ function timeVolumeChart(geom) {
     };
     refreshCobaltLog(cobaltQuery);
 
-    zoomTimer.stop();
+    volumeZoomTimer.stop();
   }
 }

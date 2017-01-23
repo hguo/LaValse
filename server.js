@@ -55,6 +55,8 @@ app.get("/cobalt", function(req, res) {
   const url = "mongodb://localhost:27017/catalog";
 
   MongoClient.connect(url, function(err, db) {
+    if (err != null) console.log(err);
+
     db.collection("cobalt").find({
       "endTimestamp": {$gte: new Date(query.T0)}, 
       "startTimestamp": {$lte: new Date(query.T1)},
