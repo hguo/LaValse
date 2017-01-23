@@ -42,6 +42,7 @@ $(function() {
   init();
 
   window.addEventListener("resize", function() {
+    return; // TODO
     const timeVolumeChartHeight = 300;
     timeVolumeChart.resize({
       L: 0, 
@@ -72,10 +73,18 @@ function init() {
     locationTypeChart = new barChart(
         "locationType", "#locationTypeChart", histogramToArray(d.locationType), locationTypes,
         {L: 120, T: 315, W: 120, H: 290});
-    timeVolumeChart = new timeVolumeChart(
-        "#timeVolumeChart", // d.timeVolumes, 
-        {L: 240, T: 330, W: 720, H: 150});
-    timeVolumeChart.updateData(d.timeVolumes);
+
+    const timeVolumeChartHeight = 300;
+    const geom = {L: 240, T: 330, W: 720, H: 300};
+    /* const geom = {
+      L: 0, 
+      T: window.innerHeight - timeVolumeChartHeight,
+      W: window.innerWidth, 
+      H: timeVolumeChartHeight
+    }; */
+    timeVolumeChart = new timeVolumeChart(geom);
+    timeVolumeChart.updateVolume(d.timeVolumes);
+
     machineView = new machineView();
     machineView.updateData(d.location, histogramToArray(d.location));
     $("#controlPanel").css("display", "block");
@@ -127,7 +136,7 @@ function refresh() {
     componentChart.updateData(histogramToArray(d.component));
     categoryChart.updateData(histogramToArray(d.category));
     locationTypeChart.updateData(histogramToArray(d.locationType));
-    timeVolumeChart.updateData(d.timeVolumes, 
+    timeVolumeChart.updateVolume(d.timeVolumes, 
         {L: 0, T: 400, W: 600, H: 150});
     machineView.updateData(d.location, histogramToArray(d.location));
 
@@ -202,7 +211,8 @@ function updateCobaltTable(allData) {
 }
 
 function refreshTops(q) {
-  d3.json("/db?query=" + JSON.stringify(q), function(data) {
+  d3.json("/db?query=" + JSON.stringify(q), function(dataAll) {
+    var data = dataAll.slice(0, 4); // TODO
     var tbody = d3.select("#eventTable tbody");
     tbody.selectAll("tr").remove();
     var tr = tbody.selectAll("tr").data(data)
