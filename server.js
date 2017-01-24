@@ -49,14 +49,14 @@ app.get("/db", function(req, res) {
     }
   }
 });
+  
+    
+const uri = "mongodb://localhost:27017/catalog";
+MongoClient.connect(uri, function(err, db) {
+  if (err != null) console.log(err);
 
-app.get("/cobalt", function(req, res) {
-  var query = JSON.parse(req.query.query); // fields in query: T0, T1, minRunTimeSeconds
-  const url = "mongodb://localhost:27017/catalog";
-
-  MongoClient.connect(url, function(err, db) {
-    if (err != null) console.log(err);
-
+  app.get("/cobalt", function(req, res) {
+    var query = JSON.parse(req.query.query); // fields in query: T0, T1, minRunTimeSeconds
     db.collection("cobalt").find({
       "endTimestamp": {$gte: new Date(query.T0)}, 
       "startTimestamp": {$lte: new Date(query.T1)},

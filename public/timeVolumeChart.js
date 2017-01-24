@@ -8,8 +8,13 @@ function timeVolumeChart(geom) {
   var cobaltHeight, volumeHeight, overviewHeight;
   var useLogScale = true;
 
+  var cobaltYScale = 1; 
+
   var volumeZoom = d3.zoom()
     .on("zoom", volumeZoomed);
+
+  var cobaltZoom = d3.zoom()
+    .on("zoom", cobaltZoomed);
   
   var svg = d3.select("body")
     .append("svg")
@@ -46,7 +51,7 @@ function timeVolumeChart(geom) {
   var YLog = d3.scaleLog()
     .clamp(true)
     .domain(yDomainLog)
-    .nice(4);
+    .nice(3);
   var yLinear = d3.scaleLinear() 
     .clamp(true)
     .domain(yDomainLinear)
@@ -111,20 +116,25 @@ function timeVolumeChart(geom) {
     height = geom.H - margin.top - margin.bottom;
    
     const cobaltRatio = 0.4, volumeRatio = 0.4, overviewRatio = 0.2;
-    const gap = 20;
+    const padding = 20;
 
     cobaltTop = 0;
-    volumeTop = cobaltRatio * height;
-    overviewTop = (cobaltRatio + volumeRatio) * height + gap;
+    volumeTop = cobaltRatio * height + padding;
+    overviewTop = (cobaltRatio + volumeRatio) * height + padding;
     
     cobaltHeight = cobaltRatio * height;
-    volumeHeight = volumeRatio * height; 
-    overviewHeight = overviewRatio * height - gap;
+    volumeHeight = volumeRatio * height - padding;
+    overviewHeight = overviewRatio * height - padding;
 
     volumeZoom.scaleExtent([1, 100000000])
       .translateExtent([[0, volumeTop], [width, volumeHeight]])
       .extent([[0, volumeTop], [width, volumeHeight]]);
     svgVolume.call(volumeZoom);
+
+    cobaltZoom.scaleExtent([1, 100])
+      .translateExtent([[0, cobaltTop], [width, cobaltHeight]])
+      .extent([[0, cobaltTop], [width, cobaltHeight]]);
+    svgCobalt.call(cobaltZoom);
 
     svgCobalt.attr("transform", "translate(0," + cobaltTop + ")");
     svgVolume.attr("transform", "translate(0," + volumeTop + ")");
@@ -133,6 +143,12 @@ function timeVolumeChart(geom) {
     svgVolume.append("rect") // for zooming
       .attr("width", width)
       .attr("height", volumeHeight)
+      .style("fill", "white")
+      .style("opacity", "0");
+
+    svgCobalt.append("rect") // for zooming
+      .attr("width", width)
+      .attr("height", cobaltHeight)
       .style("fill", "white")
       .style("opacity", "0");
 
@@ -152,6 +168,19 @@ function timeVolumeChart(geom) {
 
     svgVolume.select(".axis-y")
       .call(yAxis);
+
+    svgVolume.append("text")
+      .attr("class", "timeLabelLeft")
+      .attr("x", 2)
+      .attr("y", 0)
+      .text(d3.isoFormat(new Date(query.T0)));
+
+    svgVolume.append("text")
+      .attr("class", "timeLabelRight")
+      .attr("x", width)
+      .attr("y", 0)
+      .style("text-anchor", "end")
+      .text(d3.isoFormat(new Date(query.T1)));
 
     svgOverview.select(".axis-X")
       .attr("transform", "translate(0," + overviewHeight + ")")
@@ -291,7 +320,9 @@ function timeVolumeChart(geom) {
         .attr("class", "cobaltBox")
         .style("stroke", "none")
         .style("fill", data[i].color)
+        // .style("fill", "black")
         .style("opacity", "0.6")
+        .attr("title", data[i].machinePartition)
         .attr("x", 0)
         .attr("y", function(d, i) {return d[0];}) 
         .attr("width", 1)
@@ -327,9 +358,14 @@ function timeVolumeChart(geom) {
     refresh();
   }
 
+  function cobaltZoomed() { 
+    var t = d3.event.transform;
+    // TODO
+  }
+
   var volumeZoomTimer = d3.timer(function() {volumeZoomTimer.stop()});
 
-  function volumeZoomed() { // TODO
+  function volumeZoomed() { 
     var line = useLogScale ? lineLog : lineLinear;
    
     // svg.select("#volumeBrush")
@@ -350,6 +386,11 @@ function timeVolumeChart(geom) {
             translate = "translate(" + t0 + "px,0px)";
         return translate + scale;
       });
+
+    svgVolume.select(".timeLabelLeft")
+      .text(d3.isoFormat(x.domain()[0]));
+    svgVolume.select(".timeLabelRight")
+      .text(d3.isoFormat(x.domain()[1]));
 
     volumeZoomTimer.restart(volumeZoomTimedOut, 100);
   }
