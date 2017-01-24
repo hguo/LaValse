@@ -1,5 +1,5 @@
 function timeVolumeChart(geom) {
-  const margin = {top: 5, right: 10, bottom: 25, left: 30};
+  const margin = {top: 5, right: 10, bottom: 20, left: 30};
   const O0 = 1420070400000, // 2015-01-01
         Og = 86400000; // milliseconds in a day
 
@@ -66,7 +66,7 @@ function timeVolumeChart(geom) {
         });
 
   var XAxis = d3.axisBottom().scale(X),
-      YAxis = d3.axisLeft().scale(yLog).ticks(3)
+      YAxis = d3.axisLeft().scale(YLog).ticks(3)
         .tickFormat(function(d) {return d3.format(".2s")(d);});
 
   var lineLog = d3.line() // .curve(d3.curveBasis)
@@ -78,7 +78,7 @@ function timeVolumeChart(geom) {
 
   var overviewLineLog = d3.line()
     .x(function(d, i) {return X(O0 + Og*i);})
-    .y(function(d) {console.log(YLog(d)); return YLog(d);});
+    .y(function(d) {return YLog(d);});
   
   svgVolume.append("g")
     .attr("class", "axis axis-x");
@@ -111,14 +111,15 @@ function timeVolumeChart(geom) {
     height = geom.H - margin.top - margin.bottom;
    
     const cobaltRatio = 0.4, volumeRatio = 0.4, overviewRatio = 0.2;
+    const gap = 20;
 
     cobaltTop = 0;
     volumeTop = cobaltRatio * height;
-    overviewTop = (cobaltRatio + volumeRatio) * height;
+    overviewTop = (cobaltRatio + volumeRatio) * height + gap;
     
     cobaltHeight = cobaltRatio * height;
     volumeHeight = volumeRatio * height; 
-    overviewHeight = overviewRatio * height;
+    overviewHeight = overviewRatio * height - gap;
 
     volumeZoom.scaleExtent([1, 100000000])
       .translateExtent([[0, volumeTop], [width, volumeHeight]])
@@ -154,10 +155,10 @@ function timeVolumeChart(geom) {
 
     svgOverview.select(".axis-X")
       .attr("transform", "translate(0," + overviewHeight + ")")
-      .call(xAxis);
+      .call(XAxis);
 
     svgOverview.select(".axis-Y")
-      .call(yAxis);
+      .call(YAxis);
 
     var line = useLogScale ? lineLog : lineLinear;
     svgVolume.selectAll(".line")
@@ -228,20 +229,23 @@ function timeVolumeChart(geom) {
   this.updateOverviewVolume = function(data) {
     YMax = d3.max(data, function(d) {return d;});
     YLog.domain([1, YMax]);
-    console.log(YMax);
 
-    svgOverview.append("path")
+    if (svgOverview.select(".line").empty()) {
+      svgOverview.append("path")
+        .attr("class", "line")
+        .style("fill", "none")
+        .style("stroke", "steelblue");
+    }
+    svgOverview.select(".line")
       .datum(data)
-      .attr("class", "line")
-      .style("fill", "none")
-      .style("stroke", "steelblue")
+      .transition()
       .attr("d", overviewLineLog);
 
     svgOverview.select(".axis-X")
-      .transition().call(xAxis);
+      .transition().call(XAxis);
 
     svgOverview.select(".axis-Y")
-      .transition().call(yAxis);
+      .transition().call(YAxis);
   }
 
   this.updateRecords = function(data) {

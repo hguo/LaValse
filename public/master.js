@@ -137,8 +137,8 @@ function refresh() {
     componentChart.updateData(histogramToArray(d.component));
     categoryChart.updateData(histogramToArray(d.category));
     locationTypeChart.updateData(histogramToArray(d.locationType));
-    timeVolumeChart.updateVolume(d.timeVolumes, 
-        {L: 0, T: 400, W: 600, H: 150});
+    timeVolumeChart.updateVolume(d.timeVolumes);
+    timeVolumeChart.updateOverviewVolume(d.overviewVolume);
     machineView.updateData(d.location, histogramToArray(d.location));
 
     updateQueryInfo(d);

@@ -125,7 +125,7 @@ struct Query {
     // auto t0 = clock::now();
     // set_affinity(tid);
     
-    const int ndims = 8;
+    const int ndims = 9;
     const int nslots = results.nTimeSlots;
     bool b[ndims], c[ndims];
     int ntop = 0;
@@ -133,28 +133,29 @@ struct Query {
     for (size_t i=tid; i<events.size(); i+=nthreads) {
       const Event& e = events[i];
       crossfilter_kernel(e, b, c);
+      
       if (c[0]) {
         uint32_t t = e.aggregateTime(T0, tg);
-        switch (volumeBy) {
+        if (t>=0 && t<results.nTimeSlots) {
+          switch (volumeBy) {
 #if 0
-        case VAR_NONE: add1(results.timeVolumes[t]); break;
-        case VAR_MSGID: add1(results.timeVolumes, nslots, e.msgID, t); break;
-        case VAR_COMP: add1(results.timeVolumes, nslots, e.component(), t); break;
-        case VAR_LOC: add1(results.timeVolumes, nslots, e.locationType, t); break;
-        case VAR_CAT: add1(results.timeVolumes, nslots, e.category(), t); break;
-        case VAR_SEV: add1(results.timeVolumes, nslots, e.severity(), t); break;
+          case VAR_NONE: add1(results.timeVolumes[t]); break;
+          case VAR_MSGID: add1(results.timeVolumes, nslots, e.msgID, t); break;
+          case VAR_COMP: add1(results.timeVolumes, nslots, e.component(), t); break;
+          case VAR_LOC: add1(results.timeVolumes, nslots, e.locationType, t); break;
+          case VAR_CAT: add1(results.timeVolumes, nslots, e.category(), t); break;
+          case VAR_SEV: add1(results.timeVolumes, nslots, e.severity(), t); break;
 #else
-        case VAR_NONE: add1(results.timeVolumes[t], t, results.timeVolumesRecID, e.recID); break;
-        case VAR_MSGID: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.msgID, t, e.recID); break;
-        case VAR_COMP: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.component(), t, e.recID); break;
-        case VAR_LOC: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.locationType, t, e.recID); break;
-        case VAR_CAT: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.category(), t, e.recID); break;
-        case VAR_SEV: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.severity(), t, e.recID); break;
+          case VAR_NONE: add1(results.timeVolumes[t], t, results.timeVolumesRecID, e.recID); break;
+          case VAR_MSGID: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.msgID, t, e.recID); break;
+          case VAR_COMP: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.component(), t, e.recID); break;
+          case VAR_LOC: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.locationType, t, e.recID); break;
+          case VAR_CAT: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.category(), t, e.recID); break;
+          case VAR_SEV: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.severity(), t, e.recID); break;
 #endif
-        default: break;
+          default: break;
+          }
         }
-        uint32_t o = e.aggregateTime(O0, og);
-        add1(results.overviewVolume[o]);
       }
       if (c[1]) add1(results.msgID[e.msgID]);
       if (c[2]) add1(results.component[e.component()]);
@@ -177,6 +178,11 @@ struct Query {
           if (a & 256) add1(results.controlAction[8]);
         }
       }
+      if (c[8]) {
+        uint32_t o = e.aggregateTime(O0, og);
+        add1(results.overviewVolume[o]);
+      }
+
 
       if (b[0] && c[0]) { // all true
         results.nmatched ++; 
@@ -193,8 +199,9 @@ struct Query {
   }
 
   void crossfilter_kernel(const Event& e, bool b[], bool c[]) {
-    const int ndims = 8; // FIXME
+    const int ndims = 9; // FIXME
     // fprintf(stderr, "%llu, %llu, %llu, %llu\n", t0, t1, T0, T1);
+#if 0
     if (!checkTime(e.eventTime, T0, T1)) {
       for (int i=0; i<ndims; i++) {
         b[i] = false; 
@@ -202,6 +209,7 @@ struct Query {
       }
       return;
     }
+#endif
 
     b[0] = checkTime(e.eventTime, t0, t1);
     b[1] = check(e.msgID, msgID);
@@ -211,6 +219,7 @@ struct Query {
     b[5] = check(e.severity(), severity);
     b[6] = check(e.location[LOD], location);
     b[7] = checkBits(e.controlActions(), controlActions);
+    b[8] = true; // the overview volume
 
     for (int i=0; i<ndims; i++) {
       bool v = true;
@@ -223,6 +232,8 @@ struct Query {
       }
       c[i] = v;
     }
+
+    c[8] = b[1] && b[2] && b[3] && b[4] && b[5] && b[6] && b[7];
   }
   
   void set_affinity(int processorID) {
