@@ -405,8 +405,8 @@ function timeVolumeChart(geom) {
     svgCobalt.selectAll(".cobalt")
       .style("transform", function(d) {
         var t0 = x(d.startTimestamp), t1 = x(d.endTimestamp);
-        var scale = "scale(" + (t1-t0) + "," + cobaltHeight/96 + ")"
-            translate = "translate(" + t0 + "px,0px)";
+        var scale = "scale(" + (t1-t0) + "," + cobaltYScale*cobaltHeight/96 + ")",
+            translate = "translate(" + t0 + "px," + cobaltYTranslate + "px)";
         return translate + scale;
       });
 
