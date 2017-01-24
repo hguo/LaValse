@@ -409,6 +409,18 @@ function locationToL4Location(L) {
   }
 }
 
+function enumerateMidplanes() {
+  var locations = [];
+  for (row=0; row<3; row++) {
+    for (col=0; col<16; col++) {
+      for (mp=0; mp<2; mp++) {
+        locations.push(midplane2str(row, col, mp));
+      }
+    }
+  }
+  return locations;
+}
+
 function locationToLODLocation(L) {
   return [
     locationToL0Location(L),
@@ -671,7 +683,6 @@ var partitionParser = new function() {
 
 // var parser = new partitionParser;
 // console.log(parser.parse("MIR-08000-7BFF1-0010-12288"));
-// console.log(enumerateRMNLocations().length);
 // console.log(parseLocation("R1A-M1-N13"));
 // parseComputeBlock("MIR-00000-73FF1-16384");
 

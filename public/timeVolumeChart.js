@@ -1,5 +1,5 @@
 function timeVolumeChart(geom) {
-  const margin = {top: 5, right: 10, bottom: 20, left: 30};
+  const margin = {top: 5, right: 10, bottom: 20, left: 50};
   const O0 = 1420070400000, // 2015-01-01
         Og = 86400000; // milliseconds in a day
 
@@ -23,7 +23,8 @@ function timeVolumeChart(geom) {
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  var svgCobalt = svg.append("g")
+  var svgCobalt = svg.append("g");
+  var svgCobaltContent = svgCobalt.append("g")
     .attr("clip-path", "url(#cobaltMask)");
   var svgVolume = svg.append("g");
   var svgOverview = svg.append("g");
@@ -71,6 +72,12 @@ function timeVolumeChart(geom) {
     .nice(8);
   var color = d3.scaleOrdinal(d3.schemeCategory10);
 
+  var midplanes = enumerateMidplanes();
+  var yCobalt = d3.scaleLinear()
+    .domain([0, 96]);
+  var yCobalt0 = d3.scaleLinear()
+    .domain([0, 96]);
+
   var xAxis = d3.axisBottom().scale(x), 
       yAxis = d3.axisLeft().scale(yLog).ticks(3)
         .tickFormat(function(d) {
@@ -82,6 +89,12 @@ function timeVolumeChart(geom) {
   var XAxis = d3.axisBottom().scale(X),
       YAxis = d3.axisLeft().scale(YLog).ticks(3)
         .tickFormat(function(d) {return d3.format(".2s")(d);});
+
+  var cobaltAxis = d3.axisLeft()
+    .scale(yCobalt)
+    .tickFormat(function(d) {
+      return midplanes[d];
+    });
 
   var lineLog = d3.line() // .curve(d3.curveBasis)
     .x(function(d, i) {return x(query.T0 + query.tg * i);})
@@ -105,6 +118,9 @@ function timeVolumeChart(geom) {
 
   svgOverview.append("g")
     .attr("class", "axis axis-Y");
+
+  svgCobalt.append("g")
+    .attr("class", "axis axis-cobalt");
 
   var volumeBrush = d3.brushX()
     .on("end", volumeBrushed);
@@ -174,6 +190,9 @@ function timeVolumeChart(geom) {
     yLinear.rangeRound([volumeHeight, 0]);
     yLinearReverse.rangeRound([0, volumeHeight]);
     YLog.rangeRound([overviewHeight, 0]);
+    
+    yCobalt.rangeRound([cobaltHeight, 0]);
+    yCobalt0.rangeRound([cobaltHeight, 0]);
 
     svgVolume.select(".axis-x")
       .attr("transform", "translate(0," + volumeHeight + ")")
@@ -202,6 +221,9 @@ function timeVolumeChart(geom) {
     svgOverview.select(".axis-Y")
       .call(YAxis);
 
+    svgCobalt.select(".axis-cobalt")
+      .call(cobaltAxis);
+
     var line = useLogScale ? lineLog : lineLinear;
     svgVolume.selectAll(".line")
       .attr("d", function(d) {return line(d);});
@@ -210,7 +232,7 @@ function timeVolumeChart(geom) {
     svgOverview.selectAll(".line")
       .attr("d", function(d) {return overviewLineLog(d);});*/
 
-    svgCobalt.selectAll(".cobalt")
+    svgCobaltContent.selectAll(".cobalt")
       .style("transform", function(d) {
         var t0 = x(d.startTimestamp), t1 = x(d.endTimestamp);
         var scale = "scale(" + (t1-t0) + "," + cobaltHeight/96 + ")"
@@ -311,8 +333,8 @@ function timeVolumeChart(geom) {
 
   var cobaltYTranslate = 0, cobaltYScale = 1;
   this.updateCobaltData = function(data) {
-    svgCobalt.selectAll(".cobalt").remove();
-    svgCobalt.selectAll(".cobalt")
+    svgCobaltContent.selectAll(".cobalt").remove();
+    svgCobaltContent.selectAll(".cobalt")
       .data(data).enter()
       .append("g")
       .attr("class", "cobalt")
@@ -327,7 +349,7 @@ function timeVolumeChart(geom) {
     for (var i=0; i<data.length; i++) {
       var components = partitionParser.components(data[i].machinePartition);
       
-      svgCobalt.select("#job" + i)
+      svgCobaltContent.select("#job" + i)
         .selectAll(".cobaltBox")
         .data(components).enter()
         .append("rect")
@@ -377,7 +399,11 @@ function timeVolumeChart(geom) {
     cobaltYScale = t.k;
     cobaltYTranslate = t.y;
 
-    svgCobalt.selectAll(".cobalt")
+    yCobalt.domain(t.rescaleY(yCobalt0).domain());
+    svgCobalt.select(".axis-cobalt").call(cobaltAxis);
+    // yCobalt.call(cobaltAxis);
+
+    svgCobaltContent.selectAll(".cobalt")
       .style("transform", function(d) {
         var t0 = x(d.startTimestamp), t1 = x(d.endTimestamp);
         var scale = "scale(" + (t1-t0) + "," + cobaltYScale*cobaltHeight/96 + ")",
@@ -402,7 +428,7 @@ function timeVolumeChart(geom) {
     svgVolume.selectAll(".glyph")
       .attr("cx", function(d) {return x(d.eventTime);})
 
-    svgCobalt.selectAll(".cobalt")
+    svgCobaltContent.selectAll(".cobalt")
       .style("transform", function(d) {
         var t0 = x(d.startTimestamp), t1 = x(d.endTimestamp);
         var scale = "scale(" + (t1-t0) + "," + cobaltYScale*cobaltHeight/96 + ")",
