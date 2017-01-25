@@ -104,10 +104,6 @@ function barChart(name, id, data, humanReadableText, geom) {
       return humanReadableText[d.k] + ": " + d3.format(",")(d.v);
     })
     .on("click", highlight);
-  
-  $(".barChartTitle").tooltip();
-  $(".bar").tooltip();
-  $(".mlabel").tooltip();
 
   function highlight(d) {
     if (d == undefined) {

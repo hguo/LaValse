@@ -328,10 +328,24 @@ function timeVolumeChart(geom) {
       .attr("cx", function(d) {return x(d.eventTime);})
       .attr("cy", function(d) {return yLinearReverse(d.y);})
       .attr("title", function(d) {
-        // TODO
+        return "<b>recID:</b> " + d._id
+          + "<br><b>time:</b> " + d3.isoFormat(d.eventTime)
+          + "<br><b>severity:</b> " + d.severity
+          + "<br><b>messageID:</b> " + d.messageID
+          + "<br><b>component:</b> " + events[d.messageID].component
+          + "<br><b>category:</b> " + events[d.messageID].category
+          + "<br><b>jobID: </b> " + d.jobID
+          + "<br><b>machinePartition:</b> " + d.block
+          + "<br><b>location:</b> " + d.location
+          + "<br><b>torus:</b> " + torusRMNJMap.torus(d.location)
+          + "<br><b>CPU:</b> " + d.CPU
+          + "<br><b>count:</b> " + d.count
+          + "<br><b>controlActions:</b> " + String(events[d.messageID].controlAction).replace(/,/g, ', ')
+          + "<br><b>serviceAction:</b> " + events[d.messageID].serviceAction
+          + "<br><b>relevantDiagnosticSuites:</b> " + String(events[d.messageID].relevantDiagnosticSuites).replace(/,/g, ', ');
       });
   }
-
+  
   var cobaltYTranslate = 0, cobaltYScale = 1;
   this.updateCobaltData = function(data) {
     svgCobaltContent.selectAll(".cobalt").remove();
@@ -339,8 +353,30 @@ function timeVolumeChart(geom) {
       .data(data).enter()
       .append("g")
       .attr("class", "cobalt")
-      .attr("title", "test")
       .attr("id", function(d, i) {return "job" + i;})
+      .attr("title", function(d) {
+        return "<b>jobID:</b> " + d._id 
+          + "<br><b>queuedTime:</b> " + d3.isoFormat(new Date(d.queuedTimestamp)) 
+          + "<br><b>startTime:</b> " + d3.isoFormat(new Date(d.startTimestamp))
+          + "<br><b>runTime (s):</b> " + d.runTimeSeconds
+          // + "<br><b>wallTime (s):</b>" + d.wallTimeSeconds
+          + "<br><b>mode:</b> " + d.mode
+          // + "<br><b>requestedCores</b>" + d.requestedCores
+          // + "<br><b>usedCores</b>" + d.usedCores
+          // + "<br><b>requestedNodes</b>" + d.requestedNodes
+          // + "<br><b>usedNodes</b>" + d.usedNodes
+          // + "<br><b>requestedCoreHours</b>" + d.requestedCoreHours
+          // + "<br><b>requestedCoreSeconds</b>" + d.requestedCoreSeconds
+          // + "<br><b>usedCoreHours</b>" + d.usedCoreHours
+          // + "<br><b>usedCoreSeconds</b>" + d.usedCoreSeconds
+          + "<br><b>cobaltProjectName:</b> " + d.cobaltProjectName
+          // + "<br><b>projectName</b>" + d.projectName
+          + "<br><b>cobaltUserName:</b> " + d.cobaltUserName
+          // + "<br><b>deletedBy</b>" + d.deletedBy
+          + "<br><b>queue:</b> " + d.queue
+          + "<br><b>machinePartition:</b> " + d.machinePartition
+          + "<br><b>exitCode:</b> " + d.exitCode;
+      })
       .style("transform", function(d) {
         var t0 = x(d.startTimestamp), t1 = x(d.endTimestamp);
         var scale = "scale(" + (t1-t0) + "," + cobaltYScale*cobaltHeight/96 + ")",
@@ -385,6 +421,7 @@ function timeVolumeChart(geom) {
         .attr("width", 1)
         .attr("height", function(d) {return d[1];});
     }
+    // $(".cobalt").tooltip();
   }
 
   this.toggleLogScale = function() {

@@ -35,8 +35,7 @@ $(function() {
   $("#tabs").tabs();
   $(document).tooltip({
     content: function() {
-      // return unescape($(this).prop("title"));
-      return $(this).prop("title");
+      return $(this).attr("title");
     }
   });
   init();
@@ -226,7 +225,7 @@ function refreshTops(q) {
         return "<b>messageID:</b> " + d.messageID
           + "<br><b>severity:</b> " + events[d.messageID].severity
           + "<br><b>description:</b> " + events[d.messageID].description
-          + "<br><b>controlAction:</b> " + String(events[d.messageID].controlAction).replace(/,/g, ', ')
+          + "<br><b>controlActions:</b> " + String(events[d.messageID].controlAction).replace(/,/g, ', ')
           + "<br><b>serviceAction:</b> " + events[d.messageID].serviceAction
           + "<br><b>relevantDiagnosticSuites:</b> " + String(events[d.messageID].relevantDiagnosticSuites).replace(/,/g, ', ');
       });
@@ -275,3 +274,4 @@ var formatPower = function(d) {
 function ceilPow(v) {
   return Math.pow(10, Math.ceil(Math.log10(v)));
 }
+
