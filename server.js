@@ -1,15 +1,12 @@
 const express = require("express");
 const http = require("http");
 const cube = require("./cube").cube;
-// const db = require("./db");
-const deasync = require("deasync");
 const basicAuth = require('basic-auth-connect');
-const levelup = require("levelup");
 const MongoClient = require("mongodb").MongoClient;
 
+const uri = "mongodb://localhost:27017/catalog";
+
 var mycube = new cube("raslog");
-var rasdb = levelup("./db1");
-var jobdb = levelup("./db2");
 
 var app = express();
 app.use(express.static("public"));
@@ -25,33 +22,7 @@ app.get("/cube", function(req, res, next) {
   res.writeHead(200, {"context-type": "application/json"});
   res.end(JSON.stringify(results));
 });
-
-app.get("/db", function(req, res) {
-  var query = JSON.parse(req.query.query); // query should be an array
-  var results = {};
-  var resultsArray = [];
-
-  query.forEach(function(key) {
-    rasdb.get(key, function(err, val) {
-      results[key] = val;
-      callback();
-    });
-  });
-
-  var count = 0;
-  function callback() {
-    count ++;
-    if (count == query.length) {
-      query.forEach(function(key) {
-        resultsArray.push(JSON.parse(results[key]));
-      });
-      res.end(JSON.stringify(resultsArray));
-    }
-  }
-});
   
-    
-const uri = "mongodb://localhost:27017/catalog";
 MongoClient.connect(uri, function(err, db) {
   if (err != null) console.log(err);
 
@@ -61,6 +32,18 @@ MongoClient.connect(uri, function(err, db) {
       "endTimestamp": {$gte: new Date(query.T0)}, 
       "startTimestamp": {$lte: new Date(query.T1)},
       "runTimeSeconds": {$gte: query.minRunTimeSeconds}
+    }).toArray(function(err, docs) {
+      res.end(JSON.stringify(docs));
+    });
+  });
+
+  app.get("/ras", function(req, res) {
+    var query = JSON.parse(req.query.query); // query should be an array
+    var set = [];
+    query.forEach(function(d) {set.push(d.toString());});
+
+    db.collection("ras").find({
+      _id: {$in: set}
     }).toArray(function(err, docs) {
       res.end(JSON.stringify(docs));
     });

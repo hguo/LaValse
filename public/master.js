@@ -170,7 +170,7 @@ function refreshRecIDs(data) {
     var query = [];
     data.forEach(function(d) {query.push(d.recID);});
 
-    d3.json("/db?query=" + JSON.stringify(query), function(data1) {
+    d3.json("/ras?query=" + JSON.stringify(query), function(data1) {
       for (var i=0; i<data1.length; i++) {
         data1[i].eventTime = new Date(data1[i].eventTime);
         data1[i].y = data[i].y;
@@ -212,31 +212,31 @@ function updateCobaltTable(allData) {
 }
 
 function refreshTops(q) {
-  d3.json("/db?query=" + JSON.stringify(q), function(dataAll) {
-    var data = dataAll.slice(0, 4); // TODO
+  d3.json("/ras?query=" + JSON.stringify(q), function(dataAll) {
+    var data = dataAll.slice(0, 4);
     var tbody = d3.select("#eventTable tbody");
     tbody.selectAll("tr").remove();
     var tr = tbody.selectAll("tr").data(data)
       .enter().append("tr");
 
-    tr.append("td").html(function(d) {return d.id;});
+    tr.append("td").html(function(d) {return d._id;});
     tr.append("td").html(function(d) {return d.eventTime;});
-    tr.append("td").html(function(d) {return d.msgID + " (" + events[d.msgID].severity[0] + ")";})
+    tr.append("td").html(function(d) {return d.messageID + " (" + events[d.messageID].severity[0] + ")";})
       .attr("title", function(d) {
-        return "<b>msgID:</b> " + d.msgID
-          + "<br><b>severity:</b> " + events[d.msgID].severity
-          + "<br><b>description:</b> " + events[d.msgID].description
-          + "<br><b>controlAction:</b> " + String(events[d.msgID].controlAction).replace(/,/g, ', ')
-          + "<br><b>serviceAction:</b> " + events[d.msgID].serviceAction
-          + "<br><b>relevantDiagnosticSuites:</b> " + String(events[d.msgID].relevantDiagnosticSuites).replace(/,/g, ', ');
+        return "<b>messageID:</b> " + d.messageID
+          + "<br><b>severity:</b> " + events[d.messageID].severity
+          + "<br><b>description:</b> " + events[d.messageID].description
+          + "<br><b>controlAction:</b> " + String(events[d.messageID].controlAction).replace(/,/g, ', ')
+          + "<br><b>serviceAction:</b> " + events[d.messageID].serviceAction
+          + "<br><b>relevantDiagnosticSuites:</b> " + String(events[d.messageID].relevantDiagnosticSuites).replace(/,/g, ', ');
       });
-    tr.append("td").html(function(d) {return events[d.msgID].component;})
+    tr.append("td").html(function(d) {return events[d.messageID].component;})
       .attr("title", function(d) {
-        return components[events[d.msgID].component];
+        return components[events[d.messageID].component];
       });
-    tr.append("td").html(function(d) {return events[d.msgID].category;})
+    tr.append("td").html(function(d) {return events[d.messageID].category;})
       .attr("title", function(d) {
-        return categories[events[d.msgID].category];
+        return categories[events[d.messageID].category];
       });
     tr.append("td").html(function(d) {return d.jobID;});
     tr.append("td").html(function(d) {return d.location;})
