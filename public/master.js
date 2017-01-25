@@ -33,6 +33,28 @@ var userProfileMap = new function() {
   });
 };
 
+var projProfileMap = new function() {
+  var projMap = {};
+  this.map = function(d) {return projMap[d];}
+  this.map2 = function(d) {
+    var p = projMap[d];
+    if (p.color.length>0) {
+      return '<span class="projProfile" style="background-color:' + p.color + '">' + p.emoji + '</span>';
+    } else {
+      return "<span class='projProfile'>" + p.emoji + "</span>";
+    }
+  }
+  
+  d3.csv("/projProfiles.csv", function(err, data) {
+    data.forEach(function(d) {
+      projMap[d.proj] = {
+        color: d.color, 
+        emoji: d.emoji
+      };
+    });
+  });
+};
+
 var torusRMNJMap = new function() {
   var torusMap = {};
   var RMNJMap = {};

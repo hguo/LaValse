@@ -359,20 +359,9 @@ function timeVolumeChart(geom) {
           + "<br><b>queuedTime:</b> " + d3.isoFormat(new Date(d.queuedTimestamp)) 
           + "<br><b>startTime:</b> " + d3.isoFormat(new Date(d.startTimestamp))
           + "<br><b>runTime (s):</b> " + d.runTimeSeconds
-          // + "<br><b>wallTime (s):</b>" + d.wallTimeSeconds
           + "<br><b>mode:</b> " + d.mode
-          // + "<br><b>requestedCores</b>" + d.requestedCores
-          // + "<br><b>usedCores</b>" + d.usedCores
-          // + "<br><b>requestedNodes</b>" + d.requestedNodes
-          // + "<br><b>usedNodes</b>" + d.usedNodes
-          // + "<br><b>requestedCoreHours</b>" + d.requestedCoreHours
-          // + "<br><b>requestedCoreSeconds</b>" + d.requestedCoreSeconds
-          // + "<br><b>usedCoreHours</b>" + d.usedCoreHours
-          // + "<br><b>usedCoreSeconds</b>" + d.usedCoreSeconds
-          + "<br><b>cobaltProjectName:</b> " + d.cobaltProjectName
-          // + "<br><b>projectName</b>" + d.projectName
+          + "<br><b>cobaltProjectName:</b> " + projProfileMap.map2(d.cobaltProjectName)
           + "<br><b>cobaltUserName:</b> " + userProfileMap.map2(d.cobaltUserName)
-          // + "<br><b>deletedBy</b>" + d.deletedBy
           + "<br><b>queue:</b> " + d.queue
           + "<br><b>machinePartition:</b> " + d.machinePartition
           + "<br><b>exitCode:</b> " + d.exitCode;

@@ -4,7 +4,11 @@ body {
 }
 
 .userProfile {
-  font-size: 30pt;
+  font-size: 40pt;
+}
+
+.projProfile {
+  font-size: 40pt;
 }
 
 svg text {
