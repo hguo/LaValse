@@ -11,6 +11,28 @@ var query = {
 var severityChart, componentChart, categoryChart, locationTypeChart, controlActionChart, timeVolumeChart;
 var machineView;
 
+var userProfileMap = new function() {
+  var userMap = {};
+  this.map = function(d) {return userMap[d];}
+  this.map2 = function(d) {
+    var p = userMap[d];
+    if (p.color.length>0) {
+      return '<span class="userProfile" style="background-color:' + p.color + '">' + p.emoji + '</span>';
+    } else {
+      return "<span class='userProfile'>" + p.emoji + "</span>";
+    }
+  }
+  
+  d3.csv("/userProfiles.csv", function(err, data) {
+    data.forEach(function(d) {
+      userMap[d.user] = {
+        color: d.color, 
+        emoji: d.emoji
+      };
+    });
+  });
+};
+
 var torusRMNJMap = new function() {
   var torusMap = {};
   var RMNJMap = {};

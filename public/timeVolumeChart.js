@@ -371,7 +371,7 @@ function timeVolumeChart(geom) {
           // + "<br><b>usedCoreSeconds</b>" + d.usedCoreSeconds
           + "<br><b>cobaltProjectName:</b> " + d.cobaltProjectName
           // + "<br><b>projectName</b>" + d.projectName
-          + "<br><b>cobaltUserName:</b> " + d.cobaltUserName
+          + "<br><b>cobaltUserName:</b> " + userProfileMap.map2(d.cobaltUserName)
           // + "<br><b>deletedBy</b>" + d.deletedBy
           + "<br><b>queue:</b> " + d.queue
           + "<br><b>machinePartition:</b> " + d.machinePartition

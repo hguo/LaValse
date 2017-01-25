@@ -116,7 +116,8 @@ var aggregateDocument = function(db, callback) {
     .aggregate([
         {
           // $group: {"_id": "$cobaltProjectName", count: {$sum: 1}}
-          $group: {"_id": "$machinePartition", count: {$sum: 1}}
+          $group: {"_id": "$cobaltUserName", count: {$sum: 1}}
+          // $group: {"_id": "$machinePartition", count: {$sum: 1}}
         }
     ])
     // .find(query)

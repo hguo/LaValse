@@ -3,6 +3,10 @@ body {
   font-size: 9pt;
 }
 
+.userProfile {
+  font-size: 30pt;
+}
+
 svg text {
   cursor: default;
   -webkit-user-select: none;
