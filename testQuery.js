@@ -1,5 +1,6 @@
-var MongoClient = require("mongodb").MongoClient, 
-    assert = require("assert");
+const MongoClient = require("mongodb").MongoClient, 
+      assert = require("assert");
+const randomColor = require("randomcolor");
 
 var url = "mongodb://localhost:27017/catalog";
 
@@ -111,20 +112,28 @@ var aggregateDocument = function(db, callback) {
   // var group = {"$group": {"_id": "$messageID", "count": {$sum: 1}}};
   
   var a1 = collection
-    .find({})
-    /*
+    // .find({})
     .aggregate([
         {
           // $group: {"_id": "$cobaltProjectName", count: {$sum: 1}}
           $group: {"_id": "$machinePartition", count: {$sum: 1}}
         }
-    ])*/
+    ])
     // .find(query)
     .toArray(function(err, docs) {
-      console.log(err);
+      // console.log(err);
+      var colors = randomColor.randomColor({
+        luminosity: "dark",
+        count: docs.length
+      });
+
+      for (var i=0; i<docs.length; i++) {
+        console.log(docs[i]._id, colors[i]);
+      }
+      /*
       docs.forEach(function(d) {
         console.log(d);
-      });
+      });*/
     });
 
   callback();

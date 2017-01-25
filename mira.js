@@ -615,6 +615,25 @@ var partitionParser = new function() {
       return result;
     }
   }
+  
+  this.contour = function(str) {
+    const N = 96;
+    var array = this.parse(str);
+    var min, max;
+    for (var i=0; i<N; i++) {
+      if (array[i]) {
+        min = i; 
+        break;
+      }
+    }
+    for (var i=N-1; i>=0; i--) {
+      if (array[i]) {
+        max = i;
+        break;
+      }
+    }
+    return {min: min, max: max};
+  }
 
   this.components = function(str) {
     if (str in cache) {

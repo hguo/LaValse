@@ -93,7 +93,8 @@ function timeVolumeChart(geom) {
   var cobaltAxis = d3.axisLeft()
     .scale(yCobalt)
     .tickFormat(function(d) {
-      return midplanes[d];
+      if (midplanes[d] == undefined) return; 
+      else return midplanes[d];
     });
 
   var lineLog = d3.line() // .curve(d3.curveBasis)
@@ -175,7 +176,7 @@ function timeVolumeChart(geom) {
       .style("fill", "white")
       .style("opacity", "0");
 
-    svgCobalt.append("rect") // for zooming
+    svgCobaltContent.append("rect") // for zooming
       .attr("width", width)
       .attr("height", cobaltHeight)
       .style("fill", "white")
@@ -338,16 +339,34 @@ function timeVolumeChart(geom) {
       .data(data).enter()
       .append("g")
       .attr("class", "cobalt")
+      .attr("title", "test")
       .attr("id", function(d, i) {return "job" + i;})
       .style("transform", function(d) {
         var t0 = x(d.startTimestamp), t1 = x(d.endTimestamp);
         var scale = "scale(" + (t1-t0) + "," + cobaltYScale*cobaltHeight/96 + ")",
             translate = "translate(" + t0 + "px," + cobaltYTranslate + "px)";
         return translate + scale;
+      })
+      .on("click", function(d) {
+        // TODO
       });
 
     for (var i=0; i<data.length; i++) {
       var components = partitionParser.components(data[i].machinePartition);
+      var contour = partitionParser.contour(data[i].machinePartition);
+
+      /*
+      svgCobaltContent.select("#job" + i)
+        .append("rect")
+        .attr("class", "cobaltContour")
+        .style("vector-effect", "non-scaling-stroke")
+        .style("stroke", "black")
+        .style("fill", "none")
+        .style("display", "none")
+        .attr("x", 0)
+        .attr("y", contour.min)
+        .attr("width", 1)
+        .attr("height", contour.max - contour.min + 1);*/
       
       svgCobaltContent.select("#job" + i)
         .selectAll(".cobaltBox")
@@ -356,13 +375,12 @@ function timeVolumeChart(geom) {
         .attr("class", "cobaltBox")
         .style("stroke", "none")
         .style("fill", data[i].color)
-        // .style("fill", "black")
         .style("opacity", "0.6")
-        .attr("title", data[i].machinePartition)
+        // .attr("title", data[i].machinePartition)
         .attr("x", 0)
         .attr("y", function(d, i) {return d[0];}) 
         .attr("width", 1)
-        .attr("height", function(d) {return d[1];}); 
+        .attr("height", function(d) {return d[1];});
     }
   }
 
