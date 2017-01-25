@@ -127,13 +127,13 @@ var aggregateDocument = function(db, callback) {
         count: docs.length
       });
 
+      /*
       for (var i=0; i<docs.length; i++) {
         console.log(docs[i]._id, colors[i]);
-      }
-      /*
+      }*/
       docs.forEach(function(d) {
         console.log(d);
-      });*/
+      });
     });
 
   callback();
