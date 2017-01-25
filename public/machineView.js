@@ -428,6 +428,7 @@ function machineView() {
 
     for (mp=0; mp<2; mp++) {
       var midplaneStr = midplane2str(row, col, mp);
+      var midplaneIdx = (row*16+col)*2+mp;
       var midplane = midplaneGroup.append("g")
         .attr("id", midplaneStr)
         .attr("transform", "translate(0," + (midplaneH+midplanePadding)*mp + ")")
@@ -437,6 +438,7 @@ function machineView() {
         .attr("_mp", mp);
       midplane.append("rect")
         .attr("class", "c RMBox")
+        .attr("_mpi", midplaneIdx)
         .attr("id", midplaneStr)
         .attr("title", midplaneStr)
         .attr("width", midplaneW)
@@ -716,21 +718,21 @@ function machineView() {
   }
 }
 
-function highlightBlockAndLocation(block, location) {
+function highlightBlock(str, color) {
+  var array = partitionParser.parse(str);
+  $(".RMBox").css("stroke", "").css("stroke-width", "");
+  $(".RMBox").filter(function() {
+    var idx = +($(this).attr("_mpi"));
+    return array[idx];
+  }).css("stroke", color).css("stroke-width", 2);
+}
+
+function highlightBlockAndLocation(block, location) { // LEGACY
   highlightBlock(block);
   highlightNodeBoard(location);
 }
 
-function highlightBlock(str) {
-  var set = parseComputeBlock(str);
-  $(".c").css("fill", "white");
-  $(".c").filter(function() {
-    var mpStr = $(this).attr("id").slice(0, 6);
-    return set.has(mpStr);
-  }).css("fill", "darkblue");
-}
-
-function highlightNodeBoard(str) {
+function highlightNodeBoard(str) { // LEGACY
   var nodeBoardStr = locationStrToNodeBoardStr(str);
   $(".c#" + nodeBoardStr).css("fill", "red");
 }

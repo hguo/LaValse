@@ -192,8 +192,8 @@ function timeVolumeChart(geom) {
     yLinearReverse.rangeRound([0, volumeHeight]);
     YLog.rangeRound([overviewHeight, 0]);
     
-    yCobalt.rangeRound([cobaltHeight, 0]);
-    yCobalt0.rangeRound([cobaltHeight, 0]);
+    yCobalt.rangeRound([0, cobaltHeight]);
+    yCobalt0.rangeRound([0, cobaltHeight]);
 
     svgVolume.select(".axis-x")
       .attr("transform", "translate(0," + volumeHeight + ")")
@@ -347,8 +347,11 @@ function timeVolumeChart(geom) {
             translate = "translate(" + t0 + "px," + cobaltYTranslate + "px)";
         return translate + scale;
       })
-      .on("click", function(d) {
-        // TODO
+      .on("mouseover", function(d) {
+        highlightBlock(d.machinePartition, d.color);
+      })
+      .on("mouseleave", function(d) {
+        highlightBlock("");
       });
 
     for (var i=0; i<data.length; i++) {
