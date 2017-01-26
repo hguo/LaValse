@@ -442,7 +442,7 @@ function timeVolumeChart(geom) {
     refresh();
   }
 
-  function cobaltZoomed() { 
+  function cobaltZoomed() {
     var t = d3.event.transform;
     cobaltYScale = t.k;
     cobaltYTranslate = t.y;

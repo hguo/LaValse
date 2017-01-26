@@ -170,6 +170,8 @@ function init() {
 
 function refresh() {
   d3.json("/cube?query=" + JSON.stringify(query), function (d) {
+    removeTooltips();
+
     if ("top" in d) refreshTops(d["top"]);
     if ("recIDs" in d) refreshRecIDs(d["recIDs"]);
     
@@ -218,6 +220,7 @@ function refreshRecIDs(data) {
         data1[i].eventTime = new Date(data1[i].eventTime);
         data1[i].y = data[i].y;
       }
+      removeTooltips();
       timeVolumeChart.updateRecords(data1);
     });
   }
@@ -319,3 +322,6 @@ function ceilPow(v) {
   return Math.pow(10, Math.ceil(Math.log10(v)));
 }
 
+function removeTooltips() {
+  $(".ui-tooltip").remove();
+}
