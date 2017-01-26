@@ -355,16 +355,16 @@ function timeVolumeChart(geom) {
       .attr("class", "cobalt")
       .attr("id", function(d, i) {return "job" + i;})
       .attr("title", function(d) {
-        return "<b>jobID:</b> " + d._id 
-          + "<br><b>queuedTime:</b> " + d3.isoFormat(new Date(d.queuedTimestamp)) 
-          + "<br><b>startTime:</b> " + d3.isoFormat(new Date(d.startTimestamp))
-          + "<br><b>runTime (s):</b> " + d.runTimeSeconds
-          + "<br><b>mode:</b> " + d.mode
-          + "<br><b>cobaltProjectName:</b> " + projProfileMap.map2(d.cobaltProjectName)
-          + "<br><b>cobaltUserName:</b> " + userProfileMap.map2(d.cobaltUserName)
-          + "<br><b>queue:</b> " + d.queue
-          + "<br><b>machinePartition:</b> " + d.machinePartition
-          + "<br><b>exitCode:</b> " + d.exitCode;
+        return "<table class='tooltipTable'><tr><td><b>jobID:</b></td><td>" + d._id + "</td></tr>"
+          + "<tr><td><b>queuedTime:</b></td><td>" + d3.isoFormat(new Date(d.queuedTimestamp)) + "</td></tr>"
+          + "<tr><td><b>startTime:</b></td><td>" + d3.isoFormat(new Date(d.startTimestamp)) + "</td></tr>"
+          + "<tr><td><b>runTime (s):</b></td><td>" + d.runTimeSeconds + "</td></tr>"
+          + "<tr><td><b>mode:</b></td><td>" + d.mode + "</td></tr>"
+          + "<tr><td><b>cobaltProjectName:</b></td><td>" + projProfileMap.map2(d.cobaltProjectName) + "</td></tr>"
+          + "<tr><td><b>cobaltUserName:</b></td><td>" + userProfileMap.map2(d.cobaltUserName) + "</td></tr>"
+          + "<tr><td><b>queue:</b></td><td>" + d.queue + "</td></tr>"
+          + "<tr><td><b>machinePartition:</b></td><td>" + d.machinePartition + "</td></tr>"
+          + "<tr><td><b>exitCode:</b></td><td>" + d.exitCode + "</td></tr>";
       })
       .style("transform", function(d) {
         var t0 = x(d.startTimestamp), t1 = x(d.endTimestamp);
