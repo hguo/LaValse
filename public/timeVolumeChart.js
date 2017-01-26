@@ -342,7 +342,8 @@ function timeVolumeChart(geom) {
           + "<br><b>count:</b> " + d.count
           + "<br><b>controlActions:</b> " + String(events[d.messageID].controlAction).replace(/,/g, ', ')
           + "<br><b>serviceAction:</b> " + events[d.messageID].serviceAction
-          + "<br><b>relevantDiagnosticSuites:</b> " + String(events[d.messageID].relevantDiagnosticSuites).replace(/,/g, ', ');
+          + "<br><b>relevantDiagnosticSuites:</b> " + String(events[d.messageID].relevantDiagnosticSuites).replace(/,/g, ', ')
+          + "<br><b>message:</b> " + d.message;
       });
   }
   
