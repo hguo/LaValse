@@ -194,7 +194,7 @@ function timeVolumeChart(geom) {
     YLog.rangeRound([overviewHeight, 0]);
     
     yCobalt.rangeRound([0, cobaltHeight]);
-    yCobalt0.rangeRound([0, cobaltHeight]);
+    yCobalt0.range([0, cobaltHeight]);
 
     svgVolume.select(".axis-x")
       .attr("transform", "translate(0," + volumeHeight + ")")
@@ -276,20 +276,13 @@ function timeVolumeChart(geom) {
       .style("stroke", function(d, i) {return color(i);})
       .attr("d", function(d) {return line(d);});
 
-    /*
-    svgVolume.selectAll(".line")
-      .data(data)
-      // .datum(data)
-      // .transition()
-      .attr("d", function(d) {
-        return line(d);
-      });*/
-
     svgVolume.select(".axis-x")
-      .transition().call(xAxis);
+      .transition()
+      .call(xAxis);
     
     svgVolume.select(".axis-y")
-      .transition().call(yAxis)
+      .transition()
+      .call(yAxis)
   }
 
   this.updateOverviewVolume = function(data) {
@@ -450,12 +443,22 @@ function timeVolumeChart(geom) {
     var contour = partitionParser.contour(d.machinePartition);
     var D = [d.startTimestamp, d.endTimestamp];
 
-    var scale = width / (x0(D[1]) - x0(D[0]));
-    var tx = -x0(D[0]);
+    { // x direction
+      var scale = width / (x0(D[1]) - x0(D[0]));
+      var tx = -x0(D[0]);
 
-    svgVolume.call(volumeZoom.transform, d3.zoomIdentity
-      .scale(scale)
-      .translate(tx, 0));
+      svgVolume.call(volumeZoom.transform, d3.zoomIdentity
+        .scale(scale)
+        .translate(tx, 0));
+    }
+    { // y direction
+      var scale = cobaltHeight / (yCobalt0(contour.max) - yCobalt0(contour.min));
+      var ty = -yCobalt0(contour.min);
+
+      svgCobalt.call(cobaltZoom.transform, d3.zoomIdentity
+        .scale(scale)
+        .translate(0, ty));
+    }
   }
 
   function cobaltZoomed() {
@@ -464,8 +467,9 @@ function timeVolumeChart(geom) {
     cobaltYTranslate = t.y;
 
     yCobalt.domain(t.rescaleY(yCobalt0).domain());
-    svgCobalt.select(".axis-cobalt").call(cobaltAxis);
-    // yCobalt.call(cobaltAxis);
+    svgCobalt.select(".axis-cobalt")
+      .transition()
+      .call(cobaltAxis);
 
     svgCobaltContent.selectAll(".cobalt")
       .style("transform", function(d) {
@@ -486,11 +490,12 @@ function timeVolumeChart(geom) {
     
     var t = d3.event.transform;
     x.domain(t.rescaleX(x0).domain());
-    svgVolume.select(".axis-x").call(xAxis);
+    svgVolume.select(".axis-x")
+      .call(xAxis);
     svgVolume.selectAll(".line").attr("d", line);
     
     svgVolume.selectAll(".glyph")
-      .attr("cx", function(d) {return x(d.eventTime);})
+      .attr("cx", function(d) {return x(d.eventTime);});
 
     svgCobaltContent.selectAll(".cobalt")
       .style("transform", function(d) {
