@@ -228,10 +228,11 @@ function refreshRecIDs(data) {
 
 function refreshCobaltLog(q) {
   d3.json("/cobalt?query=" + JSON.stringify(q), function(data) {
-    for (var i=0; i<data.length; i++) {
-      data[i].startTimestamp = new Date(data[i].startTimestamp);
-      data[i].endTimestamp = new Date(data[i].endTimestamp);
-    }
+    data.forEach(function(d) {
+      d.queuedTimestamp = new Date(d.queuedTimestamp);
+      d.startTimestamp = new Date(d.startTimestamp);
+      d.endTimestamp = new Date(d.endTimestamp);
+    });
     timeVolumeChart.updateCobaltData(data);
     updateCobaltTable(data);
   });
