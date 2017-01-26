@@ -31,11 +31,18 @@ Install node.js and node-gyp.  We recommend to install node.js in home directory
 npm install -g node-gyp 
 ```
 
-Build the C++ data cube (you may need to modify binding.gyp to add C++11 arguments)
+Clone the repo and install dependencies with npm
 
 ```bash
 git clone git@bitbucket.org:hanqiguo/catalogvis.git
-cd catalogvis/cpp
+cd catalogvis
+npm install
+```
+
+Build the C++ data cube (you may need to modify binding.gyp to add C++11 arguments)
+
+```bash
+cd cpp
 node-gyp configure
 node-gyp build
 ```
