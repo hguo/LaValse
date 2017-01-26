@@ -183,7 +183,7 @@ function timeVolumeChart(geom) {
       .style("fill", "white")
       .style("opacity", "0");
 
-    x0.rangeRound([0, width]);
+    x0.range([0, width]);
     x.rangeRound([0, width]);
     X0.rangeRound([0, width]); 
     X.rangeRound([0, width]); 
@@ -448,41 +448,14 @@ function timeVolumeChart(geom) {
 
   function zoomToCobaltJob(d) {
     var contour = partitionParser.contour(d.machinePartition);
-    var D0 = x0.domain();
     var D = [d.startTimestamp, d.endTimestamp];
 
-    /*
-    var t0 = {}; // d3.zoomIdentity;
-    t0.k = (D0[1] - D0[0]) / (D[1] - D[0]);
-    t0.x = (D[0] - D0[0]); // * t0.k;
-    t0.y = 0;
-    console.log(d3.zoomIdentity, t0);
+    var scale = width / (x0(D[1]) - x0(D[0]));
+    var tx = -x0(D[0]);
 
-    svgVolume.call(volumeZoom.transform, t0);
-    */
-    // svgVolume.call(volumeZoom.transform, d3.zoomIdentity);
-   
-    /*
-    x.domain([d.startTimestamp, d.endTimestamp]);
-    svgVolume.select(".axis-x")
-      .transition()
-      .call(xAxis);
-    svgVolume.select(".line")
-      .transition()
-      .attr("d", line);
-    svgVolume.selectAll(".glyph")
-      .attr("cx", function(d) {return x(d.eventTime);})
-    svgCobaltContent.selectAll(".cobalt")
-      .style("transform", function(d) {
-        var t0 = x(d.startTimestamp), t1 = x(d.endTimestamp);
-        var scale = "scale(" + (t1-t0) + "," + cobaltYScale*cobaltHeight/96 + ")",
-            translate = "translate(" + t0 + "px," + cobaltYTranslate + "px)";
-        return translate + scale;
-      });
-    svgVolume.select(".timeLabelLeft")
-      .text(d3.isoFormat(x.domain()[0]));
-    svgVolume.select(".timeLabelRight")
-      .text(d3.isoFormat(x.domain()[1])); */
+    svgVolume.call(volumeZoom.transform, d3.zoomIdentity
+      .scale(scale)
+      .translate(tx, 0));
   }
 
   function cobaltZoomed() {
