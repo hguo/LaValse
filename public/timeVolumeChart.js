@@ -125,9 +125,15 @@ function timeVolumeChart(geom) {
 
   var volumeBrush = d3.brushX()
     .on("end", volumeBrushed);
-  svg.append("g")
+  svgVolume.append("g")
     .attr("id", "volumeBrush")
     .attr("class", "brush");
+
+  var overviewBrush = d3.brushX()
+    .on("end", overviewBrushed);
+  svgOverview.append("g")
+    .attr("class", "brush")
+    .attr("id", "overviewBrush");
   
   this.resize = function(geom) {
     $("#timeVolumeChartSvg").css({
@@ -245,8 +251,11 @@ function timeVolumeChart(geom) {
     /*
     volumeBrush.extent([[0, 0], [width, height]]);
     svg.select("#volumeBrush")
-      .call(volumeBrushed);
-    */
+      .call(volumeBrushed);*/
+   
+    overviewBrush.extent([[0, 0], [width, overviewHeight]]);
+    svgOverview.select("#overviewBrush")
+      .call(overviewBrush);
   }
 
   this.resize(geom);
@@ -436,6 +445,10 @@ function timeVolumeChart(geom) {
     query.t0 = x.invert(s[0]).getTime();
     query.t1 = x.invert(s[1]).getTime();
     refresh();
+  }
+
+  function overviewBrushed() {
+    // TODO
   }
 
   function zoomIntoCobaltJob(d) {
