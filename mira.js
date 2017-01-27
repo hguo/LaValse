@@ -605,6 +605,17 @@ function enumerateL4Locations() {
 var partitionParser = new function() {
   var cache = {};
   var cacheComponents = {};
+  
+  this.init = function(data) { // init from pre-generated maps
+    data.forEach(function(d) {
+      var array = [];
+      for (var i=0; i<d.str.length; i++) {
+        if (d.str[i] == "1") array.push(true);
+        else array.push(false);
+      }
+      cache[d.partition] = array;
+    });
+  }
 
   this.parse = function(str) {
     if (str in cache) {
@@ -636,7 +647,7 @@ var partitionParser = new function() {
   }
 
   this.components = function(str) {
-    if (str in cache) {
+    if (str in cacheComponents) {
       return cacheComponents[str];
     } else {
       var result = this.components1(str);

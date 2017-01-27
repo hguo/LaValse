@@ -473,7 +473,6 @@ function timeVolumeChart(geom) {
 
     yCobalt.domain(t.rescaleY(yCobalt0).domain());
     svgCobalt.select(".axis-cobalt")
-      .transition()
       .call(cobaltAxis);
 
     svgCobaltContent.selectAll(".cobalt")

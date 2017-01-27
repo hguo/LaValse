@@ -11,6 +11,11 @@ var query = {
 var severityChart, componentChart, categoryChart, locationTypeChart, controlActionChart, timeVolumeChart;
 var machineView;
 
+// init mira partition parser
+d3.csv("/partitionInfo.csv", function(err, data) {
+  partitionParser.init(data);
+});
+
 var userProfileMap = new function() {
   var userMap = {};
   this.map = function(d) {return userMap[d];}
