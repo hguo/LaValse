@@ -37,6 +37,20 @@ MongoClient.connect(uri, function(err, db) {
     });
   });
 
+  app.get("/backend", function(req, res) {
+    var query = JSON.parse(req.query.query); 
+    var dbquery = {};
+    if ("cobaltJobID" in query) 
+      dbquery["cobaltJobID"] = query.cobaltJobID;
+    else if ("backendJobID" in query)
+      dbquery["_id"] = query.backendJobID;
+
+    db.collection("backend").find(dbquery)
+      .toArray(function(err, docs) {
+        res.end(JSON.stringify(docs));
+      });
+  });
+
   app.get("/ras", function(req, res) {
     var query = JSON.parse(req.query.query); // query should be an array
     var set = [];

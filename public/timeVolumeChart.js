@@ -374,7 +374,7 @@ function timeVolumeChart(geom) {
         highlightBlock("");
       })
       .on("dblclick", function(d) {
-        zoomToCobaltJob(d);
+        zoomIntoCobaltJob(d);
       });
 
     for (var i=0; i<data.length; i++) {
@@ -439,7 +439,7 @@ function timeVolumeChart(geom) {
     refresh();
   }
 
-  function zoomToCobaltJob(d) {
+  function zoomIntoCobaltJob(d) {
     var contour = partitionParser.contour(d.machinePartition);
     var D = [d.startTimestamp, d.endTimestamp];
 
@@ -459,6 +459,11 @@ function timeVolumeChart(geom) {
         .scale(scale)
         .translate(0, ty));
     }
+
+    var query = {cobaltJobID: d._id};
+    d3.json("/backend?query=" + JSON.stringify(query), function(d) {
+      console.log(d);
+    });
   }
 
   function cobaltZoomed() {
