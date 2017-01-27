@@ -83,6 +83,7 @@ var torusRMNJMap = new function() {
 $(function() {
   $("#tabs").tabs();
   $(document).tooltip({
+    track: true,
     content: function() {
       return $(this).attr("title");
     }
