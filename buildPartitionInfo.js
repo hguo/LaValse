@@ -25,7 +25,7 @@ var buildUserInfo = function(db, cb) {
           else str += "0";
         });
         d.str = str;
-        console.log('"' + d._id + '","' + str + '"');
+        console.log('"' + d.str + '","' + d._id + '"');
       });
     });
   cb();

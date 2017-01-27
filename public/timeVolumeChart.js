@@ -402,7 +402,6 @@ function timeVolumeChart(geom) {
         .style("stroke", "none")
         .style("fill", data[i].color)
         .style("opacity", "0.6")
-        // .attr("title", data[i].machinePartition)
         .attr("x", 0)
         .attr("y", function(d, i) {return d[0];}) 
         .attr("width", 1)
