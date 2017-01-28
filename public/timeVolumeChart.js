@@ -459,10 +459,9 @@ function timeVolumeChart(geom) {
     }
     var s = d3.event.selection; 
   
-    svgVolume.select(".zoom")
-      .call(volumeZoom.transform, d3.zoomIdentity
-          .scale(width / (s[1] - s[0]))
-          .translate(-s[0], 0));
+    svgVolume.call(volumeZoom.transform, d3.zoomIdentity
+        .scale(width / (s[1] - s[0]))
+        .translate(-s[0], 0));
   }
 
   function zoomIntoCobaltJob(d) {
