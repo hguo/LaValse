@@ -130,7 +130,7 @@ function timeVolumeChart(geom) {
     .attr("class", "brush");
 
   var overviewBrush = d3.brushX()
-    .on("end", overviewBrushed);
+    .on("brush end", overviewBrushed);
   svgOverview.append("g")
     .attr("class", "brush")
     .attr("id", "overviewBrush");
@@ -178,12 +178,14 @@ function timeVolumeChart(geom) {
       .attr("height", cobaltHeight);
 
     svgVolume.append("rect") // for zooming
+      .attr("class", "zoom")
       .attr("width", width)
       .attr("height", volumeHeight)
       .style("fill", "white")
       .style("opacity", "0");
 
     svgCobaltContent.append("rect") // for zooming
+      .attr("class", "zoom")
       .attr("width", width)
       .attr("height", cobaltHeight)
       .style("fill", "white")
@@ -191,7 +193,7 @@ function timeVolumeChart(geom) {
 
     x0.range([0, width]);
     x.rangeRound([0, width]);
-    X0.rangeRound([0, width]); 
+    X0.range([0, width]); 
     X.rangeRound([0, width]); 
 
     yLog.rangeRound([volumeHeight, 0]);
@@ -255,7 +257,8 @@ function timeVolumeChart(geom) {
    
     overviewBrush.extent([[0, 0], [width, overviewHeight]]);
     svgOverview.select("#overviewBrush")
-      .call(overviewBrush);
+      .call(overviewBrush)
+      .call(overviewBrush.move, X0.range());
   }
 
   this.resize(geom);
@@ -448,7 +451,18 @@ function timeVolumeChart(geom) {
   }
 
   function overviewBrushed() {
-    // TODO
+    if (d3.event.sourceEvent == null) return; 
+    else if (d3.event.selection == null) {
+      svgOverview.select("#overviewBrush")
+        .call(overviewBrush.move, X0.range());
+      return;
+    }
+    var s = d3.event.selection; 
+  
+    svgVolume.select(".zoom")
+      .call(volumeZoom.transform, d3.zoomIdentity
+          .scale(width / (s[1] - s[0]))
+          .translate(-s[0], 0));
   }
 
   function zoomIntoCobaltJob(d) {
