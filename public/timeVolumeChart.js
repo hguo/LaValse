@@ -438,7 +438,7 @@ function timeVolumeChart(geom) {
 
   this.reset = function() {
     useLogScale = true;
-    svg.select("#volumeBrush")
+    svgVolume.select("#volumeBrush")
       .call(volumeBrush.move, null)
       .call(volumeZoom.transform, d3.zoomIdentity);
   }
@@ -451,14 +451,16 @@ function timeVolumeChart(geom) {
   }
 
   function overviewBrushed() {
-    if (d3.event.sourceEvent == null) return; 
-    else if (d3.event.selection == null) {
+    if (d3.event.sourceEvent == null) return;
+    if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
+    
+    if (d3.event.selection == null) {
       svgOverview.select("#overviewBrush")
         .call(overviewBrush.move, X0.range());
       return;
     }
     var s = d3.event.selection; 
-  
+ 
     svgVolume.call(volumeZoom.transform, d3.zoomIdentity
         .scale(width / (s[1] - s[0]))
         .translate(-s[0], 0));
@@ -511,7 +513,9 @@ function timeVolumeChart(geom) {
 
   var volumeZoomTimer = d3.timer(function() {volumeZoomTimer.stop()});
 
-  function volumeZoomed() { 
+  function volumeZoomed() {
+    if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+
     var line = useLogScale ? lineLog : lineLinear;
    
     // svg.select("#volumeBrush")
@@ -519,6 +523,10 @@ function timeVolumeChart(geom) {
     
     var t = d3.event.transform;
     x.domain(t.rescaleX(x0).domain());
+
+    svgOverview.select("#overviewBrush")
+      .call(overviewBrush.move, x.range().map(t.invertX, t));
+
     svgVolume.select(".axis-x")
       .call(xAxis);
     svgVolume.selectAll(".line").attr("d", line);
