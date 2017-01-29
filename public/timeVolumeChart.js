@@ -136,7 +136,14 @@ function timeVolumeChart(geom) {
   svgOverview.append("g")
     .attr("class", "brush")
     .attr("id", "overviewBrush");
-  
+ 
+  var jobTransform = function(d) {
+    var t0 = x(d.startTime), t1 = x(d.endTime);
+    var scale = "scale(" + (t1-t0) + "," + cobaltHeight/96 + ")"
+        translate = "translate(" + t0 + "px,0px)";
+    return translate + scale;
+  };
+
   this.resize = function(geom) {
     $("#timeVolumeChartSvg").css({
       top: geom.T, 
@@ -249,12 +256,7 @@ function timeVolumeChart(geom) {
       .attr("d", function(d) {return overviewLineLog(d);});*/
 
     svgCobaltContent.selectAll(".cobalt")
-      .style("transform", function(d) {
-        var t0 = x(d.startTime), t1 = x(d.endTime);
-        var scale = "scale(" + (t1-t0) + "," + cobaltHeight/96 + ")"
-            translate = "translate(" + t0 + "px,0px)";
-        return translate + scale;
-      });
+      .style("transform", jobTransform);
    
     overviewBrush.extent([[0, 0], [width, overviewHeight]]);
     svgOverview.select("#overviewBrush")
@@ -390,12 +392,7 @@ function timeVolumeChart(geom) {
           + "<tr><td><b>machinePartition:</b></td><td>" + d.machinePartition + "</td></tr>"
           + "<tr><td><b>exitCode:</b></td><td>" + d.exitCode + "</td></tr>";
       })
-      .style("transform", function(d) {
-        var t0 = x(d.startTime), t1 = x(d.endTime);
-        var scale = "scale(" + (t1-t0) + "," + cobaltYScale*cobaltHeight/96 + ")",
-            translate = "translate(" + t0 + "px," + cobaltYTranslate + "px)";
-        return translate + scale;
-      })
+      .style("transform", jobTransform)
       .on("mouseover", function(d) {
         highlightBlock(d.machinePartition, d.color);
       })
@@ -552,12 +549,7 @@ function timeVolumeChart(geom) {
       .call(cobaltAxis);
 
     svgCobaltContent.selectAll(".cobalt")
-      .style("transform", function(d) {
-        var t0 = x(d.startTime), t1 = x(d.endTime);
-        var scale = "scale(" + (t1-t0) + "," + cobaltYScale*cobaltHeight/96 + ")",
-            translate = "translate(" + t0 + "px," + cobaltYTranslate + "px)";
-        return translate + scale;
-      });
+      .style("transform", jobTransform);
   }
 
   var volumeZoomTimer = d3.timer(function() {volumeZoomTimer.stop()});
