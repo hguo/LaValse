@@ -451,7 +451,6 @@ function timeVolumeChart(geom) {
         .attr("width", 1)
         .attr("height", function(d) {return d[1];});
     });
-    // $(".cobalt").tooltip();
    
     /* // another approach. WIP
     cobaltJobGroups.selectAll(".cobaltBox")
