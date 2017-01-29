@@ -139,7 +139,7 @@ function timeVolumeChart(geom) {
  
   var jobTransform = function(d) {
     var t0 = x(d.startTime), t1 = x(d.endTime);
-    var scale = "scale(" + (t1-t0) + "," + cobaltHeight/96 + ")"
+    var scale = "scale(" + (t1-t0) + "," + cobaltYScale*cobaltHeight/96 + ")"
         translate = "translate(" + t0 + "px,0px)";
     return translate + scale;
   };
@@ -386,8 +386,8 @@ function timeVolumeChart(geom) {
           + "<tr><td><b>startTime:</b></td><td>" + d3.isoFormat(new Date(d.startTime)) + "</td></tr>"
           + "<tr><td><b>runTime (s):</b></td><td>" + d.runTimeSeconds + "</td></tr>"
           + "<tr><td><b>mode:</b></td><td>" + d.mode + "</td></tr>"
-          + "<tr><td><b>cobaltProjectName:</b></td><td>" + projProfileMap.map2(d.cobaltProjectName) + "</td></tr>"
-          + "<tr><td><b>cobaltUserName:</b></td><td>" + userProfileMap.map2(d.cobaltUserName) + "</td></tr>"
+          + "<tr><td><b>project:</b></td><td>" + projProfileMap.map2(d.cobaltProjectName) + "</td></tr>"
+          + "<tr><td><b>user:</b></td><td>" + userProfileMap.map2(d.cobaltUserName) + "</td></tr>"
           + "<tr><td><b>queue:</b></td><td>" + d.queue + "</td></tr>"
           + "<tr><td><b>machinePartition:</b></td><td>" + d.machinePartition + "</td></tr>"
           + "<tr><td><b>exitCode:</b></td><td>" + d.exitCode + "</td></tr>";
@@ -577,12 +577,7 @@ function timeVolumeChart(geom) {
       .attr("cx", function(d) {return x(d.eventTime);});
 
     svgCobaltContent.selectAll(".cobalt")
-      .style("transform", function(d) {
-        var t0 = x(d.startTime), t1 = x(d.endTime);
-        var scale = "scale(" + (t1-t0) + "," + cobaltYScale*cobaltHeight/96 + ")",
-            translate = "translate(" + t0 + "px," + cobaltYTranslate + "px)";
-        return translate + scale;
-      });
+      .style("transform", jobTransform);
 
     svgVolume.select(".timeLabelLeft")
       .text(d3.isoFormat(x.domain()[0]));
