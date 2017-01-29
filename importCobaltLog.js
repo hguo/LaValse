@@ -12,11 +12,12 @@ MongoClient.connect(url, function(err, db) {
   assert.equal(null, err);
   console.log("connected.");
 
-  var collection = db.collection("cobalt");
+  var backend = db.collection("backend"),
+      cobalt = db.collection("cobalt1");
 
   var csvStream = csv({headers: true})
     .on("data", function(d) {
-      var data = {
+      var cobaltJob = {
         _id: d.JOBID,
         queuedTimestamp: new Date(d.QUEUED_TIMESTAMP + " GMT"),
         startTimestamp: new Date(d.START_TIMESTAMP + " GMT"),
@@ -42,11 +43,18 @@ MongoClient.connect(url, function(err, db) {
         projectName: d.PROJECT_NAME_GENID,
         color: randomColor.randomColor({luminosity: "dark"})
       };
-      // console.log(data);
-      collection.insertOne(data);
+
+      backend.find({cobaltJobID: cobaltJob._id})
+        .toArray(function(err, docs) {
+          assert.equal(null, err);
+          cobaltJob.backendJobs = docs;
+          
+          // console.log(cobaltJob);
+          cobalt.insertOne(cobaltJob);
+        });
     })
     .on("end", function() {
-      db.close();
+      // db.close();
       console.log("finished.");
     });
 

@@ -7,6 +7,7 @@ function timeVolumeChart(geom) {
   var cobaltTop, volumeTop, overviewTop;
   var cobaltHeight, volumeHeight, overviewHeight;
   var useLogScale = true;
+  var cobaltJobHighlighted = false;
 
   var volumeZoom = d3.zoom()
     .on("zoom", volumeZoomed);
@@ -36,6 +37,9 @@ function timeVolumeChart(geom) {
     .attr("y", 0);
 
   var xDomain = [query.T0, query.T1];
+  var xDomainPrevious = [query.T0, query.T1];
+  var xDomainBeforeCobaltJobHiglighted = [query.T0, query.T1];
+
   var yMax = 1; 
   yMax = ceilPow(yMax);
   var yDomainLog = [1, yMax],
@@ -194,9 +198,9 @@ function timeVolumeChart(geom) {
       .style("opacity", "0");
 
     x0.range([0, width]);
-    x.rangeRound([0, width]);
+    x.range([0, width]);
     X0.range([0, width]); 
-    X.rangeRound([0, width]); 
+    X.range([0, width]); 
 
     yLog.rangeRound([volumeHeight, 0]);
     yLinear.rangeRound([volumeHeight, 0]);
@@ -383,7 +387,11 @@ function timeVolumeChart(geom) {
         highlightBlock("");
       })
       .on("dblclick", function(d) {
-        zoomIntoCobaltJob(d);
+        if (cobaltJobHighlighted) {
+          zoomOutCobaltJob();
+        } else {
+          zoomIntoCobaltJob(d);
+        }
       });
 
     for (var i=0; i<data.length; i++) {
@@ -465,18 +473,31 @@ function timeVolumeChart(geom) {
         .translate(-s[0], 0));
   }
 
+  function zoomIntoTimeDomain(T0, T1) {
+    xDomainPrevious = [x.invert(0).getTime(), x.invert(width).getTime()];
+    console.log(T0, T1);
+    
+    var scale = width / (x0(T1) - x0(T0));
+    var tx = -x0(T0);
+    svgVolume.call(volumeZoom.transform, d3.zoomIdentity
+      .scale(scale)
+      .translate(tx, 0));
+  }
+
+  function zoomOutCobaltJob() {
+    svgCobalt.call(cobaltZoom.transform, d3.zoomIdentity);
+    zoomIntoTimeDomain(xDomainBeforeCobaltJobHiglighted[0], xDomainBeforeCobaltJobHiglighted[1]);
+
+    cobaltJobHighlighted = false;
+  }
+
   function zoomIntoCobaltJob(d) {
     var contour = partitionParser.contour(d.machinePartition);
-    var D = [d.startTimestamp, d.endTimestamp];
 
-    { // x direction
-      var scale = width / (x0(D[1]) - x0(D[0]));
-      var tx = -x0(D[0]);
+    // x direction
+    xDomainBeforeCobaltJobHiglighted = [x.invert(0).getTime(), x.invert(width).getTime()];
+    zoomIntoTimeDomain(d.startTimestamp, d.endTimestamp);
 
-      svgVolume.call(volumeZoom.transform, d3.zoomIdentity
-        .scale(scale)
-        .translate(tx, 0));
-    }
     { // y direction
       var scale = cobaltHeight / (yCobalt0(contour.max) - yCobalt0(contour.min));
       var ty = -yCobalt0(contour.min);
@@ -490,6 +511,8 @@ function timeVolumeChart(geom) {
     d3.json("/backend?query=" + JSON.stringify(query), function(d) {
       console.log(d);
     });
+    
+    cobaltJobHighlighted = true;
   }
 
   function cobaltZoomed() {
