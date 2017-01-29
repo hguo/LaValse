@@ -238,6 +238,8 @@ function refreshCobaltLog(q) {
       d.queuedTime = new Date(d.queuedTime);
       d.startTime = new Date(d.startTime);
       d.endTime = new Date(d.endTime);
+      d.components = partitionParser.components(d.machinePartition);
+      d.contour = partitionParser.contour(d.machinePartition);
     });
     timeVolumeChart.updateCobaltData(data);
     updateCobaltTable(data);

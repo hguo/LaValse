@@ -390,10 +390,10 @@ function timeVolumeChart(geom) {
     } */
   }
 
-  this.updateCobaltData = function(data) {
+  this.updateCobaltData = function(cobaltJobs) {
     svgCobaltContent.selectAll(".cobalt").remove();
     svgCobaltContent.selectAll(".cobalt")
-      .data(data).enter()
+      .data(cobaltJobs).enter()
       .append("g")
       .attr("class", "cobalt")
       .attr("id", function(d, i) {return "job" + d._id;})
@@ -424,10 +424,7 @@ function timeVolumeChart(geom) {
         }
       });
 
-    data.forEach(function (d) {
-      var components = partitionParser.components(d.machinePartition);
-      var contour = partitionParser.contour(d.machinePartition);
-
+    cobaltJobs.forEach(function (cobaltJob) {
       /*
       svgCobaltContent.select("#job" + i)
         .append("rect")
@@ -441,20 +438,35 @@ function timeVolumeChart(geom) {
         .attr("width", 1)
         .attr("height", contour.max - contour.min + 1);*/
       
-      svgCobaltContent.select("#job" + d._id)
+      svgCobaltContent.select("#job" + cobaltJob._id)
         .selectAll(".cobaltBox")
-        .data(components).enter()
+        .data(cobaltJob.components).enter()
         .append("rect")
         .attr("class", "cobaltBox")
         .style("stroke", "none")
-        .style("fill", d.color)
+        .style("fill", cobaltJob.color)
         .style("opacity", "0.6")
         .attr("x", 0)
-        .attr("y", function(dd, i) {return dd[0];}) 
+        .attr("y", function(d) {return d[0];}) 
         .attr("width", 1)
-        .attr("height", function(dd) {return dd[1];});
+        .attr("height", function(d) {return d[1];});
     });
     // $(".cobalt").tooltip();
+   
+    /* // another approach. WIP
+    cobaltJobGroups.selectAll(".cobaltBox")
+      .data(function(cobaltJob) {return cobaltJob.components;})
+      .enter()
+      .append("rect")
+      .attr("class", "cobaltBox")
+      .style("stroke", "none")
+      .style("fill", d.color)
+      .style("opacity", "0.6")
+      .attr("x", 0)
+      .attr("y", function(d, i) {return d[0];}) 
+      .attr("width", 1)
+      .attr("height", function(d) {return d[1];});
+    */
   }
 
   this.toggleLogScale = function() {
