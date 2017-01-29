@@ -163,6 +163,10 @@ function timeVolumeChart(geom) {
       .extent([[0, volumeTop], [width, volumeHeight]]);
     svgVolume.call(volumeZoom);
 
+    volumeBrush.extent([[0, 0], [width, height]]);
+    svg.select("#volumeBrush")
+      .call(volumeBrush);
+
     cobaltZoom.scaleExtent([1, 100])
       .translateExtent([[0, cobaltTop], [width, cobaltHeight]])
       .extent([[0, cobaltTop], [width, cobaltHeight]]);
@@ -249,11 +253,6 @@ function timeVolumeChart(geom) {
             translate = "translate(" + t0 + "px,0px)";
         return translate + scale;
       });
-
-    /*
-    volumeBrush.extent([[0, 0], [width, height]]);
-    svg.select("#volumeBrush")
-      .call(volumeBrushed);*/
    
     overviewBrush.extent([[0, 0], [width, overviewHeight]]);
     svgOverview.select("#overviewBrush")
