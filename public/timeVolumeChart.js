@@ -441,6 +441,7 @@ function timeVolumeChart(geom) {
   }
 
   function volumeBrushed() {
+    removeTooltips(); // TODO
     var s = d3.event.selection || x.range();
     query.t0 = x.invert(s[0]).getTime();
     query.t1 = x.invert(s[1]).getTime();
@@ -450,6 +451,7 @@ function timeVolumeChart(geom) {
   function overviewBrushed() {
     if (d3.event.sourceEvent == null) return;
     if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
+    removeTooltips();
     
     if (d3.event.selection == null) {
       svgOverview.select("#overviewBrush")
@@ -491,6 +493,8 @@ function timeVolumeChart(geom) {
   }
 
   function cobaltZoomed() {
+    removeTooltips();
+    
     var t = d3.event.transform;
     cobaltYScale = t.k;
     cobaltYTranslate = t.y;
@@ -512,6 +516,7 @@ function timeVolumeChart(geom) {
 
   function volumeZoomed() {
     if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+    removeTooltips();
 
     var line = useLogScale ? lineLog : lineLinear;
    
