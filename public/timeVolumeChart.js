@@ -361,7 +361,7 @@ function timeVolumeChart(geom) {
       .data(data).enter()
       .append("g")
       .attr("class", "cobalt")
-      .attr("id", function(d, i) {return "job" + i;})
+      .attr("id", function(d, i) {return "job" + d._id;})
       .attr("title", function(d) {
         return "<table class='tooltipTable'><tr><td><b>jobID:</b></td><td>" + d._id + "</td></tr>"
           + "<tr><td><b>queuedTime:</b></td><td>" + d3.isoFormat(new Date(d.queuedTimestamp)) + "</td></tr>"
@@ -394,9 +394,9 @@ function timeVolumeChart(geom) {
         }
       });
 
-    for (var i=0; i<data.length; i++) {
-      var components = partitionParser.components(data[i].machinePartition);
-      var contour = partitionParser.contour(data[i].machinePartition);
+    data.forEach(function (d) {
+      var components = partitionParser.components(d.machinePartition);
+      var contour = partitionParser.contour(d.machinePartition);
 
       /*
       svgCobaltContent.select("#job" + i)
@@ -411,19 +411,19 @@ function timeVolumeChart(geom) {
         .attr("width", 1)
         .attr("height", contour.max - contour.min + 1);*/
       
-      svgCobaltContent.select("#job" + i)
+      svgCobaltContent.select("#job" + d._id)
         .selectAll(".cobaltBox")
         .data(components).enter()
         .append("rect")
         .attr("class", "cobaltBox")
         .style("stroke", "none")
-        .style("fill", data[i].color)
+        .style("fill", d.color)
         .style("opacity", "0.6")
         .attr("x", 0)
-        .attr("y", function(d, i) {return d[0];}) 
+        .attr("y", function(dd, i) {return dd[0];}) 
         .attr("width", 1)
-        .attr("height", function(d) {return d[1];});
-    }
+        .attr("height", function(dd) {return dd[1];});
+    });
     // $(".cobalt").tooltip();
   }
 
@@ -505,20 +505,24 @@ function timeVolumeChart(geom) {
   }
 
   function zoomIntoCobaltJob(d) {
-    var contour = partitionParser.contour(d.machinePartition);
-
-    // x direction
-    xDomainBeforeCobaltJobHiglighted = [x.invert(0).getTime(), x.invert(width).getTime()];
-    zoomIntoTimeDomain(d.startTimestamp, d.endTimestamp);
-
-    // y direction
-    zoomIntoMidplaneDomain(contour.min, contour.max);
-
+    // retrieve backend jobs
     var query = {cobaltJobID: d._id};
     d3.json("/backend?query=" + JSON.stringify(query), function(d) {
       console.log(d);
     });
     
+    // x direction zoom
+    xDomainBeforeCobaltJobHiglighted = [x.invert(0).getTime(), x.invert(width).getTime()];
+    zoomIntoTimeDomain(d.startTimestamp, d.endTimestamp);
+
+    // y direction zoom
+    var contour = partitionParser.contour(d.machinePartition);
+    zoomIntoMidplaneDomain(contour.min, contour.max);
+   
+    // fade context // TODO
+
+    // visualize backend jobs
+
     cobaltJobHighlighted = true;
   }
 
