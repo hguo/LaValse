@@ -147,11 +147,7 @@ function init() {
     updateQueryInfo(d);
   });
 
-  refreshCobaltLog({
-    minRunTimeSeconds: 55174,
-    T0: query.T0, 
-    T1: query.T1
-  });
+  refreshCobaltLog({T0: query.T0, T1: query.T1});
   
   $("#volumeBy").change(function() {
     query.volumeBy = $(this).val();

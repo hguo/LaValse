@@ -25,7 +25,20 @@ app.get("/cube", function(req, res, next) {
   
 MongoClient.connect(uri, function(err, db) {
   if (err != null) console.log(err);
+  
+  app.get("/cobalt", function(req, res) {
+    const limit = 2000; // return no more than this number of jobs
+    var query = JSON.parse(req.query.query); // fields in query: T0, T1
+    db.collection("cobalt").aggregate([
+        {"$match": {"endTime": {$gte: new Date(query.T0)}, "startTime": {$lte: new Date(query.T1)}}},
+        {"$sort": {"runTimeSeconds": -1}},
+        {"$limit": limit}
+    ]).toArray(function(err, docs) {
+      res.end(JSON.stringify(docs));
+    });
+  });
 
+  /* 
   app.get("/cobalt", function(req, res) {
     var query = JSON.parse(req.query.query); // fields in query: T0, T1, minRunTimeSeconds
     db.collection("cobalt").find({
@@ -35,7 +48,7 @@ MongoClient.connect(uri, function(err, db) {
     }).toArray(function(err, docs) {
       res.end(JSON.stringify(docs));
     });
-  });
+  }); */
 
   app.get("/backend", function(req, res) {
     var query = JSON.parse(req.query.query); 

@@ -624,11 +624,7 @@ function timeVolumeChart(geom) {
     query.tg = (query.T1 - query.T0) / width * 2;
     refresh();
 
-    var cobaltQuery = {
-      minRunTimeSeconds: query.tg/2 / 1000, // ms to s
-      T0: query.T0, 
-      T1: query.T1
-    };
+    var cobaltQuery = {T0: query.T0, T1: query.T1};
     refreshCobaltLog(cobaltQuery);
 
     volumeZoomTimer.stop();
