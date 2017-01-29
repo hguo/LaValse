@@ -999,6 +999,7 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     componentMap: generateBiMap(components),
     severityMap: generateBiMap(severities),
     locationTypeMap: generateBiMap(locationTypes),
+    midplaneMap: generateBiMapFromArray(mira.enumerateMidplanes()),
     controlActionMap: generateBiMapFromArray(controlActions),
     locationMaps: [
       generateBiMapFromArray(mira.enumerateL0Locations()),

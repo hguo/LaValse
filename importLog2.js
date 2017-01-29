@@ -5,7 +5,7 @@ const assert = require("assert");
 const mira = require("./mira");
 const rasbook = require("./rasbook");
 
-var db = levelup("./db1");
+// var db = levelup("./db1");
 
 var stream = fs.createReadStream(process.argv[2]);
 
@@ -15,23 +15,16 @@ var csvStream = csv({headers: true})
     var rasData = {
       id: d.RECID,
       msgID: d.MSG_ID,
-      // component: d.COMPONENT,
-      // severity: d.SEVERITY,
       eventTime: new Date(d.EVENT_TIME + " GMT"),
       jobID: d.JOBID,
       block: d.BLOCK,
       location: d.LOCATION,
-      // serialNumber: d.SERIALNUMBER,
       CPU: parseInt(d.CPU),
       count: parseInt(d.COUNT),
-      // controlActions: d.CTLACTION.split(","),
-      message: d.MESSAGE,
-      // diagnosis: d.DIAGS,
-      // qualifier: d.QUALIFIER,
-      // machineName: d.MACHINE_NAME
+      message: d.MESSAGE
     };
 
-    db.put(rasData.id, JSON.stringify(rasData));
+    // db.put(rasData.id, JSON.stringify(rasData));
 
     var L = mira.parseLocation(rasData.location);
     var L0 = mira.locationToL0Location(L),
@@ -44,6 +37,7 @@ var csvStream = csv({headers: true})
         L2i = rasbook.locationMaps[2].key(L2),
         L3i = rasbook.locationMaps[3].key(L3),
         L4i = rasbook.locationMaps[4].key(L4);
+    var midplane = mira.locationToMidplane(L);
    
     // console.log(L0, L1, L2, L3, L4);
     console.log(
@@ -51,6 +45,7 @@ var csvStream = csv({headers: true})
         rasbook.eventMap.key(rasData.msgID),
         rasData.eventTime.getTime(),
         rasbook.locationTypeMap.key(L.type), // locaitonType
+        rasbook.midplaneMap.key(midplane),
         L0i, L1i, L2i, L3i, L4i);
   })
   .on("end", function() {

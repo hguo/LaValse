@@ -41,6 +41,7 @@ struct QueryResults {
            category[NUM_CAT], severity[NUM_SEV], controlAction[NUM_CTLACT];
   uint32_t *location, *locationRecID; 
   uint32_t *timeVolumes, *timeVolumesRecID;
+  uint32_t *midplaneVolumes; // heat maps
   uint32_t *overviewVolume;  // the second time volume for overview
 
   std::vector<uint32_t> topRecIDs;

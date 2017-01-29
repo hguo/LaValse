@@ -409,8 +409,23 @@ function locationToL4Location(L) {
   }
 }
 
+function locationToMidplane(L) {
+  switch (L.type) {
+  case "RM":
+  case "RMS":
+  case "RMN":
+  case "RMNJ":
+  case "RMNU": 
+  case "RMND": 
+  case "RMNO": 
+    return midplane2str(L.row, L.column, L.midplane);
+
+  default: return "";
+  }
+}
+
 function enumerateMidplanes() {
-  var locations = [];
+  var locations = [""];
   for (row=0; row<3; row++) {
     for (col=0; col<16; col++) {
       for (mp=0; mp<2; mp++) {
@@ -722,6 +737,7 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     parseLocation: parseLocation,
     parseLocationType: parseLocationType,
     parseLocationTypeInt: parseLocationTypeInt,
+    enumerateMidplanes: enumerateMidplanes,
     enumerateL0Locations: enumerateL0Locations,
     enumerateL1Locations: enumerateL1Locations,
     enumerateL2Locations: enumerateL2Locations,
@@ -733,6 +749,7 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     locationToL3Location: locationToL3Location,
     locationToL4Location: locationToL4Location,
     locationToLODLocation: locationToLODLocation,
+    locationToMidplane: locationToMidplane,
     computeCard2str: computeCard2str
   };
 }

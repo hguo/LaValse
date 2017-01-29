@@ -8,8 +8,6 @@ function timeVolumeChart(geom) {
   var cobaltHeight, volumeHeight, overviewHeight;
   var useLogScale = true;
 
-  var cobaltYScale = 1; 
-
   var volumeZoom = d3.zoom()
     .on("zoom", volumeZoomed);
 
