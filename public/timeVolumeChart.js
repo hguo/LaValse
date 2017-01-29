@@ -368,9 +368,26 @@ function timeVolumeChart(geom) {
       .attr("title", function(d) {
         return "backendJob"; // WIP
       })
-      .style("transform", function(d) {
-        // TODO
-      });
+      .style("transform", jobTransform);
+
+    /* // WIP
+    backendJob.forEach(function(d) {
+      var components = partitionParser.components(d.machinePartition);
+      var contour = partitionParser.contour(d.machinePartition);
+      
+      svgCobaltContent.select("#backend" + d._id)
+        .selectAll(".cobaltBox")
+        .data(components).enter()
+        .append("rect")
+        .attr("class", "cobaltBox")
+        .style("stroke", "none")
+        .style("fill", d.color)
+        .style("opacity", "0.6")
+        .attr("x", 0)
+        .attr("y", function(dd, i) {return dd[0];}) 
+        .attr("width", 1)
+        .attr("height", function(dd) {return dd[1];});
+    } */
   }
 
   this.updateCobaltData = function(data) {
