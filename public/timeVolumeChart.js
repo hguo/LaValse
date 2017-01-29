@@ -250,7 +250,7 @@ function timeVolumeChart(geom) {
 
     svgCobaltContent.selectAll(".cobalt")
       .style("transform", function(d) {
-        var t0 = x(d.startTimestamp), t1 = x(d.endTimestamp);
+        var t0 = x(d.startTime), t1 = x(d.endTime);
         var scale = "scale(" + (t1-t0) + "," + cobaltHeight/96 + ")"
             translate = "translate(" + t0 + "px,0px)";
         return translate + scale;
@@ -355,6 +355,22 @@ function timeVolumeChart(geom) {
   }
   
   var cobaltYTranslate = 0, cobaltYScale = 1;
+  
+  this.updateBackendJobData = function(backendJobs) {
+    svgCobaltContent.select(".backend").remove();
+    svgCobaltContent.select(".backend")
+      .data(backendJobs).enter()
+      .append("g")
+      .attr("class", "cobalt")
+      .attr("id", function(d, i) {return "backend" + d._id;})
+      .attr("title", function(d) {
+        return "backendJob"; // WIP
+      })
+      .style("transform", function(d) {
+        // TODO
+      });
+  }
+
   this.updateCobaltData = function(data) {
     svgCobaltContent.selectAll(".cobalt").remove();
     svgCobaltContent.selectAll(".cobalt")
@@ -364,8 +380,8 @@ function timeVolumeChart(geom) {
       .attr("id", function(d, i) {return "job" + d._id;})
       .attr("title", function(d) {
         return "<table class='tooltipTable'><tr><td><b>jobID:</b></td><td>" + d._id + "</td></tr>"
-          + "<tr><td><b>queuedTime:</b></td><td>" + d3.isoFormat(new Date(d.queuedTimestamp)) + "</td></tr>"
-          + "<tr><td><b>startTime:</b></td><td>" + d3.isoFormat(new Date(d.startTimestamp)) + "</td></tr>"
+          + "<tr><td><b>queuedTime:</b></td><td>" + d3.isoFormat(new Date(d.queuedTime)) + "</td></tr>"
+          + "<tr><td><b>startTime:</b></td><td>" + d3.isoFormat(new Date(d.startTime)) + "</td></tr>"
           + "<tr><td><b>runTime (s):</b></td><td>" + d.runTimeSeconds + "</td></tr>"
           + "<tr><td><b>mode:</b></td><td>" + d.mode + "</td></tr>"
           + "<tr><td><b>cobaltProjectName:</b></td><td>" + projProfileMap.map2(d.cobaltProjectName) + "</td></tr>"
@@ -375,7 +391,7 @@ function timeVolumeChart(geom) {
           + "<tr><td><b>exitCode:</b></td><td>" + d.exitCode + "</td></tr>";
       })
       .style("transform", function(d) {
-        var t0 = x(d.startTimestamp), t1 = x(d.endTimestamp);
+        var t0 = x(d.startTime), t1 = x(d.endTime);
         var scale = "scale(" + (t1-t0) + "," + cobaltYScale*cobaltHeight/96 + ")",
             translate = "translate(" + t0 + "px," + cobaltYTranslate + "px)";
         return translate + scale;
@@ -504,24 +520,22 @@ function timeVolumeChart(geom) {
     cobaltJobHighlighted = false;
   }
 
-  function zoomIntoCobaltJob(d) {
+  function zoomIntoCobaltJob(cobaltJob) {
     // retrieve backend jobs
-    var query = {cobaltJobID: d._id};
-    d3.json("/backend?query=" + JSON.stringify(query), function(d) {
-      console.log(d);
+    var query = {cobaltJobID: cobaltJob._id};
+    d3.json("/backend?query=" + JSON.stringify(query), function(backendJobs) {
+      this.updateBackendJobData(backendJobs);
     });
     
     // x direction zoom
     xDomainBeforeCobaltJobHiglighted = [x.invert(0).getTime(), x.invert(width).getTime()];
-    zoomIntoTimeDomain(d.startTimestamp, d.endTimestamp);
+    zoomIntoTimeDomain(cobaltJob.startTime, cobaltJob.endTime);
 
     // y direction zoom
-    var contour = partitionParser.contour(d.machinePartition);
+    var contour = partitionParser.contour(cobaltJob.machinePartition);
     zoomIntoMidplaneDomain(contour.min, contour.max);
    
     // fade context // TODO
-
-    // visualize backend jobs
 
     cobaltJobHighlighted = true;
   }
@@ -539,7 +553,7 @@ function timeVolumeChart(geom) {
 
     svgCobaltContent.selectAll(".cobalt")
       .style("transform", function(d) {
-        var t0 = x(d.startTimestamp), t1 = x(d.endTimestamp);
+        var t0 = x(d.startTime), t1 = x(d.endTime);
         var scale = "scale(" + (t1-t0) + "," + cobaltYScale*cobaltHeight/96 + ")",
             translate = "translate(" + t0 + "px," + cobaltYTranslate + "px)";
         return translate + scale;
@@ -572,7 +586,7 @@ function timeVolumeChart(geom) {
 
     svgCobaltContent.selectAll(".cobalt")
       .style("transform", function(d) {
-        var t0 = x(d.startTimestamp), t1 = x(d.endTimestamp);
+        var t0 = x(d.startTime), t1 = x(d.endTime);
         var scale = "scale(" + (t1-t0) + "," + cobaltYScale*cobaltHeight/96 + ")",
             translate = "translate(" + t0 + "px," + cobaltYTranslate + "px)";
         return translate + scale;

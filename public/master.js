@@ -235,9 +235,9 @@ function refreshRecIDs(data) {
 function refreshCobaltLog(q) {
   d3.json("/cobalt?query=" + JSON.stringify(q), function(data) {
     data.forEach(function(d) {
-      d.queuedTimestamp = new Date(d.queuedTimestamp);
-      d.startTimestamp = new Date(d.startTimestamp);
-      d.endTimestamp = new Date(d.endTimestamp);
+      d.queuedTime = new Date(d.queuedTime);
+      d.startTime = new Date(d.startTime);
+      d.endTime = new Date(d.endTime);
     });
     timeVolumeChart.updateCobaltData(data);
     updateCobaltTable(data);
@@ -254,8 +254,8 @@ function updateCobaltTable(allData) {
     .enter().append("tr");
 
   tr.append("td").html(function(d) {return d._id;});
-  tr.append("td").html(function(d) {return d.startTimestamp;});
-  tr.append("td").html(function(d) {return d.endTimestamp;});
+  tr.append("td").html(function(d) {return d.startTime;});
+  tr.append("td").html(function(d) {return d.endTime;});
   tr.append("td").html(function(d) {return d.runTimeSeconds;});
   tr.append("td").html(function(d) {return d.mode;});
   tr.append("td").html(function(d) {return d.machinePartition;});
