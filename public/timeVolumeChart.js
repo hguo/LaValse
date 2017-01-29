@@ -484,9 +484,22 @@ function timeVolumeChart(geom) {
       .translate(tx, 0));
   }
 
-  function zoomOutCobaltJob() {
+  function zoomIntoMidplaneDomain(M0, M1) {
+    var scale = cobaltHeight / (yCobalt0(M1) - yCobalt0(M0));
+    var ty = -yCobalt0(M0);
+
+    svgCobalt.call(cobaltZoom.transform, d3.zoomIdentity
+      .scale(scale)
+      .translate(0, ty));
+  }
+
+  function zoomOutMidplaneDomain() {
     svgCobalt.call(cobaltZoom.transform, d3.zoomIdentity);
+  }
+
+  function zoomOutCobaltJob() {
     zoomIntoTimeDomain(xDomainBeforeCobaltJobHiglighted[0], xDomainBeforeCobaltJobHiglighted[1]);
+    zoomOutMidplaneDomain();
 
     cobaltJobHighlighted = false;
   }
@@ -498,14 +511,8 @@ function timeVolumeChart(geom) {
     xDomainBeforeCobaltJobHiglighted = [x.invert(0).getTime(), x.invert(width).getTime()];
     zoomIntoTimeDomain(d.startTimestamp, d.endTimestamp);
 
-    { // y direction
-      var scale = cobaltHeight / (yCobalt0(contour.max) - yCobalt0(contour.min));
-      var ty = -yCobalt0(contour.min);
-
-      svgCobalt.call(cobaltZoom.transform, d3.zoomIdentity
-        .scale(scale)
-        .translate(0, ty));
-    }
+    // y direction
+    zoomIntoMidplaneDomain(contour.min, contour.max);
 
     var query = {cobaltJobID: d._id};
     d3.json("/backend?query=" + JSON.stringify(query), function(d) {
