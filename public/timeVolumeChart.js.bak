@@ -7,15 +7,17 @@ function timeVolumeChart(geom) {
   var cobaltTop, volumeTop, overviewTop;
   var cobaltHeight, volumeHeight, overviewHeight;
   var useLogScale = true;
-  
-  var cobaltJobHighlighted = false;
-  var cobaltYTranslate = 0, cobaltYScale = 1;
+
+  var cobaltYScale = 1; 
 
   var volumeZoom = d3.zoom()
     .on("zoom", volumeZoomed);
 
   var cobaltZoom = d3.zoom()
     .on("zoom", cobaltZoomed);
+
+  var overviewZoom = d3.zoom()
+    .on("zoom", overviewZoomed);
   
   var svg = d3.select("body")
     .append("svg")
@@ -39,9 +41,6 @@ function timeVolumeChart(geom) {
     .attr("y", 0);
 
   var xDomain = [query.T0, query.T1];
-  var xDomainPrevious = [query.T0, query.T1];
-  var xDomainBeforeCobaltJobHiglighted = [query.T0, query.T1];
-
   var yMax = 1; 
   yMax = ceilPow(yMax);
   var yDomainLog = [1, yMax],
@@ -138,14 +137,7 @@ function timeVolumeChart(geom) {
   svgOverview.append("g")
     .attr("class", "brush")
     .attr("id", "overviewBrush");
- 
-  var jobTransform = function(d) {
-    var t0 = x(d.startTime), t1 = x(d.endTime);
-    var scale = "scale(" + (t1-t0) + "," + cobaltYScale*cobaltHeight/96 + ")"
-        translate = "translate(" + t0 + "px," + cobaltYTranslate + "px)";
-    return translate + scale;
-  };
-
+  
   this.resize = function(geom) {
     $("#timeVolumeChartSvg").css({
       top: geom.T, 
@@ -170,19 +162,24 @@ function timeVolumeChart(geom) {
     overviewHeight = overviewRatio * height - padding;
 
     volumeZoom.scaleExtent([1, 100000000])
-      .translateExtent([[0, volumeTop], [width, volumeHeight]])
-      .extent([[0, volumeTop], [width, volumeHeight]]);
+      .translateExtent([[0, 0], [width, volumeHeight]])
+      .extent([[0, 0], [width, volumeHeight]]);
     svgVolume.call(volumeZoom);
 
-    volumeBrush.extent([[0, 0], [width, height]]);
-    svg.select("#volumeBrush")
-      .call(volumeBrush);
-
     cobaltZoom.scaleExtent([1, 100])
-      .translateExtent([[0, cobaltTop], [width, cobaltHeight]])
-      .extent([[0, cobaltTop], [width, cobaltHeight]]);
+      .translateExtent([[0, 0], [width, cobaltHeight]])
+      .extent([[0, 0], [width, cobaltHeight]]);
     svgCobalt.call(cobaltZoom)
       .on("dblclick.zoom", null);
+
+    overviewZoom.scaleExtent([1, 100000])
+      .translateExtent([[0, 0], [width, overviewHeight]])
+      .extent([[0, 0], [width, overviewHeight]]);
+    overviewBrush.extent([[0, 0], [width, overviewHeight]]);
+    svgOverview.select("#overviewBrush")
+      .call(overviewBrush)
+      .call(overviewBrush.move, X0.range());
+    // svgOverview.call(overviewZoom);
 
     svgCobalt.attr("transform", "translate(0," + cobaltTop + ")");
     svgVolume.attr("transform", "translate(0," + volumeTop + ")");
@@ -196,20 +193,24 @@ function timeVolumeChart(geom) {
       .attr("class", "zoom")
       .attr("width", width)
       .attr("height", volumeHeight)
-      .style("fill", "white")
       .style("opacity", "0");
 
     svgCobaltContent.append("rect") // for zooming
       .attr("class", "zoom")
       .attr("width", width)
       .attr("height", cobaltHeight)
-      .style("fill", "white")
+      .style("opacity", "0");
+
+    svgOverview.append("rect") 
+      .attr("class", "zoom")
+      .attr("width", width)
+      .attr("height", overviewHeight)
       .style("opacity", "0");
 
     x0.range([0, width]);
-    x.range([0, width]);
+    x.rangeRound([0, width]);
     X0.range([0, width]); 
-    X.range([0, width]); 
+    X.rangeRound([0, width]); 
 
     yLog.rangeRound([volumeHeight, 0]);
     yLinear.rangeRound([volumeHeight, 0]);
@@ -258,12 +259,17 @@ function timeVolumeChart(geom) {
       .attr("d", function(d) {return overviewLineLog(d);});*/
 
     svgCobaltContent.selectAll(".cobalt")
-      .style("transform", jobTransform);
-   
-    overviewBrush.extent([[0, 0], [width, overviewHeight]]);
-    svgOverview.select("#overviewBrush")
-      .call(overviewBrush)
-      .call(overviewBrush.move, X0.range());
+      .style("transform", function(d) {
+        var t0 = x(d.startTimestamp), t1 = x(d.endTimestamp);
+        var scale = "scale(" + (t1-t0) + "," + cobaltHeight/96 + ")"
+            translate = "translate(" + t0 + "px,0px)";
+        return translate + scale;
+      });
+
+    /*
+    volumeBrush.extent([[0, 0], [width, height]]);
+    svg.select("#volumeBrush")
+      .call(volumeBrushed);*/
   }
 
   this.resize(geom);
@@ -358,110 +364,73 @@ function timeVolumeChart(geom) {
       });
   }
   
-  function updateBackendJobData(backendJobs) {
-    svgCobaltContent.selectAll(".backend").remove();
-    svgCobaltContent.selectAll(".backend")
-      .data(backendJobs).enter()
-      .append("g")
-      .attr("class", "backend")
-      .attr("id", function(d, i) {return "backend" + d._id;})
-      .style("transform", jobTransform)
-      .attr("title", function(d) {
-        return "backendJob"; // WIP
-      });
-
-    backendJobs.forEach(function(d) {
-      var components = partitionParser.components(d.machinePartition);
-      var contour = partitionParser.contour(d.machinePartition);
-      
-      svgCobaltContent.select("#backend" + d._id)
-        .selectAll(".backendBox")
-        .data(components).enter()
-        .append("rect")
-        .attr("class", "backendBox")
-        .style("vector-effect", "non-scaling-stroke")
-        .style("stroke", "black")
-        .style("stroke-opacity", "1.0")
-        .style("fill", "none")
-        // .style("opacity", "0.6")
-        .attr("x", 0)
-        .attr("y", function(dd, i) {return dd[0];}) 
-        .attr("width", 1)
-        .attr("height", function(dd) {return dd[1];});
-    });
-  }
-
-  this.updateCobaltData = function(cobaltJobs) {
+  var cobaltYTranslate = 0, cobaltYScale = 1;
+  this.updateCobaltData = function(data) {
     svgCobaltContent.selectAll(".cobalt").remove();
     svgCobaltContent.selectAll(".cobalt")
-      .data(cobaltJobs).enter()
+      .data(data).enter()
       .append("g")
       .attr("class", "cobalt")
-      .attr("id", function(d, i) {return "cobalt" + d._id;})
+      .attr("id", function(d, i) {return "job" + i;})
       .attr("title", function(d) {
         return "<table class='tooltipTable'><tr><td><b>jobID:</b></td><td>" + d._id + "</td></tr>"
-          + "<tr><td><b>queuedTime:</b></td><td>" + d3.isoFormat(new Date(d.queuedTime)) + "</td></tr>"
-          + "<tr><td><b>startTime:</b></td><td>" + d3.isoFormat(new Date(d.startTime)) + "</td></tr>"
+          + "<tr><td><b>queuedTime:</b></td><td>" + d3.isoFormat(new Date(d.queuedTimestamp)) + "</td></tr>"
+          + "<tr><td><b>startTime:</b></td><td>" + d3.isoFormat(new Date(d.startTimestamp)) + "</td></tr>"
           + "<tr><td><b>runTime (s):</b></td><td>" + d.runTimeSeconds + "</td></tr>"
           + "<tr><td><b>mode:</b></td><td>" + d.mode + "</td></tr>"
-          + "<tr><td><b>project:</b></td><td>" + projProfileMap.map2(d.cobaltProjectName) + "</td></tr>"
-          + "<tr><td><b>user:</b></td><td>" + userProfileMap.map2(d.cobaltUserName) + "</td></tr>"
+          + "<tr><td><b>cobaltProjectName:</b></td><td>" + projProfileMap.map2(d.cobaltProjectName) + "</td></tr>"
+          + "<tr><td><b>cobaltUserName:</b></td><td>" + userProfileMap.map2(d.cobaltUserName) + "</td></tr>"
           + "<tr><td><b>queue:</b></td><td>" + d.queue + "</td></tr>"
           + "<tr><td><b>machinePartition:</b></td><td>" + d.machinePartition + "</td></tr>"
           + "<tr><td><b>exitCode:</b></td><td>" + d.exitCode + "</td></tr>";
       })
-      .style("transform", jobTransform)
+      .style("transform", function(d) {
+        var t0 = x(d.startTimestamp), t1 = x(d.endTimestamp);
+        var scale = "scale(" + (t1-t0) + "," + cobaltYScale*cobaltHeight/96 + ")",
+            translate = "translate(" + t0 + "px," + cobaltYTranslate + "px)";
+        return translate + scale;
+      })
       .on("mouseover", function(d) {
         highlightBlock(d.machinePartition, d.color);
-        svgCobaltContent.select("#cobalt" + d._id)
-          .each(function(){
-            this.parentNode.appendChild(this);
-          })
-          .selectAll(".cobaltContour")
-          .style("display", "block");
       })
       .on("mouseleave", function(d) {
         highlightBlock("");
-        svgCobaltContent.select("#cobalt" + d._id)
-          .selectAll(".cobaltContour")
-          .style("display", "none");
       })
       .on("dblclick", function(d) {
-        if (cobaltJobHighlighted) {
-          zoomOutCobaltJob();
-        } else {
-          zoomIntoCobaltJob(d);
-        }
+        zoomIntoCobaltJob(d);
       });
 
-    cobaltJobs.forEach(function (cobaltJob) {
-      svgCobaltContent.select("#cobalt" + cobaltJob._id)
+    for (var i=0; i<data.length; i++) {
+      var components = partitionParser.components(data[i].machinePartition);
+      var contour = partitionParser.contour(data[i].machinePartition);
+
+      /*
+      svgCobaltContent.select("#job" + i)
         .append("rect")
         .attr("class", "cobaltContour")
         .style("vector-effect", "non-scaling-stroke")
         .style("stroke", "black")
-        .style("stroke-width", 2)
-        .style("fill", "white")
-        .style("opacity", "0.6")
+        .style("fill", "none")
         .style("display", "none")
         .attr("x", 0)
-        .attr("y", cobaltJob.contour.min)
+        .attr("y", contour.min)
         .attr("width", 1)
-        .attr("height", cobaltJob.contour.max - cobaltJob.contour.min + 1);
+        .attr("height", contour.max - contour.min + 1);*/
       
-      svgCobaltContent.select("#cobalt" + cobaltJob._id)
+      svgCobaltContent.select("#job" + i)
         .selectAll(".cobaltBox")
-        .data(cobaltJob.components).enter()
+        .data(components).enter()
         .append("rect")
         .attr("class", "cobaltBox")
         .style("stroke", "none")
-        .style("fill", cobaltJob.color)
+        .style("fill", data[i].color)
         .style("opacity", "0.6")
         .attr("x", 0)
-        .attr("y", function(d) {return d[0];}) 
+        .attr("y", function(d, i) {return d[0];}) 
         .attr("width", 1)
         .attr("height", function(d) {return d[1];});
-    });
+    }
+    // $(".cobalt").tooltip();
   }
 
   this.toggleLogScale = function() {
@@ -486,7 +455,6 @@ function timeVolumeChart(geom) {
   }
 
   function volumeBrushed() {
-    removeTooltips(); // TODO
     var s = d3.event.selection || x.range();
     query.t0 = x.invert(s[0]).getTime();
     query.t1 = x.invert(s[1]).getTime();
@@ -496,7 +464,6 @@ function timeVolumeChart(geom) {
   function overviewBrushed() {
     if (d3.event.sourceEvent == null) return;
     if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
-    removeTooltips();
     
     if (d3.event.selection == null) {
       svgOverview.select("#overviewBrush")
@@ -510,63 +477,34 @@ function timeVolumeChart(geom) {
         .translate(-s[0], 0));
   }
 
-  function zoomIntoTimeDomain(T0, T1) {
-    xDomainPrevious = [x.invert(0).getTime(), x.invert(width).getTime()];
-    
-    var scale = width / (x0(T1) - x0(T0));
-    var tx = -x0(T0);
-    svgVolume.call(volumeZoom.transform, d3.zoomIdentity
-      .scale(scale)
-      .translate(tx, 0));
-  }
+  function zoomIntoCobaltJob(d) {
+    var contour = partitionParser.contour(d.machinePartition);
+    var D = [d.startTimestamp, d.endTimestamp];
 
-  function zoomIntoMidplaneDomain(M0, M1) {
-    var scale = cobaltHeight / (yCobalt0(M1) - yCobalt0(M0));
-    var ty = -yCobalt0(M0);
+    { // x direction
+      var scale = width / (x0(D[1]) - x0(D[0]));
+      var tx = -x0(D[0]);
 
-    svgCobalt.call(cobaltZoom.transform, d3.zoomIdentity
-      .scale(scale)
-      .translate(0, ty));
-  }
+      svgVolume.call(volumeZoom.transform, d3.zoomIdentity
+        .scale(scale)
+        .translate(tx, 0));
+    }
+    { // y direction
+      var scale = cobaltHeight / (yCobalt0(contour.max) - yCobalt0(contour.min));
+      var ty = -yCobalt0(contour.min);
 
-  function zoomOutMidplaneDomain() {
-    svgCobalt.call(cobaltZoom.transform, d3.zoomIdentity);
-  }
+      svgCobalt.call(cobaltZoom.transform, d3.zoomIdentity
+        .scale(scale)
+        .translate(0, ty));
+    }
 
-  function zoomOutCobaltJob() {
-    zoomIntoTimeDomain(xDomainBeforeCobaltJobHiglighted[0], xDomainBeforeCobaltJobHiglighted[1]);
-    zoomOutMidplaneDomain();
-
-    cobaltJobHighlighted = false;
-  }
-
-  function zoomIntoCobaltJob(cobaltJob) {
-    // retrieve backend jobs
-    var query = [cobaltJob._id];
-    d3.json("/backendJobsByCobaltJobID?query=" + JSON.stringify(query), function(backendJobs) {
-      backendJobs.forEach(function(d) {
-        d.startTime = new Date(d.startTime);
-        d.endTime = new Date(d.endTime);
-      });
-      updateBackendJobData(backendJobs);
+    var query = {cobaltJobID: d._id};
+    d3.json("/backend?query=" + JSON.stringify(query), function(d) {
+      console.log(d);
     });
-    
-    // x direction zoom
-    xDomainBeforeCobaltJobHiglighted = [x.invert(0).getTime(), x.invert(width).getTime()];
-    zoomIntoTimeDomain(cobaltJob.startTime, cobaltJob.endTime);
-
-    // y direction zoom
-    var contour = partitionParser.contour(cobaltJob.machinePartition);
-    zoomIntoMidplaneDomain(contour.min, contour.max);
-   
-    // fade context // TODO
-
-    cobaltJobHighlighted = true;
   }
 
   function cobaltZoomed() {
-    removeTooltips();
-    
     var t = d3.event.transform;
     cobaltYScale = t.k;
     cobaltYTranslate = t.y;
@@ -576,17 +514,18 @@ function timeVolumeChart(geom) {
       .call(cobaltAxis);
 
     svgCobaltContent.selectAll(".cobalt")
-      .style("transform", jobTransform);
-    
-    svgCobaltContent.selectAll(".backend")
-      .style("transform", jobTransform);
+      .style("transform", function(d) {
+        var t0 = x(d.startTimestamp), t1 = x(d.endTimestamp);
+        var scale = "scale(" + (t1-t0) + "," + cobaltYScale*cobaltHeight/96 + ")",
+            translate = "translate(" + t0 + "px," + cobaltYTranslate + "px)";
+        return translate + scale;
+      });
   }
 
   var volumeZoomTimer = d3.timer(function() {volumeZoomTimer.stop()});
 
   function volumeZoomed() {
     if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
-    removeTooltips();
 
     var line = useLogScale ? lineLog : lineLinear;
    
@@ -607,10 +546,12 @@ function timeVolumeChart(geom) {
       .attr("cx", function(d) {return x(d.eventTime);});
 
     svgCobaltContent.selectAll(".cobalt")
-      .style("transform", jobTransform);
-    
-    svgCobaltContent.selectAll(".backend")
-      .style("transform", jobTransform);
+      .style("transform", function(d) {
+        var t0 = x(d.startTimestamp), t1 = x(d.endTimestamp);
+        var scale = "scale(" + (t1-t0) + "," + cobaltYScale*cobaltHeight/96 + ")",
+            translate = "translate(" + t0 + "px," + cobaltYTranslate + "px)";
+        return translate + scale;
+      });
 
     svgVolume.select(".timeLabelLeft")
       .text(d3.isoFormat(x.domain()[0]));
@@ -618,6 +559,10 @@ function timeVolumeChart(geom) {
       .text(d3.isoFormat(x.domain()[1]));
 
     volumeZoomTimer.restart(volumeZoomTimedOut, 100);
+  }
+
+  function overviewZoomed() {
+    console.log(d3.event);
   }
 
   function volumeZoomTimedOut() {
@@ -629,7 +574,11 @@ function timeVolumeChart(geom) {
     query.tg = (query.T1 - query.T0) / width * 2;
     refresh();
 
-    var cobaltQuery = {T0: query.T0, T1: query.T1};
+    var cobaltQuery = {
+      minRunTimeSeconds: query.tg/2 / 1000, // ms to s
+      T0: query.T0, 
+      T1: query.T1
+    };
     refreshCobaltLog(cobaltQuery);
 
     volumeZoomTimer.stop();

@@ -250,7 +250,7 @@ function requestBackendJobs(cobaltJobs) {
   });
 
   d3.json("/backendJobsByCobaltJobID?query=" + JSON.stringify(cobaltJobIDs), function(data) {
-    // console.log(data);
+    console.log(data.length);
   });
 }
 
