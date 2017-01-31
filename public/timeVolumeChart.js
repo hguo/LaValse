@@ -7,7 +7,9 @@ function timeVolumeChart(geom) {
   var cobaltTop, volumeTop, overviewTop;
   var cobaltHeight, volumeHeight, overviewHeight;
   var useLogScale = true;
+  
   var cobaltJobHighlighted = false;
+  var cobaltYTranslate = 0, cobaltYScale = 1;
 
   var volumeZoom = d3.zoom()
     .on("zoom", volumeZoomed);
@@ -140,7 +142,7 @@ function timeVolumeChart(geom) {
   var jobTransform = function(d) {
     var t0 = x(d.startTime), t1 = x(d.endTime);
     var scale = "scale(" + (t1-t0) + "," + cobaltYScale*cobaltHeight/96 + ")"
-        translate = "translate(" + t0 + "px,0px)";
+        translate = "translate(" + t0 + "px," + cobaltYTranslate + "px)";
     return translate + scale;
   };
 
@@ -355,8 +357,6 @@ function timeVolumeChart(geom) {
           + "<br><b>message:</b> " + d.message;
       });
   }
-  
-  var cobaltYTranslate = 0, cobaltYScale = 1;
   
   function updateBackendJobData(backendJobs) {
     svgCobaltContent.selectAll(".backend").remove();
