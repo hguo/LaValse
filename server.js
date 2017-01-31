@@ -51,20 +51,13 @@ MongoClient.connect(uri, function(err, db) {
   }); */
 
   app.get("/backendJobsByCobaltJobID", function(req, res) {
+    const limit = 3000;
     var query = JSON.parse(req.query.query); 
-    db.collection("backend").find({
-      "cobaltJobID": {"$in": query}
-    })
-    .toArray(function(err, docs) {
-      res.end(JSON.stringify(docs));
-    });
-  });
-
-  app.get("/backendJobsByCobaltJobID", function(req, res) {
-    var query = JSON.parse(req.query.query); 
-    db.collection("backend").find({
-      "cobaltJobID": {"$in": query}
-    })
+    db.collection("backend").aggregate([
+        {"$match": {"cobaltJobID": {"$in": query}}}, 
+        // {"$sort": {"runTimeSeconds": -1}} // TODO: add runTimeSeconds property for backend jobs
+        {"$limit": limit}
+    ])
     .toArray(function(err, docs) {
       res.end(JSON.stringify(docs));
     });
