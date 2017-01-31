@@ -547,8 +547,8 @@ function timeVolumeChart(geom) {
 
   function zoomIntoCobaltJob(cobaltJob) {
     // retrieve backend jobs
-    var query = {cobaltJobID: cobaltJob._id};
-    d3.json("/backend?query=" + JSON.stringify(query), function(backendJobs) {
+    var query = [cobaltJob._id];
+    d3.json("/backendJobsByCobaltJobID?query=" + JSON.stringify(query), function(backendJobs) {
       backendJobs.forEach(function(d) {
         d.startTime = new Date(d.startTime);
         d.endTime = new Date(d.endTime);

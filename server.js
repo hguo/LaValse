@@ -27,7 +27,7 @@ MongoClient.connect(uri, function(err, db) {
   if (err != null) console.log(err);
   
   app.get("/cobalt", function(req, res) {
-    const limit = 2000; // return no more than this number of jobs
+    const limit = 500; // return no more than this number of jobs
     var query = JSON.parse(req.query.query); // fields in query: T0, T1
     db.collection("cobalt").aggregate([
         {"$match": {"endTime": {$gte: new Date(query.T0)}, "startTime": {$lte: new Date(query.T1)}}},
@@ -50,18 +50,24 @@ MongoClient.connect(uri, function(err, db) {
     });
   }); */
 
-  app.get("/backend", function(req, res) {
+  app.get("/backendJobsByCobaltJobID", function(req, res) {
     var query = JSON.parse(req.query.query); 
-    var dbquery = {};
-    if ("cobaltJobID" in query) 
-      dbquery["cobaltJobID"] = query.cobaltJobID;
-    else if ("backendJobID" in query)
-      dbquery["_id"] = query.backendJobID;
+    db.collection("backend").find({
+      "cobaltJobID": {"$in": query}
+    })
+    .toArray(function(err, docs) {
+      res.end(JSON.stringify(docs));
+    });
+  });
 
-    db.collection("backend").find(dbquery)
-      .toArray(function(err, docs) {
-        res.end(JSON.stringify(docs));
-      });
+  app.get("/backendJobsByCobaltJobID", function(req, res) {
+    var query = JSON.parse(req.query.query); 
+    db.collection("backend").find({
+      "cobaltJobID": {"$in": query}
+    })
+    .toArray(function(err, docs) {
+      res.end(JSON.stringify(docs));
+    });
   });
 
   app.get("/ras", function(req, res) {
