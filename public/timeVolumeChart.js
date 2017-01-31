@@ -358,36 +358,37 @@ function timeVolumeChart(geom) {
   
   var cobaltYTranslate = 0, cobaltYScale = 1;
   
-  this.updateBackendJobData = function(backendJobs) {
-    svgCobaltContent.select(".backend").remove();
-    svgCobaltContent.select(".backend")
+  function updateBackendJobData(backendJobs) {
+    svgCobaltContent.selectAll(".backend").remove();
+    svgCobaltContent.selectAll(".backend")
       .data(backendJobs).enter()
       .append("g")
-      .attr("class", "cobalt")
+      .attr("class", "backend")
       .attr("id", function(d, i) {return "backend" + d._id;})
+      .style("transform", jobTransform)
       .attr("title", function(d) {
         return "backendJob"; // WIP
-      })
-      .style("transform", jobTransform);
+      });
 
-    /* // WIP
-    backendJob.forEach(function(d) {
+    backendJobs.forEach(function(d) {
       var components = partitionParser.components(d.machinePartition);
       var contour = partitionParser.contour(d.machinePartition);
       
       svgCobaltContent.select("#backend" + d._id)
-        .selectAll(".cobaltBox")
+        .selectAll(".backendBox")
         .data(components).enter()
         .append("rect")
-        .attr("class", "cobaltBox")
-        .style("stroke", "none")
-        .style("fill", d.color)
-        .style("opacity", "0.6")
+        .attr("class", "backendBox")
+        .style("vector-effect", "non-scaling-stroke")
+        .style("stroke", "black")
+        .style("stroke-opacity", "1.0")
+        .style("fill", "none")
+        // .style("opacity", "0.6")
         .attr("x", 0)
         .attr("y", function(dd, i) {return dd[0];}) 
         .attr("width", 1)
         .attr("height", function(dd) {return dd[1];});
-    } */
+    });
   }
 
   this.updateCobaltData = function(cobaltJobs) {
@@ -516,7 +517,6 @@ function timeVolumeChart(geom) {
 
   function zoomIntoTimeDomain(T0, T1) {
     xDomainPrevious = [x.invert(0).getTime(), x.invert(width).getTime()];
-    console.log(T0, T1);
     
     var scale = width / (x0(T1) - x0(T0));
     var tx = -x0(T0);
@@ -549,7 +549,11 @@ function timeVolumeChart(geom) {
     // retrieve backend jobs
     var query = {cobaltJobID: cobaltJob._id};
     d3.json("/backend?query=" + JSON.stringify(query), function(backendJobs) {
-      this.updateBackendJobData(backendJobs);
+      backendJobs.forEach(function(d) {
+        d.startTime = new Date(d.startTime);
+        d.endTime = new Date(d.endTime);
+      });
+      updateBackendJobData(backendJobs);
     });
     
     // x direction zoom
@@ -578,6 +582,9 @@ function timeVolumeChart(geom) {
 
     svgCobaltContent.selectAll(".cobalt")
       .style("transform", jobTransform);
+    
+    svgCobaltContent.selectAll(".backend")
+      .style("transform", jobTransform);
   }
 
   var volumeZoomTimer = d3.timer(function() {volumeZoomTimer.stop()});
@@ -605,6 +612,9 @@ function timeVolumeChart(geom) {
       .attr("cx", function(d) {return x(d.eventTime);});
 
     svgCobaltContent.selectAll(".cobalt")
+      .style("transform", jobTransform);
+    
+    svgCobaltContent.selectAll(".backend")
       .style("transform", jobTransform);
 
     svgVolume.select(".timeLabelLeft")
