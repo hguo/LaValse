@@ -37,6 +37,7 @@ struct QueryResults {
   uint32_t nVolumes;
   uint32_t nTimeSlots, nOverviewSlots; // time slots
   uint32_t nmatched = 0;
+
   uint32_t msgID[NUM_MSGID], component[NUM_COMP], locationType[NUM_LOCTYPE], 
            category[NUM_CAT], severity[NUM_SEV], controlAction[NUM_CTLACT];
   uint32_t *location, *locationRecID; 

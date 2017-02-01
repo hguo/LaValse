@@ -896,6 +896,14 @@ static const uint16_t eventTable[][5] = {
   {821, COMP_TEST, CAT_BQC, SEV_FATAL, 128}
 };
 
+typedef uint32_t recID_t;
+typedef uint16_t msgID_t;
+typedef uint64_t eventTime_t;
+typedef uint32_t location_t;
+typedef uint8_t component_t;
+typedef uint8_t severity_t;
+typedef uint16_t controlActions_t;
+
 struct Event {
   uint32_t recID;
   uint16_t msgID;

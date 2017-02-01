@@ -84,6 +84,7 @@ $(function() {
   $("#tabs").tabs();
   $(document).tooltip({
     track: true,
+    show: {delay: 800, duration: 800},
     content: function() {
       return $(this).attr("title");
     }
@@ -250,7 +251,12 @@ function requestBackendJobs(cobaltJobs) {
   });
 
   d3.json("/backendJobsByCobaltJobID?query=" + JSON.stringify(cobaltJobIDs), function(data) {
-    // console.log(data.length);
+    data.forEach(function(d) {
+      d.startTime = new Date(d.startTime);
+      d.endTime = new Date(d.endTime);
+    });
+    console.log(data.length);
+    timeVolumeChart.updateBackendJobData(data);
   });
 }
 
@@ -301,7 +307,7 @@ function refreshTops(q) {
       .attr("title", function(d) {
         return categories[events[d.messageID].category];
       });
-    tr.append("td").html(function(d) {return d.jobID;});
+    tr.append("td").html(function(d) {return d.cobaltJobID;});
     tr.append("td").html(function(d) {return d.location;})
       .attr("title", function(d) {
         L = parseLocation(d.location);

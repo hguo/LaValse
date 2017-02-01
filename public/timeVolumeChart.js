@@ -339,22 +339,23 @@ function timeVolumeChart(geom) {
       .attr("cx", function(d) {return x(d.eventTime);})
       .attr("cy", function(d) {return yLinearReverse(d.y);})
       .attr("title", function(d) {
-        return "<b>recID:</b> " + d._id
-          + "<br><b>time:</b> " + d3.isoFormat(d.eventTime)
-          + "<br><b>severity:</b> " + d.severity
-          + "<br><b>messageID:</b> " + d.messageID
-          + "<br><b>component:</b> " + events[d.messageID].component
-          + "<br><b>category:</b> " + events[d.messageID].category
-          + "<br><b>jobID: </b> " + d.jobID
-          + "<br><b>machinePartition:</b> " + d.block
-          + "<br><b>location:</b> " + d.location
-          + "<br><b>torus:</b> " + torusRMNJMap.torus(d.location)
-          + "<br><b>CPU:</b> " + d.CPU
-          + "<br><b>count:</b> " + d.count
-          + "<br><b>controlActions:</b> " + String(events[d.messageID].controlAction).replace(/,/g, ', ')
-          + "<br><b>serviceAction:</b> " + events[d.messageID].serviceAction
-          + "<br><b>relevantDiagnosticSuites:</b> " + String(events[d.messageID].relevantDiagnosticSuites).replace(/,/g, ', ')
-          + "<br><b>message:</b> " + d.message;
+        return "<table class='tooltipTable'><tr><td><b>recID:</b></td><td>" + d._id + "</td></tr>"
+          + "<tr><td><b>time:</b></td><td>" + d3.isoFormat(d.eventTime) + "</td></tr>"
+          + "<tr><td><b>severity:</b></td><td>" + d.severity + "</td></tr>"
+          + "<tr><td><b>messageID:</b></td><td>" + d.messageID + "</td></tr>"
+          + "<tr><td><b>component:</b></td><td>" + events[d.messageID].component + "</td></tr>"
+          + "<tr><td><b>category:</b></td><td>" + events[d.messageID].category + "</td></tr>"
+          + "<tr><td><b>cobaltJobID:</b></td><td>" + d.cobaltJobID + "</td></tr>"
+          + "<tr><td><b>machinePartition:</b></td><td>" + d.block + "</td></tr>"
+          + "<tr><td><b>location:</b></td><td>" + d.location + "</td></tr>"
+          + "<tr><td><b>torus:</b></td><td>" + torusRMNJMap.torus(d.location) + "</td></tr>"
+          + "<tr><td><b>CPU:</b></td><td>" + d.CPU + "</td></tr>"
+          + "<tr><td><b>count:</b></td><td>" + d.count + "</td></tr>"
+          + "<tr><td><b>controlActions:</b></td><td>" + String(events[d.messageID].controlAction).replace(/,/g, ', ') + "</td></tr>"
+          + "<tr><td><b>serviceAction:</b></td><td>" + events[d.messageID].serviceAction + "</td></tr>"
+          + "<tr><td><b>relevantDiagnosticSuites:</b></td><td>" + String(events[d.messageID].relevantDiagnosticSuites).replace(/,/g, ', ') + "</td></tr>"
+          + "<tr><td><b>message:</b></td><td>" + d.message + "</td></tr>"
+          + "</table>";
       });
   }
   
@@ -366,6 +367,7 @@ function timeVolumeChart(geom) {
       .attr("class", "backend")
       .attr("id", function(d, i) {return "backend" + d._id;})
       .style("transform", jobTransform)
+      .style("display", "none")
       .attr("title", function(d) {
         return "backendJob"; // WIP
       });
@@ -390,6 +392,7 @@ function timeVolumeChart(geom) {
         .attr("height", function(dd) {return dd[1];});
     });
   }
+  this.updateBackendJobData = updateBackendJobData;
 
   this.updateCobaltData = function(cobaltJobs) {
     svgCobaltContent.selectAll(".cobalt").remove();
@@ -399,7 +402,7 @@ function timeVolumeChart(geom) {
       .attr("class", "cobalt")
       .attr("id", function(d, i) {return "cobalt" + d._id;})
       .attr("title", function(d) {
-        return "<table class='tooltipTable'><tr><td><b>jobID:</b></td><td>" + d._id + "</td></tr>"
+        return "<table class='tooltipTable'><tr><td><b>cobaltJobID:</b></td><td>" + d._id + "</td></tr>"
           + "<tr><td><b>queuedTime:</b></td><td>" + d3.isoFormat(new Date(d.queuedTime)) + "</td></tr>"
           + "<tr><td><b>startTime:</b></td><td>" + d3.isoFormat(new Date(d.startTime)) + "</td></tr>"
           + "<tr><td><b>runTime (s):</b></td><td>" + d.runTimeSeconds + "</td></tr>"
@@ -408,20 +411,28 @@ function timeVolumeChart(geom) {
           + "<tr><td><b>user:</b></td><td>" + userProfileMap.map2(d.cobaltUserName) + "</td></tr>"
           + "<tr><td><b>queue:</b></td><td>" + d.queue + "</td></tr>"
           + "<tr><td><b>machinePartition:</b></td><td>" + d.machinePartition + "</td></tr>"
-          + "<tr><td><b>exitCode:</b></td><td>" + d.exitCode + "</td></tr>";
+          + "<tr><td><b>exitCode:</b></td><td>" + d.exitCode + "</td></tr>"
+          + "</table>";
       })
       .style("transform", jobTransform)
       .on("mouseover", function(d) {
         highlightBlock(d.machinePartition, d.color);
+        svgCobaltContent.selectAll(".backend")
+          .filter(function(dd) {return dd.cobaltJobID == d._id;})
+          .style("display", "block");
         svgCobaltContent.select("#cobalt" + d._id)
           .each(function(){
             this.parentNode.appendChild(this);
-          })
-          .selectAll(".cobaltContour")
-          .style("display", "block");
+          }); 
+          // .selectAll(".cobaltContour")
+          // .style("display", "block");
       })
       .on("mouseleave", function(d) {
         highlightBlock("");
+        svgCobaltContent.selectAll(".backend")
+          .filter(function(dd) {return dd.cobaltJobID == d._id;})
+          .style("display", "none");
+        return;  // TODO
         svgCobaltContent.select("#cobalt" + d._id)
           .selectAll(".cobaltContour")
           .style("display", "none");
@@ -548,7 +559,7 @@ function timeVolumeChart(geom) {
         d.startTime = new Date(d.startTime);
         d.endTime = new Date(d.endTime);
       });
-      updateBackendJobData(backendJobs);
+      // updateBackendJobData(backendJobs);
     });
     
     // x direction zoom
