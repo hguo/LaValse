@@ -8,7 +8,7 @@ var query = {
   t1: 1451520000000, // 2015-12-31
   tg: 27587368 // (t1 - t0) / width_of_time_chart // aggregation resolution
 };
-var severityChart, componentChart, categoryChart, locationTypeChart, controlActionChart, timeVolumeChart;
+var severityChart, componentChart, categoryChart, locationTypeChart, controlActionChart, timeVolumeChart, treeMapView;
 var machineView;
 
 // init mira partition parser
@@ -85,21 +85,22 @@ function buildMessageHierarchy(volumeBy, msgHistogram) { // volumeBy = component
   for (var msgID in msgHistogram) {
     var key = events[msgID][volumeBy];
     if (!(key in histogram)) histogram[key] = [];
-    histogram[key].push({msgID: msgID, count: msgHistogram[msgID]});
+    histogram[key].push({name: msgID, count: msgHistogram[msgID]});
   }
 
-  var histogramArray = [];
+  var hierarchy = {name: "root", children: []};
   for (var key in histogram) {
-    histogramArray.push({k: key, v: histogram[key]});
+    hierarchy.children.push({name: key, children: histogram[key]});
   }
-  return histogramArray;
+
+  return hierarchy;
 }
 
 $(function() {
   $("#tabs").tabs();
   $(document).tooltip({
     track: true,
-    show: {delay: 800, duration: 800},
+    show: {delay: 100, duration: 800},
     content: function() {
       return $(this).attr("title");
     }
@@ -138,6 +139,8 @@ function init() {
     locationTypeChart = new barChart(
         "locationType", "#locationTypeChart", histogramToArray(d.locationType), locationTypes,
         {L: 120, T: 315, W: 120, H: 290});
+    treeMapView = new treeMapView(
+        "#messageIdChart");
 
     const timeVolumeChartHeight = 300;
     const geom = {L: 240, T: 330, W: 720, H: 300};
@@ -159,6 +162,9 @@ function init() {
     $("#tabs").css("display", "block");
   
     torusView = new torusView("#tabs-0", {L: 0, T: 0, W: 360, H: 360});
+    
+    treeMapView.resize({L: 0, T: 605, W: 240, H: 120});
+    treeMapView.updateData(buildMessageHierarchy("severity", d.msgID));
 
     updateQueryInfo(d);
   });
@@ -204,8 +210,6 @@ function refresh() {
     timeVolumeChart.updateOverviewVolume(d.overviewVolume);
     machineView.updateData(d.location, histogramToArray(d.location));
     
-    // console.log(buildMessageHierarchy("category", d.msgID));
-
     updateQueryInfo(d);
   });
 }
