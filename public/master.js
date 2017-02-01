@@ -80,17 +80,24 @@ var torusRMNJMap = new function() {
   }
 }
 
-function buildMessageHierarchy(volumeBy, msgHistogram) { // volumeBy = component/category/severity (locationType will be in future)
-  var histogram = {};
-  for (var msgID in msgHistogram) {
-    var key = events[msgID][volumeBy];
-    if (!(key in histogram)) histogram[key] = [];
-    histogram[key].push({name: msgID, count: msgHistogram[msgID]});
-  }
-
+function buildMessageIdHierarchy(volumeBy, msgHistogram) { // volumeBy = component/category/severity (locationType will be in future)
   var hierarchy = {name: "root", children: []};
-  for (var key in histogram) {
-    hierarchy.children.push({name: key, children: histogram[key]});
+
+  if (volumeBy == "") {
+    for (var msgID in msgHistogram) {
+      hierarchy.children.push({name: msgID, count: msgHistogram[msgID]});
+    }
+  } else {
+    var histogram = {};
+    for (var msgID in msgHistogram) {
+      var key = events[msgID][volumeBy];
+      if (!(key in histogram)) histogram[key] = [];
+      histogram[key].push({name: msgID, count: msgHistogram[msgID]});
+    }
+
+    for (var key in histogram) {
+      hierarchy.children.push({name: key, children: histogram[key]});
+    }
   }
 
   return hierarchy;
@@ -163,8 +170,8 @@ function init() {
   
     torusView = new torusView("#tabs-0", {L: 0, T: 0, W: 360, H: 360});
     
-    treeMapView.resize({L: 0, T: 605, W: 240, H: 120});
-    treeMapView.updateData(buildMessageHierarchy("severity", d.msgID));
+    treeMapView.resize({L: 0, T: 605, W: 240, H: 140});
+    treeMapView.updateData(buildMessageIdHierarchy("component", d.msgID));
 
     updateQueryInfo(d);
   });
