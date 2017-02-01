@@ -80,6 +80,21 @@ var torusRMNJMap = new function() {
   }
 }
 
+function buildMessageHierarchy(volumeBy, msgHistogram) { // volumeBy = component/category/severity (locationType will be in future)
+  var histogram = {};
+  for (var msgID in msgHistogram) {
+    var key = events[msgID][volumeBy];
+    if (!(key in histogram)) histogram[key] = [];
+    histogram[key].push({msgID: msgID, count: msgHistogram[msgID]});
+  }
+
+  var histogramArray = [];
+  for (var key in histogram) {
+    histogramArray.push({k: key, v: histogram[key]});
+  }
+  return histogramArray;
+}
+
 $(function() {
   $("#tabs").tabs();
   $(document).tooltip({
@@ -188,6 +203,8 @@ function refresh() {
     timeVolumeChart.updateVolume(d.timeVolumes);
     timeVolumeChart.updateOverviewVolume(d.overviewVolume);
     machineView.updateData(d.location, histogramToArray(d.location));
+    
+    // console.log(buildMessageHierarchy("category", d.msgID));
 
     updateQueryInfo(d);
   });
