@@ -727,14 +727,17 @@ function highlightBlock(str, color) {
   }).css("stroke", color).css("stroke-width", 2);
 }
 
+function highlightNodeBoard(str, color) { 
+  var nodeBoardStr = locationStrToNodeBoardStr(str);
+  $(".RMNBox").css("stroke", "").css("stroke-width", "");
+  $(".c#" + nodeBoardStr)
+    .css("stroke", color)
+    .css("stroke-width", 2);
+}
+
 function highlightBlockAndLocation(block, location) { // LEGACY
   highlightBlock(block);
   highlightNodeBoard(location);
-}
-
-function highlightNodeBoard(str) { // LEGACY
-  var nodeBoardStr = locationStrToNodeBoardStr(str);
-  $(".c#" + nodeBoardStr).css("fill", "red");
 }
 
 // createMachineView();
