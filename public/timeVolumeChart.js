@@ -30,6 +30,28 @@ function timeVolumeChart(geom) {
   var svgVolume = svg.append("g");
   var svgOverview = svg.append("g");
  
+  var patternDef = d3.select("#timeVolumeChartSvg") // pattern-stripe
+    .append("defs");
+  patternDef.append("pattern")
+    .attr("id", "pattern-stripe")
+    .attr("width", 4)
+    .attr("height", 4)
+    .attr("patternUnits", "userSpaceOnUse")
+    .attr("patternTransform", "rotate(45)")
+    .append("rect")
+    .attr("width", 2)
+    .attr("height", 4)
+    .attr("transform", "translate(0,0)")
+    .attr("fill", "white");
+  patternDef.append("mask")
+    .attr("id", "mask-stripe")
+    .append("rect")
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("width", "100%")
+    .attr("height", "100%")
+    .attr("fill", "url(#pattern-stripe)");
+
   svg.append("defs") // masking cobalt
     .append("clipPath")
     .attr("id", "cobaltMask")
@@ -377,6 +399,7 @@ function timeVolumeChart(geom) {
       .attr("class", "maintainance")
       .style("transform", jobTransform)
       .append("rect")
+      // .style("mask", "url(#mask-stripe)")
       .style("fill", "grey")
       .style("opacity", 0.8)
       .attr("x", 0)
@@ -516,6 +539,7 @@ function timeVolumeChart(geom) {
       .style("transform", jobTransform);
 
     cobaltJobs.forEach(function (cobaltJob) {
+      /*
       svgCobaltContent.select("#cobalt" + cobaltJob._id)
         .select(".cobaltGroup")
         .append("rect")
@@ -529,7 +553,7 @@ function timeVolumeChart(geom) {
         .attr("x", 0)
         .attr("y", cobaltJob.contour.min)
         .attr("width", 1)
-        .attr("height", cobaltJob.contour.max - cobaltJob.contour.min + 1);
+        .attr("height", cobaltJob.contour.max - cobaltJob.contour.min + 1); */
       
       svgCobaltContent.select("#cobalt" + cobaltJob._id)
         .select(".cobaltGroup")
