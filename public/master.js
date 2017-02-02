@@ -81,11 +81,12 @@ var torusRMNJMap = new function() {
 }
 
 function buildMessageIdHierarchy(volumeBy, msgHistogram) { // volumeBy = component/category/severity (locationType will be in future)
-  var hierarchy = {name: "root", children: []};
+  var hierarchy = {name: "root", children: [], nnodes: 0};
 
-  if (volumeBy == "") {
+  if (volumeBy == "" || volumeBy == null || volumeBy == undefined) {
     for (var msgID in msgHistogram) {
       hierarchy.children.push({name: msgID, count: msgHistogram[msgID]});
+      hierarchy.nnodes ++;
     }
   } else {
     var histogram = {};
@@ -93,6 +94,7 @@ function buildMessageIdHierarchy(volumeBy, msgHistogram) { // volumeBy = compone
       var key = events[msgID][volumeBy];
       if (!(key in histogram)) histogram[key] = [];
       histogram[key].push({name: msgID, count: msgHistogram[msgID]});
+      hierarchy.nnodes ++;
     }
 
     for (var key in histogram) {
@@ -171,7 +173,7 @@ function init() {
     torusView = new torusView("#tabs-0", {L: 0, T: 0, W: 360, H: 360});
     
     treeMapView.resize({L: 0, T: 605, W: 240, H: 140});
-    treeMapView.updateData(buildMessageIdHierarchy("component", d.msgID));
+    treeMapView.updateData(buildMessageIdHierarchy(query.volumeBy, d.msgID));
 
     updateQueryInfo(d);
   });
@@ -206,8 +208,6 @@ function refresh() {
     if ("top" in d) refreshTops(d["top"]);
     if ("recIDs" in d) refreshRecIDs(d["recIDs"]);
     
-    // console.log(query);
-    // console.log(d);
     severityChart.updateData(histogramToArray(d.severity));
     controlActionChart.updateData(histogramToArray(d.controlAction));
     componentChart.updateData(histogramToArray(d.component));
@@ -216,6 +216,8 @@ function refresh() {
     timeVolumeChart.updateVolume(d.timeVolumes);
     timeVolumeChart.updateOverviewVolume(d.overviewVolume);
     machineView.updateData(d.location, histogramToArray(d.location));
+    
+    treeMapView.updateData(buildMessageIdHierarchy(query.volumeBy, d.msgID));
     
     updateQueryInfo(d);
   });
@@ -283,7 +285,6 @@ function requestBackendJobs(cobaltJobs) {
       d.startTime = new Date(d.startTime);
       d.endTime = new Date(d.endTime);
     });
-    console.log(data.length);
     timeVolumeChart.updateBackendJobData(data);
   });
 }

@@ -17,9 +17,12 @@ function barChart(name, id, data, humanReadableText, geom) {
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  svg.append("text")
+  svg.append("g")
     .attr("class", "barChartTitle")
-    .attr("x", 0).attr("y", -4)
+    .attr("transform", "translate(0,-4)");
+
+  svg.select(".barChartTitle")
+    .append("text")
     .text(name);
 
   var xMax = d3.max(data, function(d) {return d.v;});
