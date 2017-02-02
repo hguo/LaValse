@@ -138,6 +138,13 @@ function timeVolumeChart(geom) {
   svgOverview.append("g")
     .attr("class", "brush")
     .attr("id", "overviewBrush");
+  
+  var jobTransformX = function(d) {
+    var t0 = x(d.startTime), t1 = x(d.endTime);
+    var scale = "scale(" + (t1-t0) + ",1)",
+        translate = "translate(" + t0 + "px,0px)"
+    return translate + scale;
+  };
  
   var jobTransform = function(d) {
     var t0 = x(d.startTime), t1 = x(d.endTime);
@@ -259,6 +266,10 @@ function timeVolumeChart(geom) {
 
     svgCobaltContent.selectAll(".cobalt")
       .style("transform", jobTransform);
+    svgCobaltContent.selectAll(".backend")
+      .style("transform", jobTransform);
+    svgCobaltContent.selectAll(".maintainance")
+      .style("transform", jobTransform);
    
     overviewBrush.extent([[0, 0], [width, overviewHeight]]);
     svgOverview.select("#overviewBrush")
@@ -357,6 +368,46 @@ function timeVolumeChart(geom) {
           + "<br><b>message:</b> " + d.message;
       });
   }
+
+  this.updateMaintainanceData = function(data) {
+    svgCobaltContent.selectAll(".maintainance").remove();
+    svgCobaltContent.selectAll(".maintainance")
+      .data(data).enter()
+      .append("g")
+      .attr("class", "maintainance")
+      .style("transform", jobTransform)
+      .append("rect")
+      .style("fill", "grey")
+      .style("opacity", 0.8)
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("width", 1)
+      .attr("height", 96)
+      .attr("title", function(d) {
+        return "<b>scheduled maintainance</b>"
+          + "<br><b>startTime:</b> " + d3.isoFormat(d.startTime)
+          + "<br><b>endTime:</b> " + d3.isoFormat(d.endTime);
+      });
+    
+    svgVolume.selectAll(".maintainance").remove();
+    svgVolume.selectAll(".maintainance")
+      .data(data).enter()
+      .append("g")
+      .attr("class", "maintainance")
+      .style("transform", jobTransformX)
+      .append("rect")
+      .style("fill", "grey")
+      .style("opacity", 0.8)
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("width", 1)
+      .attr("height", volumeHeight)
+      .attr("title", function(d) {
+        return "<b>scheduled maintainance</b>"
+          + "<br><b>startTime:</b> " + d3.isoFormat(d.startTime)
+          + "<br><b>endTime:</b> " + d3.isoFormat(d.endTime);
+      });
+  }
   
   function updateBackendJobData(backendJobs) {
     svgCobaltContent.selectAll(".backend").remove();
@@ -368,7 +419,7 @@ function timeVolumeChart(geom) {
       .style("transform", jobTransform)
       .style("display", "none")
       .attr("title", function(d) {
-        return "backendJob"; // WIP
+        return "backendJob"; // TODO
       });
 
     backendJobs.forEach(function(d) {
@@ -587,8 +638,9 @@ function timeVolumeChart(geom) {
 
     svgCobaltContent.selectAll(".cobalt")
       .style("transform", jobTransform);
-    
     svgCobaltContent.selectAll(".backend")
+      .style("transform", jobTransform);
+    svgCobaltContent.selectAll(".maintainance")
       .style("transform", jobTransform);
   }
 
@@ -618,9 +670,12 @@ function timeVolumeChart(geom) {
 
     svgCobaltContent.selectAll(".cobalt")
       .style("transform", jobTransform);
-    
     svgCobaltContent.selectAll(".backend")
       .style("transform", jobTransform);
+    svgCobaltContent.selectAll(".maintainance")
+      .style("transform", jobTransform);
+    svgVolume.selectAll(".maintainance")
+      .style("transform", jobTransformX);
 
     svgVolume.select(".timeLabelLeft")
       .text(d3.isoFormat(x.domain()[0]));

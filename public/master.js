@@ -162,7 +162,7 @@ function init() {
     timeVolumeChart = new timeVolumeChart(geom);
     timeVolumeChart.updateVolume(d.timeVolumes);
     timeVolumeChart.updateOverviewVolume(d.overviewVolume);
-
+    
     machineView = new machineView();
     machineView.updateData(d.location, histogramToArray(d.location));
     $("#controlPanel").css("display", "block");
@@ -180,6 +180,15 @@ function init() {
 
   refreshCobaltLog({T0: query.T0, T1: query.T1});
   
+  // load maintainance time
+  d3.csv("/maintainance.csv", function(data) {
+    data.forEach(function(d) {
+      d.startTime = new Date(d.startTime);
+      d.endTime = new Date(d.endTime);
+    });
+    timeVolumeChart.updateMaintainanceData(data);
+  });
+
   $("#volumeBy").change(function() {
     query.volumeBy = $(this).val();
     $(this).blur();
