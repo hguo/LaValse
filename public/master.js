@@ -279,22 +279,6 @@ function refreshCobaltLog(q) {
     });
     timeVolumeChart.updateCobaltData(data);
     updateCobaltTable(data);
-    requestBackendJobs(data);
-  });
-}
-
-function requestBackendJobs(cobaltJobs) {
-  var cobaltJobIDs = [];
-  cobaltJobs.forEach(function(d) {
-    cobaltJobIDs.push(d._id);
-  });
-
-  d3.json("/backendJobsByCobaltJobID?query=" + JSON.stringify(cobaltJobIDs), function(data) {
-    data.forEach(function(d) {
-      d.startTime = new Date(d.startTime);
-      d.endTime = new Date(d.endTime);
-    });
-    timeVolumeChart.updateBackendJobData(data);
   });
 }
 

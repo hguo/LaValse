@@ -408,80 +408,79 @@ function timeVolumeChart(geom) {
           + "<br><b>endTime:</b> " + d3.isoFormat(d.endTime);
       });
   }
-  
-  function updateBackendJobData(backendJobs) {
-    svgCobaltContent.selectAll(".backend").remove();
-    svgCobaltContent.selectAll(".backend")
-      .data(backendJobs).enter()
-      .append("g")
-      .attr("class", "backend")
-      .attr("id", function(d, i) {return "backend" + d._id;})
-      .style("transform", jobTransform)
-      .style("display", "none")
-      .attr("title", function(d) {
-        return "backendJob"; // TODO
-      });
+ 
+  function requestBackendJobs(cobaltJobID) {
+    var backendGroup = svgCobaltContent.select("#cobalt" + cobaltJobID).select(".backendGroup");
+    if (!backendGroup.attr("_loaded")) {
+      var query = [cobaltJobID];
+      d3.json("/backendJobsByCobaltJobID?query=" + JSON.stringify(query), function(backendJobs) {
+        backendJobs.forEach(function(d) {
+          d.startTime = new Date(d.startTime);
+          d.endTime = new Date(d.endTime);
+        });
 
-    backendJobs.forEach(function(d) {
-      var components = partitionParser.components(d.machinePartition);
-      var contour = partitionParser.contour(d.machinePartition);
-      
-      svgCobaltContent.select("#backend" + d._id)
-        .selectAll(".backendBox")
-        .data(components).enter()
-        .append("rect")
-        .attr("class", "backendBox")
-        .style("vector-effect", "non-scaling-stroke")
-        .style("stroke", "black")
-        .style("stroke-opacity", "1.0")
-        .style("fill", "none")
-        // .style("opacity", "0.6")
-        .attr("x", 0)
-        .attr("y", function(dd, i) {return dd[0];}) 
-        .attr("width", 1)
-        .attr("height", function(dd) {return dd[1];});
-    });
+        backendGroup
+          .attr("_loaded", 1)
+          .selectAll(".backend")
+          .data(backendJobs).enter()
+          .append("g")
+          .attr("class", "backend")
+          .attr("id", function(d) {return "backend" + d._id;})
+          .style("transform", jobTransform)
+          .attr("title", function(d) {
+            return "backendJob"; // TODO
+          });
+        
+        backendJobs.forEach(function(d) {
+          var components = partitionParser.components(d.machinePartition);
+          var contour = partitionParser.contour(d.machinePartition);
+          
+          svgCobaltContent.select("#backend" + d._id)
+            .selectAll(".backendBox")
+            .data(components).enter()
+            .append("rect")
+            .attr("class", "backendBox")
+            .style("vector-effect", "non-scaling-stroke")
+            .style("stroke", "black")
+            .style("stroke-opacity", "1.0")
+            .style("fill", "none")
+            // .style("opacity", "0.6")
+            .attr("x", 0)
+            .attr("y", function(dd, i) {return dd[0];}) 
+            .attr("width", 1)
+            .attr("height", function(dd) {return dd[1];});
+        });
+      });
+    }
   }
-  this.updateBackendJobData = updateBackendJobData;
 
   this.updateCobaltData = function(cobaltJobs) {
     svgCobaltContent.selectAll(".cobalt").remove();
-    svgCobaltContent.selectAll(".cobalt")
+    var cobalt = svgCobaltContent.selectAll(".cobalt")
       .data(cobaltJobs).enter()
       .append("g")
       .attr("class", "cobalt")
       .attr("id", function(d, i) {return "cobalt" + d._id;})
-      .attr("title", function(d) {
-        return "<table class='tooltipTable'><tr><td><b>cobaltJobID:</b></td><td>" + d._id + "</td></tr>"
-          + "<tr><td><b>queuedTime:</b></td><td>" + d3.isoFormat(new Date(d.queuedTime)) + "</td></tr>"
-          + "<tr><td><b>startTime:</b></td><td>" + d3.isoFormat(new Date(d.startTime)) + "</td></tr>"
-          + "<tr><td><b>runTime (s):</b></td><td>" + d.runTimeSeconds + "</td></tr>"
-          + "<tr><td><b>mode:</b></td><td>" + d.mode + "</td></tr>"
-          + "<tr><td><b>project:</b></td><td>" + projProfileMap.map2(d.cobaltProjectName) + "</td></tr>"
-          + "<tr><td><b>user:</b></td><td>" + userProfileMap.map2(d.cobaltUserName) + "</td></tr>"
-          + "<tr><td><b>queue:</b></td><td>" + d.queue + "</td></tr>"
-          + "<tr><td><b>machinePartition:</b></td><td>" + d.machinePartition + "</td></tr>"
-          + "<tr><td><b>exitCode:</b></td><td>" + d.exitCode + "</td></tr>"
-          + "</table>";
-      })
-      .style("transform", jobTransform)
       .on("mouseover", function(d) {
         highlightBlock(d.machinePartition, d.color);
-        svgCobaltContent.selectAll(".backend")
-          .filter(function(dd) {return dd.cobaltJobID == d._id;})
-          .style("display", "block");
+        requestBackendJobs(d._id);
         svgCobaltContent.select("#cobalt" + d._id)
-          .each(function(){
-            this.parentNode.appendChild(this);
-          }); 
+          // .each(function(){ // bring to front
+          //   this.parentNode.appendChild(this);
+          // })
+          .select(".backendGroup")
+          .style("display", "block");
           // .selectAll(".cobaltContour")
           // .style("display", "block");
       })
       .on("mouseleave", function(d) {
         highlightBlock("");
-        svgCobaltContent.selectAll(".backend")
-          .filter(function(dd) {return dd.cobaltJobID == d._id;})
+        svgCobaltContent.select("#cobalt" + d._id)
+          .select(".backendGroup")
           .style("display", "none");
+        // svgCobaltContent.selectAll(".backend")
+        //   .filter(function(dd) {return dd.cobaltJobID == d._id;})
+        //   .style("display", "none");
         return;  // TODO
         svgCobaltContent.select("#cobalt" + d._id)
           .selectAll(".cobaltContour")
@@ -495,8 +494,30 @@ function timeVolumeChart(geom) {
         }
       });
 
+    cobalt.append("g")
+      .attr("class", "backendGroup")
+      .style("display", "none");
+
+    cobalt.append("g")
+      .attr("class", "cobaltGroup")
+      .attr("title", function(d) {
+        return "<table class='tooltipTable'><tr><td><b>cobaltJobID:</b></td><td>" + d._id + "</td></tr>"
+          + "<tr><td><b>queuedTime:</b></td><td>" + d3.isoFormat(new Date(d.queuedTime)) + "</td></tr>"
+          + "<tr><td><b>startTime:</b></td><td>" + d3.isoFormat(new Date(d.startTime)) + "</td></tr>"
+          + "<tr><td><b>runTime (s):</b></td><td>" + d.runTimeSeconds + "</td></tr>"
+          + "<tr><td><b>mode:</b></td><td>" + d.mode + "</td></tr>"
+          + "<tr><td><b>project:</b></td><td>" + projProfileMap.map2(d.cobaltProjectName) + "</td></tr>"
+          + "<tr><td><b>user:</b></td><td>" + userProfileMap.map2(d.cobaltUserName) + "</td></tr>"
+          + "<tr><td><b>queue:</b></td><td>" + d.queue + "</td></tr>"
+          + "<tr><td><b>machinePartition:</b></td><td>" + d.machinePartition + "</td></tr>"
+          + "<tr><td><b>exitCode:</b></td><td>" + d.exitCode + "</td></tr>"
+          + "</table>";
+      })
+      .style("transform", jobTransform);
+
     cobaltJobs.forEach(function (cobaltJob) {
       svgCobaltContent.select("#cobalt" + cobaltJob._id)
+        .select(".cobaltGroup")
         .append("rect")
         .attr("class", "cobaltContour")
         .style("vector-effect", "non-scaling-stroke")
@@ -511,6 +532,7 @@ function timeVolumeChart(geom) {
         .attr("height", cobaltJob.contour.max - cobaltJob.contour.min + 1);
       
       svgCobaltContent.select("#cobalt" + cobaltJob._id)
+        .select(".cobaltGroup")
         .selectAll(".cobaltBox")
         .data(cobaltJob.components).enter()
         .append("rect")
@@ -602,16 +624,6 @@ function timeVolumeChart(geom) {
   }
 
   function zoomIntoCobaltJob(cobaltJob) {
-    // retrieve backend jobs
-    var query = [cobaltJob._id];
-    d3.json("/backendJobsByCobaltJobID?query=" + JSON.stringify(query), function(backendJobs) {
-      backendJobs.forEach(function(d) {
-        d.startTime = new Date(d.startTime);
-        d.endTime = new Date(d.endTime);
-      });
-      // updateBackendJobData(backendJobs);
-    });
-    
     // x direction zoom
     xDomainBeforeCobaltJobHiglighted = [x.invert(0).getTime(), x.invert(width).getTime()];
     zoomIntoTimeDomain(cobaltJob.startTime, cobaltJob.endTime);
@@ -636,7 +648,7 @@ function timeVolumeChart(geom) {
     svgCobalt.select(".axis-cobalt")
       .call(cobaltAxis);
 
-    svgCobaltContent.selectAll(".cobalt")
+    svgCobaltContent.selectAll(".cobaltGroup")
       .style("transform", jobTransform);
     svgCobaltContent.selectAll(".backend")
       .style("transform", jobTransform);
@@ -668,7 +680,7 @@ function timeVolumeChart(geom) {
     svgVolume.selectAll(".glyph")
       .attr("cx", function(d) {return x(d.eventTime);});
 
-    svgCobaltContent.selectAll(".cobalt")
+    svgCobaltContent.selectAll(".cobaltGroup")
       .style("transform", jobTransform);
     svgCobaltContent.selectAll(".backend")
       .style("transform", jobTransform);
