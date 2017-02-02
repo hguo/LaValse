@@ -179,14 +179,14 @@ function init() {
   });
 
   refreshCobaltLog({T0: query.T0, T1: query.T1});
-  
-  // load maintainance time
-  d3.csv("/maintainance.csv", function(data) {
+ 
+  // load maintenance time
+  d3.csv("/maintenance.csv", function(data) {
     data.forEach(function(d) {
       d.startTime = new Date(d.startTime);
       d.endTime = new Date(d.endTime);
     });
-    timeVolumeChart.updateMaintainanceData(data);
+    timeVolumeChart.updateMaintenanceData(data);
   });
 
   $("#volumeBy").change(function() {

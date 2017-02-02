@@ -290,7 +290,7 @@ function timeVolumeChart(geom) {
       .style("transform", jobTransform);
     svgCobaltContent.selectAll(".backend")
       .style("transform", jobTransform);
-    svgCobaltContent.selectAll(".maintainance")
+    svgCobaltContent.selectAll(".maintenance")
       .style("transform", jobTransform);
    
     overviewBrush.extent([[0, 0], [width, overviewHeight]]);
@@ -372,13 +372,15 @@ function timeVolumeChart(geom) {
       .attr("cx", function(d) {return x(d.eventTime);})
       .attr("cy", function(d) {return yLinearReverse(d.y);})
       .attr("title", function(d) {
+        const e = events[d.messageID];
         return "<b>recID:</b> " + d._id
           + "<br><b>time:</b> " + d3.isoFormat(d.eventTime)
           + "<br><b>severity:</b> " + d.severity
           + "<br><b>messageID:</b> " + d.messageID
-          + "<br><b>component:</b> " + events[d.messageID].component
-          + "<br><b>category:</b> " + events[d.messageID].category
-          + "<br><b>jobID: </b> " + d.jobID
+          + "<br><b>component:</b> " + e.component
+          + "<br><b>category:</b> " + e.category
+          + "<br><b>cobaltJobID: </b> " + d.cobaltJobID
+          + "<br><b>backendJobID: </b> " + d.backendJobID
           + "<br><b>machinePartition:</b> " + d.block
           + "<br><b>location:</b> " + d.location
           + "<br><b>torus:</b> " + torusRMNJMap.torus(d.location)
@@ -387,16 +389,17 @@ function timeVolumeChart(geom) {
           + "<br><b>controlActions:</b> " + String(events[d.messageID].controlAction).replace(/,/g, ', ')
           + "<br><b>serviceAction:</b> " + events[d.messageID].serviceAction
           + "<br><b>relevantDiagnosticSuites:</b> " + String(events[d.messageID].relevantDiagnosticSuites).replace(/,/g, ', ')
-          + "<br><b>message:</b> " + d.message;
+          + "<br><b>message:</b> " + d.message
+          + "<br><b>description:</b> " + e.description;
       });
   }
 
-  this.updateMaintainanceData = function(data) {
-    svgCobaltContent.selectAll(".maintainance").remove();
-    svgCobaltContent.selectAll(".maintainance")
+  this.updateMaintenanceData = function(data) {
+    svgCobaltContent.selectAll(".maintenance").remove();
+    svgCobaltContent.selectAll(".maintenance")
       .data(data).enter()
       .append("g")
-      .attr("class", "maintainance")
+      .attr("class", "maintenance")
       .style("transform", jobTransform)
       .append("rect")
       // .style("mask", "url(#mask-stripe)")
@@ -407,16 +410,16 @@ function timeVolumeChart(geom) {
       .attr("width", 1)
       .attr("height", 96)
       .attr("title", function(d) {
-        return "<b>scheduled maintainance</b>"
+        return "<b>scheduled maintenance</b>"
           + "<br><b>startTime:</b> " + d3.isoFormat(d.startTime)
           + "<br><b>endTime:</b> " + d3.isoFormat(d.endTime);
       });
     
-    svgVolume.selectAll(".maintainance").remove();
-    svgVolume.selectAll(".maintainance")
+    svgVolume.selectAll(".maintenance").remove();
+    svgVolume.selectAll(".maintenance")
       .data(data).enter()
       .append("g")
-      .attr("class", "maintainance")
+      .attr("class", "maintenance")
       .style("transform", jobTransformX)
       .append("rect")
       .style("fill", "grey")
@@ -426,7 +429,7 @@ function timeVolumeChart(geom) {
       .attr("width", 1)
       .attr("height", volumeHeight)
       .attr("title", function(d) {
-        return "<b>scheduled maintainance</b>"
+        return "<b>scheduled maintenance</b>"
           + "<br><b>startTime:</b> " + d3.isoFormat(d.startTime)
           + "<br><b>endTime:</b> " + d3.isoFormat(d.endTime);
       });
@@ -676,7 +679,7 @@ function timeVolumeChart(geom) {
       .style("transform", jobTransform);
     svgCobaltContent.selectAll(".backend")
       .style("transform", jobTransform);
-    svgCobaltContent.selectAll(".maintainance")
+    svgCobaltContent.selectAll(".maintenance")
       .style("transform", jobTransform);
   }
 
@@ -708,9 +711,9 @@ function timeVolumeChart(geom) {
       .style("transform", jobTransform);
     svgCobaltContent.selectAll(".backend")
       .style("transform", jobTransform);
-    svgCobaltContent.selectAll(".maintainance")
+    svgCobaltContent.selectAll(".maintenance")
       .style("transform", jobTransform);
-    svgVolume.selectAll(".maintainance")
+    svgVolume.selectAll(".maintenance")
       .style("transform", jobTransformX);
 
     svgVolume.select(".timeLabelLeft")
