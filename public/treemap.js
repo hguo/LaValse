@@ -80,7 +80,8 @@ function treeMapView(id, geom) {
     var root = d3.hierarchy(data)
       .eachBefore(function(d) { d.data.id = (d.parent ? d.parent.data.id + "." : "") + d.data.name; })
       // .sum(function(d) {return d.count;})
-      .sum(function(d) {return Math.max(d.count, 200);})
+      // .sum(function(d) {return Math.max(d.count, 200);})
+      .sum(function(d) {return Math.log10(d.count);})
       .sort(function(a, b) { return b.height - a.height || b.value - a.value; });
     
     treemap(root);

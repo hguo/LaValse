@@ -1,5 +1,5 @@
 function barChart(name, id, data, humanReadableText, geom) {
-  const margin = {top: 20, right: 10, bottom: 25, left: 10},
+  const margin = {top: 20, right: 10, bottom: 20, left: 10},
         width = geom.W - margin.left - margin.right,
         height = geom.H - margin.top - margin.bottom;
 

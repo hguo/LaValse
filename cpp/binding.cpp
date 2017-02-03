@@ -183,6 +183,15 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
     for (uint32_t i=0; i<severity->Length(); i++) 
       query.severity[ severity->Get(i)->Uint32Value() ] = true;
   }
+
+  Local<Array> maintenance = Local<Array>::Cast(input->Get(String::NewFromUtf8(isolate, "maintenance")));
+  if (maintenance->Length() == 0) {
+    query.maintenance[0] = query.maintenance[1] = 1;
+  } else {
+    memset(query.maintenance, 0, 2);
+    for (uint32_t i=0; i<maintenance->Length(); i++) 
+      query.maintenance[ maintenance->Get(i)->Uint32Value() ] = true;
+  }
   
   Local<Array> location = Local<Array>::Cast(input->Get(String::NewFromUtf8(isolate, "location")));
   if (location->Length() == 0) 
@@ -279,6 +288,11 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
       jControlAction->Set(Number::New(isolate, i), Number::New(isolate, results.controlAction[i]));
     }
   jout->Set(String::NewFromUtf8(isolate, "controlAction"), jControlAction);
+
+  Local<Object> jMaintenance = Object::New(isolate);
+  for (size_t i=0; i<2; i++) 
+    jMaintenance->Set(Number::New(isolate, i), Number::New(isolate, results.maintenance[i]));
+  jout->Set(String::NewFromUtf8(isolate, "maintenance"), jMaintenance);
 
   Local<Array> jTop = Array::New(isolate);
   for (size_t i=0; i<results.topRecIDs.size(); i++) 

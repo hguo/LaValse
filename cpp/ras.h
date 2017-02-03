@@ -912,7 +912,7 @@ struct Event {
 
   uint8_t locationType;
   uint32_t cobaltJobID;
-  uint8_t maintenaince; // 0 or 1
+  uint8_t maintenance; // 0 or 1
   uint16_t user;
   uint8_t proj;
   uint8_t midplane;

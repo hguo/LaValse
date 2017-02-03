@@ -8,7 +8,8 @@ var query = {
   t1: 1451520000000, // 2015-12-31
   tg: 27587368 // (t1 - t0) / width_of_time_chart // aggregation resolution
 };
-var severityChart, componentChart, categoryChart, locationTypeChart, controlActionChart, timeVolumeChart, treeMapView;
+var severityChart, componentChart, categoryChart, locationTypeChart, maintenanceChart,
+    controlActionChart, timeVolumeChart, treeMapView;
 var machineView;
 
 // init mira partition parser
@@ -135,10 +136,13 @@ function init() {
 
     severityChart = new barChart(
         "severity", "#severityChart", histogramToArray(d.severity), severities,
-        {L: 0, T: 25, W: 120, H: 100});
+        {L: 0, T: 25, W: 120, H: 90});
+    maintenanceChart = new barChart(
+        "maintenance", "#maintenanceChart", histogramToArray(d.maintenance), maintenanceStates,
+        {L: 0, T: 115, W: 120, H: 65});
     controlActionChart = new barChart(
         "controlAction", "#controlActionChart", histogramToArray(d.controlAction), controlActions,
-        {L: 0, T: 125, W: 120, H: 190});
+        {L: 0, T: 180, W: 120, H: 135});
     componentChart = new barChart(
         "component", "#componentChart", histogramToArray(d.component), components,
         {L: 120, T: 25, W: 120, H: 290});
@@ -201,6 +205,7 @@ function init() {
     query = Object.assign({}, defaultQuery);
     timeVolumeChart.reset();
     severityChart.reset();
+    maintenanceChart.reset();
     componentChart.reset();
     categoryChart.reset();
     locationTypeChart.reset();
@@ -216,8 +221,11 @@ function refresh() {
 
     if ("top" in d) refreshTops(d["top"]);
     if ("recIDs" in d) refreshRecIDs(d["recIDs"]);
-    
+   
+    console.log(d.maintenance);
+
     severityChart.updateData(histogramToArray(d.severity));
+    maintenanceChart.updateData(histogramToArray(d.maintenance));
     controlActionChart.updateData(histogramToArray(d.controlAction));
     componentChart.updateData(histogramToArray(d.component));
     categoryChart.updateData(histogramToArray(d.category));

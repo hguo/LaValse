@@ -882,6 +882,11 @@ const severities = {
 "FATAL": "FATAL"
 };
 
+const maintenanceStates = {
+  "0": "regular",
+  "1": "maintenance"
+};
+
 // RAS Component
 const components = {
 "CNK": "Compute Node Kernel",

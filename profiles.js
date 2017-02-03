@@ -19,7 +19,7 @@ var maintenanceTimeChecker = new function() {
 
   this.check = function(t) {
     for (var i=0; i<array.length; i++) {
-      if (t >= array[i].startTime && t >= array[i].endTime) return 1;
+      if (t >= array[i].startTime && t <= array[i].endTime) return 1;
     }
     return 0;
   }

@@ -39,7 +39,8 @@ struct QueryResults {
   uint32_t nmatched = 0;
 
   uint32_t msgID[NUM_MSGID], component[NUM_COMP], locationType[NUM_LOCTYPE], 
-           category[NUM_CAT], severity[NUM_SEV], controlAction[NUM_CTLACT];
+           category[NUM_CAT], severity[NUM_SEV], controlAction[NUM_CTLACT], 
+           maintenance[2];
   uint32_t *location, *locationRecID; 
   uint32_t *timeVolumes, *timeVolumesRecID;
   uint32_t *midplaneVolumes; // heat maps
@@ -62,7 +63,7 @@ struct Query {
   int nthreads = 1;
 
   bool msgID[NUM_MSGID], component[NUM_COMP], locationType[NUM_LOCTYPE],
-       category[NUM_CAT], severity[NUM_SEV], location[MAX_NUM_LOC];
+       category[NUM_CAT], severity[NUM_SEV], location[MAX_NUM_LOC], maintenance[2];
   uint16_t controlActions; // bits
 
   std::vector<uint64_t> jobIDs; // TODO
@@ -127,7 +128,7 @@ struct Query {
     // auto t0 = clock::now();
     // set_affinity(tid);
     
-    const int ndims = 9;
+    const int ndims = 10;
     const int nslots = results.nTimeSlots;
     bool b[ndims], c[ndims];
     int ntop = 0;
@@ -184,7 +185,7 @@ struct Query {
         uint32_t o = e.aggregateTime(O0, og);
         add1(results.overviewVolume[o]);
       }
-
+      if (c[9]) add1(results.maintenance[e.maintenance]);
 
       if (b[0] && c[0]) { // all true
         results.nmatched ++; 
@@ -201,7 +202,7 @@ struct Query {
   }
 
   void crossfilter_kernel(const Event& e, bool b[], bool c[]) {
-    const int ndims = 9; // FIXME
+    const int ndims = 10; // FIXME
     // fprintf(stderr, "%llu, %llu, %llu, %llu\n", t0, t1, T0, T1);
 #if 0
     if (!checkTime(e.eventTime, T0, T1)) {
@@ -222,6 +223,7 @@ struct Query {
     b[6] = check(e.location[LOD], location);
     b[7] = checkBits(e.controlActions(), controlActions);
     b[8] = true; // the overview volume
+    b[9] = check(e.maintenance, maintenance);
 
     for (int i=0; i<ndims; i++) {
       bool v = true;
@@ -274,6 +276,7 @@ QueryResults::QueryResults(const Query& q)
   memset(locationType, 0, NUM_LOCTYPE*4);
   memset(category, 0, NUM_CAT*4);
   memset(severity, 0, NUM_SEV*4);
+  memset(maintenance, 0, 8);
   memset(controlAction, 0, NUM_CTLACT*4);
   
   topRecIDs.reserve(q.top);
