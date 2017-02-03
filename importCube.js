@@ -49,7 +49,7 @@ function printRAS(ras) {
       profiles.userMap.key(ras.cobaltUserName),
       profiles.projectMap.key(ras.cobaltProjectName),
       // profiles.partitionMap.key(ras.partition),
-      rasbook.locationTypeMap.key(L.type), // locaitonType
       rasbook.midplaneMap.key(midplane),
+      rasbook.locationTypeMap.key(L.type), // locaitonType
       L0i, L1i, L2i, L3i, L4i);
 }
