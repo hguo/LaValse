@@ -3,6 +3,7 @@ const assert = require("assert");
 const async = require("async");
 const mira = require("./mira");
 const rasbook = require("./rasbook");
+const profiles = require("./profiles");
 
 var uri = "mongodb://localhost:27017/catalog";
 
@@ -37,12 +38,17 @@ function printRAS(ras) {
       L3i = rasbook.locationMaps[3].key(L3),
       L4i = rasbook.locationMaps[4].key(L4);
   var midplane = mira.locationToMidplane(L);
- 
+
   // console.log(L0, L1, L2, L3, L4);
   console.log(
       ras._id,
       rasbook.eventMap.key(ras.messageID),
       ras.eventTime.getTime(),
+      +ras.cobaltJobID,
+      profiles.checkMaintenanceTime(ras.eventTime),
+      profiles.userMap.key(ras.cobaltUserName),
+      profiles.projectMap.key(ras.cobaltProjectName),
+      // profiles.partitionMap.key(ras.partition),
       rasbook.locationTypeMap.key(L.type), // locaitonType
       rasbook.midplaneMap.key(midplane),
       L0i, L1i, L2i, L3i, L4i);
