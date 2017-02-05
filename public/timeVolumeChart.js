@@ -420,8 +420,8 @@ function timeVolumeChart(geom) {
       .style("transform", jobTransform)
       .append("rect")
       // .style("mask", "url(#mask-stripe)")
-      .style("fill", "grey")
-      .style("opacity", 0.8)
+      .style("fill", "lightgrey")
+      .style("opacity", 0.6)
       .attr("x", 0)
       .attr("y", 0)
       .attr("width", 1)
@@ -439,8 +439,8 @@ function timeVolumeChart(geom) {
       .attr("class", "maintenance")
       .style("transform", jobTransformX)
       .append("rect")
-      .style("fill", "grey")
-      .style("opacity", 0.8)
+      .style("fill", "lightgrey")
+      .style("opacity", 0.6)
       .attr("x", 0)
       .attr("y", 0)
       .attr("width", 1)
@@ -508,7 +508,8 @@ function timeVolumeChart(geom) {
       .range(["white", "steelblue"])
       .interpolate(d3.interpolateCubehelixLong);
     var M = midplaneVolumes[0].length, N = 96;
-    var xGridSize = cobaltWidth/M, yGridSize = cobaltHeight/N*cobaltYScale;
+    var xGridSize = cobaltWidth/M * (x.domain()[1].getTime()-x.domain()[0].getTime())/query.tg, 
+        yGridSize = cobaltHeight/N*cobaltYScale;
 
     ctx.globalAlpha = 1;
     for (var i=0; i<N; i++) {
