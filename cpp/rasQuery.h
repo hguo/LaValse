@@ -140,6 +140,7 @@ struct Query {
       if (c[0]) {
         uint32_t t = e.aggregateTime(T0, tg);
         if (/*t>=0 &&*/ t<results.nTimeSlots) {
+          if (e.midplane < nMidplanes) add1(results.midplaneVolumes[e.midplane*nMidplanes+t]); // midplane volume
           switch (volumeBy) {
 #if 0
           case VAR_NONE: add1(results.timeVolumes[t]); break;
@@ -263,6 +264,9 @@ QueryResults::QueryResults(const Query& q)
   memset(timeVolumes, 0, nTimeSlots*nVolumes*4);
   // memset(timeVolumesRecID, 0, nslots*nvolumes*MAX_EVENTS_PER_SLOT*4);
 
+  midplaneVolumes = (uint32_t*)malloc(nTimeSlots*nMidplanes*4);
+  memset(midplaneVolumes, 0, nTimeSlots*nMidplanes*4);
+
   nOverviewSlots = (q.O1 - q.O0) / q.og;
   overviewVolume = (uint32_t*)malloc(nOverviewSlots*4);
   memset(overviewVolume, 0, nOverviewSlots*4);
@@ -287,6 +291,7 @@ QueryResults::~QueryResults()
   free(timeVolumes);
   free(timeVolumesRecID);
   free(overviewVolume);
+  free(midplaneVolumes);
   free(location);
   free(locationRecID);
 }
