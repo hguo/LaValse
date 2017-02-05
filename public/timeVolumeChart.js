@@ -498,7 +498,8 @@ function timeVolumeChart(geom) {
     var ctx = cobaltCanvas.node().getContext("2d");
     var W = cobaltCanvas.node().width, H = cobaltCanvas.node().height;
     ctx.clearRect(0, 0, W, H);
-    
+  
+    volumes.splice(0, 1); // the first row is for ``all others''
     var max = d3.max(volumes, function(d) {return d3.max(d, function(dd) {return dd;});});
     var color = d3.scaleLog()
       .clamp(true)

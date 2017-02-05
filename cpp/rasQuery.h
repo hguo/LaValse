@@ -140,7 +140,7 @@ struct Query {
       if (c[0]) {
         uint32_t t = e.aggregateTime(T0, tg);
         if (/*t>=0 &&*/ t<results.nTimeSlots) {
-          if (e.midplane < nMidplanes) add1(results.midplaneVolumes[e.midplane*nMidplanes+t]); // midplane volume
+          if (e.midplane < nMidplanes) add1(results.midplaneVolumes[e.midplane*results.nTimeSlots+t]); // midplane volume
           switch (volumeBy) {
 #if 0
           case VAR_NONE: add1(results.timeVolumes[t]); break;

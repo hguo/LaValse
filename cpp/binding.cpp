@@ -242,7 +242,7 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
   for (uint32_t mp=0; mp<nMidplanes; mp++) {
     Local<Array> jMidplaneVolume = Array::New(isolate);
     for (uint32_t j=0; j<results.nTimeSlots; j++) {
-      jMidplaneVolume->Set(Number::New(isolate, j), Number::New(isolate, results.midplaneVolumes[mp*nMidplanes+j]));
+      jMidplaneVolume->Set(Number::New(isolate, j), Number::New(isolate, results.midplaneVolumes[mp*results.nTimeSlots+j]));
     }
     jMidplaneVolumes->Set(Number::New(isolate, mp), jMidplaneVolume);
   }

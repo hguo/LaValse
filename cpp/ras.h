@@ -70,7 +70,7 @@ enum {TIME_SECOND = 1000L, TIME_MINUTE = 60000L, TIME_HOUR = 3600000L, TIME_DAY 
 
 static const uint32_t nvolumes[] = {1, NUM_MSGID, NUM_COMP, NUM_LOCTYPE, NUM_CAT, NUM_SEV};
 static const uint32_t nlocations[] = {127603, 8515, 1987, 295, 55}; // L0-->L4
-static const int nUsers = 510, nProjs = 223, nMidplanes = 96;
+static const int nUsers = 510, nProjs = 223, nMidplanes = 97;
 
 static const uint16_t eventTable[][5] = {
   {0, COMP_CNK, CAT_Software_Error, SEV_FATAL, 416},
