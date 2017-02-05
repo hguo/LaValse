@@ -245,7 +245,7 @@ function timeVolumeChart(geom) {
     yLinearReverse.rangeRound([0, volumeHeight]);
     YLog.rangeRound([overviewHeight, 0]);
     
-    yCobalt.rangeRound([0, cobaltHeight]);
+    yCobalt.range([0, cobaltHeight]);
     yCobalt0.range([0, cobaltHeight]);
 
     svgVolume.select(".axis-x")
@@ -480,6 +480,36 @@ function timeVolumeChart(geom) {
     }
   }
 
+  this.updateMidplaneVolumes = function(volumes) {
+    return; 
+    var max = d3.max(volumes, function(d) {return d3.max(d, function(dd) {return dd;});});
+    var color = d3.scaleLog()
+      .clamp(true)
+      .domain([1, max])
+      .range(["white", "steelblue"])
+      .interpolate(d3.interpolateCubehelixLong);
+
+    svgCobaltContent.selectAll(".mpvg").remove();
+    svgCobaltContent.selectAll(".mpvg")
+      .data(volumes).enter()
+      .append("g")
+      .attr("class", "mpvg")
+      .style("transform", function(d, i) {
+        var scale = "scale(1," + cobaltYScale*cobaltHeight/96 + ")";
+        var translate = "translate(0px," + yCobalt(i) + "px)";
+        return translate + scale;
+      })
+      .selectAll(".mpv")
+      .data(function(d) {return d;}).enter()
+      .append("rect")
+      .attr("class", "mpv")
+      .attr("x", function(d, i) {return x(query.T0 + query.tg * i);})
+      .attr("y", 0)
+      .attr("width", 2) // TODO
+      .attr("height", 1)
+      .attr("fill", function(d) {return color(d);});
+  }
+
   this.updateCobaltData = function(cobaltJobs) {
     svgCobaltContent.selectAll(".cobalt").remove();
     var cobalt = svgCobaltContent.selectAll(".cobalt")
@@ -564,9 +594,9 @@ function timeVolumeChart(geom) {
         .data(cobaltJob.components).enter()
         .append("rect")
         .attr("class", "cobaltBox")
-        .style("stroke", "none")
+        .style("vector-effect", "non-scaling-stroke")
         .style("fill", cobaltJob.color)
-        .style("opacity", "0.6")
+        .style("opacity", "0.5")
         .attr("x", 0)
         .attr("y", function(d) {return d[0];}) 
         .attr("width", 1)
@@ -681,6 +711,12 @@ function timeVolumeChart(geom) {
       .style("transform", jobTransform);
     svgCobaltContent.selectAll(".maintenance")
       .style("transform", jobTransform);
+    svgCobaltContent.selectAll(".mpvg")
+      .style("transform", function(d, i) {
+        var scale = "scale(1," + cobaltYScale*cobaltHeight/96 + ")";
+        var translate = "translate(0px," + yCobalt(i) + "px)";
+        return translate + scale;
+      });
   }
 
   var volumeZoomTimer = d3.timer(function() {volumeZoomTimer.stop()});
@@ -715,6 +751,14 @@ function timeVolumeChart(geom) {
       .style("transform", jobTransform);
     svgVolume.selectAll(".maintenance")
       .style("transform", jobTransformX);
+    svgCobaltContent.selectAll(".mpvg")
+      .style("transform", function(d, i) {
+        var scale = "scale(1," + cobaltYScale*cobaltHeight/96 + ")";
+        var translate = "translate(0px," + yCobalt(i) + "px)";
+        return translate + scale;
+      })
+      .selectAll(".mpv")
+      .attr("x", function(d, i) {return x(query.T0 + query.tg * i);});
 
     svgVolume.select(".timeLabelLeft")
       .text(d3.isoFormat(x.domain()[0]));

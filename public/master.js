@@ -166,6 +166,7 @@ function init() {
     timeVolumeChart = new timeVolumeChart(geom);
     timeVolumeChart.updateVolume(d.timeVolumes);
     timeVolumeChart.updateOverviewVolume(d.overviewVolume);
+    timeVolumeChart.updateMidplaneVolumes(d.midplaneVolumes);
     
     machineView = new machineView();
     machineView.updateData(d.location, histogramToArray(d.location));
@@ -232,6 +233,7 @@ function refresh() {
     locationTypeChart.updateData(histogramToArray(d.locationType));
     timeVolumeChart.updateVolume(d.timeVolumes);
     timeVolumeChart.updateOverviewVolume(d.overviewVolume);
+    timeVolumeChart.updateMidplaneVolumes(d.midplaneVolumes);
     machineView.updateData(d.location, histogramToArray(d.location));
     
     treeMapView.updateData(buildMessageIdHierarchy(query.volumeBy, d.msgID));
