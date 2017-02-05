@@ -8,6 +8,9 @@ function timeVolumeChart(geom) {
   var cobaltWidth, volumeWidth, overviewWidth;
   var cobaltHeight, volumeHeight, overviewHeight;
   var useLogScale = true;
+
+  var midplaneVolumes = [];
+  var midplaneVolumeMax = 1;
   
   var cobaltJobHighlighted = false;
   var cobaltYTranslate = 0, cobaltYScale = 1;
@@ -494,25 +497,23 @@ function timeVolumeChart(geom) {
     }
   }
 
-  this.updateMidplaneVolumes = function(volumes) {
+  function drawMidplaneVolumes() {
     var ctx = cobaltCanvas.node().getContext("2d");
     var W = cobaltCanvas.node().width, H = cobaltCanvas.node().height;
     ctx.clearRect(0, 0, W, H);
   
-    volumes.splice(0, 1); // the first row is for ``all others''
-    var max = d3.max(volumes, function(d) {return d3.max(d, function(dd) {return dd;});});
     var color = d3.scaleLog()
       .clamp(true)
-      .domain([1, max])
+      .domain([1, midplaneVolumeMax])
       .range(["white", "steelblue"])
       .interpolate(d3.interpolateCubehelixLong);
-    var M = volumes[0].length, N = 96;
-    var xGridSize = cobaltWidth/M, yGridSize = cobaltHeight/N;
+    var M = midplaneVolumes[0].length, N = 96;
+    var xGridSize = cobaltWidth/M, yGridSize = cobaltHeight/N*cobaltYScale;
 
     ctx.globalAlpha = 1;
     for (var i=0; i<N; i++) {
       for (var j=0; j<M; j++) {
-        ctx.fillStyle = color(volumes[i][j]);
+        ctx.fillStyle = color(midplaneVolumes[i][j]);
         ctx.fillRect(
             x(query.T0 + query.tg * j),
             yCobalt(i), 
@@ -520,8 +521,17 @@ function timeVolumeChart(geom) {
             yGridSize);
       }
     }
+
+  }
+
+  this.updateMidplaneVolumes = function(volumes) {
+    volumes.splice(0, 1); // the first row is for ``all others''
+    midplaneVolumes = volumes;
+    midplaneVolumeMax = d3.max(midplaneVolumes, function(d) {return d3.max(d, function(dd) {return dd;});});
+    drawMidplaneVolumes();
     return;
 
+    // legacy impl with svg
     svgCobaltContent.selectAll(".mpvg").remove();
     svgCobaltContent.selectAll(".mpvg")
       .data(volumes).enter()
@@ -544,7 +554,6 @@ function timeVolumeChart(geom) {
   }
 
   this.updateCobaltData = function(cobaltJobs) {
-    return; 
     svgCobaltContent.selectAll(".cobalt").remove();
     var cobalt = svgCobaltContent.selectAll(".cobalt")
       .data(cobaltJobs).enter()
@@ -732,6 +741,7 @@ function timeVolumeChart(geom) {
 
   function cobaltZoomed() {
     removeTooltips();
+    drawMidplaneVolumes();
     
     var t = d3.event.transform;
     cobaltYScale = t.k;
@@ -760,6 +770,7 @@ function timeVolumeChart(geom) {
   function volumeZoomed() {
     if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
     removeTooltips();
+    drawMidplaneVolumes();
 
     var line = useLogScale ? lineLog : lineLinear;
    
