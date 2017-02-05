@@ -5,6 +5,7 @@ function timeVolumeChart(geom) {
 
   var width, height; 
   var cobaltTop, volumeTop, overviewTop;
+  var cobaltWidth, volumeWidth, overviewWidth;
   var cobaltHeight, volumeHeight, overviewHeight;
   var useLogScale = true;
   
@@ -16,6 +17,10 @@ function timeVolumeChart(geom) {
 
   var cobaltZoom = d3.zoom()
     .on("zoom", cobaltZoomed);
+
+  var cobaltCanvas = d3.select("body")
+    .append("canvas")
+    .style("position", "absolute");
   
   var svg = d3.select("body")
     .append("svg")
@@ -186,7 +191,7 @@ function timeVolumeChart(geom) {
 
     width = geom.W - margin.left - margin.right,
     height = geom.H - margin.top - margin.bottom;
-   
+
     const cobaltRatio = 0.4, volumeRatio = 0.4, overviewRatio = 0.2;
     const padding = 20;
 
@@ -194,9 +199,18 @@ function timeVolumeChart(geom) {
     volumeTop = cobaltRatio * height + padding;
     overviewTop = (cobaltRatio + volumeRatio) * height + padding;
     
+    cobaltWidth = width;
     cobaltHeight = cobaltRatio * height;
     volumeHeight = volumeRatio * height - padding;
     overviewHeight = overviewRatio * height - padding;
+
+    cobaltCanvas
+      .style("left", geom.L + margin.left)
+      .style("top", geom.T + margin.top + cobaltTop)
+      .attr("width", width)
+      .attr("height", cobaltHeight);
+    var ctx = cobaltCanvas.node().getContext("2d");
+    adjustCanvasResolution(cobaltCanvas.node(), ctx);
 
     volumeZoom.scaleExtent([1, 100000000])
       .translateExtent([[0, volumeTop], [width, volumeHeight]])
@@ -481,13 +495,31 @@ function timeVolumeChart(geom) {
   }
 
   this.updateMidplaneVolumes = function(volumes) {
-    return; 
+    var ctx = cobaltCanvas.node().getContext("2d");
+    var W = cobaltCanvas.node().width, H = cobaltCanvas.node().height;
+    ctx.clearRect(0, 0, W, H);
+    
     var max = d3.max(volumes, function(d) {return d3.max(d, function(dd) {return dd;});});
     var color = d3.scaleLog()
       .clamp(true)
       .domain([1, max])
       .range(["white", "steelblue"])
       .interpolate(d3.interpolateCubehelixLong);
+    var M = volumes[0].length, N = 96;
+    var xGridSize = cobaltWidth/M, yGridSize = cobaltHeight/N;
+
+    ctx.globalAlpha = 1;
+    for (var i=0; i<N; i++) {
+      for (var j=0; j<M; j++) {
+        ctx.fillStyle = color(volumes[i][j]);
+        ctx.fillRect(
+            x(query.T0 + query.tg * j),
+            yCobalt(i), 
+            xGridSize, 
+            yGridSize);
+      }
+    }
+    return;
 
     svgCobaltContent.selectAll(".mpvg").remove();
     svgCobaltContent.selectAll(".mpvg")
@@ -511,6 +543,7 @@ function timeVolumeChart(geom) {
   }
 
   this.updateCobaltData = function(cobaltJobs) {
+    return; 
     svgCobaltContent.selectAll(".cobalt").remove();
     var cobalt = svgCobaltContent.selectAll(".cobalt")
       .data(cobaltJobs).enter()
@@ -596,7 +629,9 @@ function timeVolumeChart(geom) {
         .attr("class", "cobaltBox")
         .style("vector-effect", "non-scaling-stroke")
         .style("fill", cobaltJob.color)
-        .style("opacity", "0.5")
+        // .style("stroke", cobaltJob.color)
+        .style("stroke", "none")
+        .style("opacity", "0.6")
         .attr("x", 0)
         .attr("y", function(d) {return d[0];}) 
         .attr("width", 1)

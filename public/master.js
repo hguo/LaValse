@@ -181,18 +181,18 @@ function init() {
     treeMapView.updateData(buildMessageIdHierarchy(query.volumeBy, d.msgID));
 
     updateQueryInfo(d);
+   
+    // load maintenance time
+    d3.csv("/maintenance.csv", function(data) {
+      data.forEach(function(d) {
+        d.startTime = new Date(d.startTime);
+        d.endTime = new Date(d.endTime);
+      });
+      timeVolumeChart.updateMaintenanceData(data);
+    });
   });
 
   refreshCobaltLog({T0: query.T0, T1: query.T1});
- 
-  // load maintenance time
-  d3.csv("/maintenance.csv", function(data) {
-    data.forEach(function(d) {
-      d.startTime = new Date(d.startTime);
-      d.endTime = new Date(d.endTime);
-    });
-    timeVolumeChart.updateMaintenanceData(data);
-  });
 
   $("#volumeBy").change(function() {
     query.volumeBy = $(this).val();
@@ -379,4 +379,41 @@ function ceilPow(v) {
 
 function removeTooltips() {
   $(".ui-tooltip").remove();
+}
+
+function globalCategoryColor(volumeBy, d) {
+  var color = d3.scale.category20();
+  if (volumeBy == "severity") {
+    switch (d) {
+      case "FATAL": return "red";
+      case "WARN": return "yellow";
+      default: return "green";
+    }
+  } else {
+    return color(d);
+  }
+}
+
+function adjustCanvasResolution(canvas, ctx) {
+  var devicePixelRatio = window.devicePixelRatio || 1, 
+      backingStoreRatio = ctx.webkitBackingStorePixelRatio ||
+                          ctx.mozBackingStorePixelRatio ||
+                          ctx.msBackingStorePixelRatio ||
+                          ctx.oBackingStorePixelRatio ||
+                          ctx.backingStorePixelRatio || 1;
+
+  var ratio = devicePixelRatio / backingStoreRatio;
+
+  if (devicePixelRatio !== backingStoreRatio) {
+    var oldWidth = canvas.width;
+    var oldHeight = canvas.height;
+
+    canvas.width = oldWidth * ratio;
+    canvas.height = oldHeight * ratio;
+
+    canvas.style.width = oldWidth + 'px';
+    canvas.style.height = oldHeight + 'px';
+
+    ctx.scale(ratio, ratio);
+  }
 }
