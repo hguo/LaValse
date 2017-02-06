@@ -116,6 +116,7 @@ $(function() {
     }
   });
   init();
+  initControlPanel();
 
   window.addEventListener("resize", function() {
     return; // TODO
@@ -416,4 +417,40 @@ function adjustCanvasResolution(canvas, ctx) {
 
     ctx.scale(ratio, ratio);
   }
+}
+
+function initControlPanel() {
+  return; // WIP
+
+  var text = new function() {
+    this.reset = function () {
+    };
+    this.scale = "auto";
+    this.volumeBy = "all";
+    this.matched = 0;
+    this.queryTime = 0;
+    this.showJobs = true;
+    this.showHeatMap = true;
+  };
+  var gui = new dat.GUI();
+  
+  var f1 = gui.addFolder("options");
+  f1.add(text, "scale", ["auto", "log", "linear"]).onChange(function(val) {
+    console.log(val);
+  });
+  f1.add(text, "volumeBy", ["all", "severity", "component", "category", "locationType"]).onChange(function(val) {
+    console.log(val);
+  });
+  f1.add(text, "showJobs").onChange(function(val) {
+    console.log(val);
+  });
+  f1.add(text, "showHeatMap").onChange(function(val) {
+    console.log(val);
+  });
+  f1.open();
+
+  var f2 = gui.addFolder("stats");
+  f2.add(text, "matched");
+  f2.add(text, "queryTime");
+  f2.open();
 }
