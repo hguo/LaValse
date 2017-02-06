@@ -529,6 +529,7 @@ function timeVolumeChart(geom) {
     volumes.splice(0, 1); // the first row is for ``all others''
     midplaneVolumes = volumes;
     midplaneVolumeMax = d3.max(midplaneVolumes, function(d) {return d3.max(d, function(dd) {return dd;});});
+    midplaneVolumeMax = Math.max(2, midplaneVolumeMax);
     drawMidplaneVolumes();
     return;
 
@@ -639,8 +640,8 @@ function timeVolumeChart(geom) {
         .append("rect")
         .attr("class", "cobaltBox")
         .style("vector-effect", "non-scaling-stroke")
-        // .style("fill", cobaltJob.color)
-        .style("fill", "white")
+        .style("fill", cobaltJob.color)
+        // .style("fill", "white")
         .style("fill-opacity", "0.1")
         .style("stroke", cobaltJob.color)
         // .style("stroke", "none")
