@@ -161,13 +161,20 @@ function machineView() {
 
   function renderRects() {
     var colorScale = useLogScale ? colorScaleLog : colorScaleLinear;
+   
+    var box = {
+      x: -currentTransform.x / currentTransform.k,
+      y: -currentTransform.y / currentTransform.k,
+      w: W / currentTransform.k,
+      h: H / currentTransform.k
+    };
     
     ctx.clearRect(0, 0, W, H);
     ctx.save();
     ctx.translate(currentTransform.x, currentTransform.y);
     ctx.scale(currentTransform.k, currentTransform.k);
     rects.forEach(function(d) {
-      if (d.lod >= query.LOD) {
+      if (d.lod >= query.LOD && aabb.collide(box, d)) {
         if (d.id in histogram) ctx.fillStyle = colorScale(histogram[d.id]); // TODO
         else ctx.fillStyle = "white";
 
