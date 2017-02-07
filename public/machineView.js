@@ -145,6 +145,9 @@ function machineView() {
   var highlightedElements = {};
   var highlightColor;
   var currentTransform = {x: 0, y: 0, k: 1};
+  
+  var autoLOD = true;
+  var previousLOD = 2, currentLOD = 2;
 
   d3.csv("/machine.csv", function(err, data) {
     data.forEach(function(d) {
@@ -174,7 +177,7 @@ function machineView() {
     ctx.translate(currentTransform.x, currentTransform.y);
     ctx.scale(currentTransform.k, currentTransform.k);
     rects.forEach(function(d) {
-      if (d.lod >= query.LOD && aabb.collide(box, d)) {
+      if (d.lod >= currentLOD && aabb.collide(box, d)) {
         if (d.id in histogram) ctx.fillStyle = colorScale(histogram[d.id]); // TODO
         else ctx.fillStyle = "white";
 
@@ -202,10 +205,28 @@ function machineView() {
     ctx.restore();
   }
 
+  function setLOD(LOD) {
+    currentLOD = LOD;
+    if (previousLOD != currentLOD) {
+      previousLOD = currentLOD;
+      query.LOD = currentLOD;
+      renderRects();
+      refresh();
+    }
+  }
+  this.setLOD = setLOD;
+
   function zoomed() {
     var t = d3.event.transform;
     currentTransform = {k: t.k, x: t.x, y: t.y};
-    renderRects();
+
+    if (autoLOD) {
+      if (t.k >= 8) setLOD(0);
+      else if (t.k >= 3) setLOD(1);
+      else setLOD(2);
+      renderRects();
+    } else
+      renderRects();
   }
 
   function brushed() {
@@ -269,6 +290,10 @@ function machineView() {
     legendSvg.select(".axis")
       .transition()
       .call(legendAxis);
+  }
+
+  this.toggleAutoLOD = function(b) {
+    autoLOD = b;
   }
 
   this.toggleLogScale = function() {

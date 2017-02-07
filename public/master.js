@@ -416,7 +416,7 @@ function initControlPanel() {
     };
     this.scale = "auto";
     this.volumeBy = "all";
-    this.LOD = "2";
+    this.LOD = "auto";
     this.matched = 0;
     this.queryTime = 0;
     this.showJobs = true;
@@ -432,9 +432,13 @@ function initControlPanel() {
   f1.add(text, "scale", ["auto", "log", "linear"]).onChange(function(val) {
     toggleLogScale(); // FIXME
   });
-  f1.add(text, "LOD", ["0", "1", "2", "3", "4"]).onChange(function(val) {
-    query.LOD = +val;
-    refresh();
+  f1.add(text, "LOD", ["auto", "0", "1", "2", "3", "4"]).onChange(function(val) {
+    if (val == "auto") {
+      machineView.toggleAutoLOD(true);
+    } else {
+      machineView.toggleAutoLOD(false);
+      machineView.setLOD(+val);
+    }
   });
   f1.add(text, "showJobs").onChange(function(val) {
     timeVolumeChart.toggleJobs(val);
