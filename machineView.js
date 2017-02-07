@@ -15,8 +15,8 @@ function machineView() {
   const nodeBoardW = 7.5, nodeBoardH = 9;
 
   const computeCardGroupL = 0, computeCardGroupT = 1.5;
-  // const computeCardW = 0.9375, computeCardH = 0.9375;
-  const computeCardW = 0.9375, computeCardH = 1.875;
+  const computeCardW = 0.9375, computeCardH = 0.9375;
+  // const computeCardW = 0.9375, computeCardH = 1.875;
 
   const linkModuleGroupL = 0, linkModuleGroupT = 5.25;
   const linkModuleW = 1.25, linkModuleH = 1.25;
@@ -223,6 +223,8 @@ function machineView() {
         // printElement(nodeBoardStr, 2, transformer.zero(), nodeBoardW, nodeBoardH, 0.1, 0.5, 1.25, 1, "N"+mira.pad(nodeBoardID, 10, 2));
         printElement(nodeBoardStr, 2, transformer.zero(), nodeBoardW, nodeBoardH, 0.1, 0.5, 1.25, 0, "N"+mira.pad(nodeBoardID, 10, 2));
         renderComputeCards(row, col, mp, nodeBoardID);
+        renderLinkModules(row, col, mp, nodeBoardID);
+        renderOpticalModules(row, col, mp, nodeBoardID);
         renderDCAs(row, col, mp, nodeBoardID);
         transformer.pop();
       }
@@ -238,8 +240,38 @@ function machineView() {
         var computeCardStr = mira.computeCard2str(row, col, mp, nb, computeCardID);
 
         transformer.push([q*computeCardW, p*computeCardH]);
-        // printElement(computeCardStr, 0, transformer.zero(), computeCardW, computeCardH, 0.1, 0.25, 0.4, 0.25, "J"+mira.pad(computeCardID, 10, 2));
-        printElement(computeCardStr, 0, transformer.zero(), computeCardW, computeCardH, 0, 0.25, 0.4, 0, "J"+mira.pad(computeCardID, 10, 2));
+        printElement(computeCardStr, 0, transformer.zero(), computeCardW, computeCardH, 0.05, 0.25, 0.4, 0.25, "J"+mira.pad(computeCardID, 10, 2));
+        transformer.pop();
+      }
+    }
+    transformer.pop();
+  }
+  
+  function renderLinkModules(row, col, mp, nb) {
+    transformer.push([linkModuleGroupL, linkModuleGroupT]);
+
+    for (p=0; p<3; p++) {
+      for (q=0; q<3; q++) {
+        var linkModuleID = p*3+q;
+        var linkModuleStr = mira.linkModule2str(row, col, mp, nb, linkModuleID);
+
+        transformer.push([q*linkModuleW, p*linkModuleH]);
+        printElement(linkModuleStr, 0, transformer.zero(), linkModuleW, linkModuleH, 0.05, 0.45, 0.6, 0.25, "U"+linkModuleID);
+        transformer.pop();
+      }
+    }
+    transformer.pop();
+  }
+
+  function renderOpticalModules(row, col, mp, nb) {
+    transformer.push([opticalModuleGroupL, opticalModuleGroupT]);
+
+    for (p=0; p<6; p++) {
+      for (q=0; q<6; q++) {
+        var opticalModuleID = p*6+q;
+        var opticalModuleStr = mira.opticalModule2str(row, col, mp, nb, opticalModuleID);
+        transformer.push([q*opticalModuleW, p*opticalModuleH]);
+        printElement(opticalModuleStr, 0, transformer.zero(), opticalModuleW, opticalModuleH, 0.05, 0.05, 0.4, 0.25, "O"+mira.pad(opticalModuleID, 10, 2));
         transformer.pop();
       }
     }
@@ -256,12 +288,28 @@ function machineView() {
   function renderBulkPowerSupply(row, col) {
     transformer.push([bulkPowerSupplyGroupL, bulkPowerSupplyGroupT]);
 
-    for (p=0; p<2; p++) {
-      for (q=0; q<2; q++) {
+    for (var p=0; p<2; p++) {
+      for (var q=0; q<2; q++) {
         var bulkPowerSupplyID = p*2+q;
         var bulkPowerSupplyStr = mira.bulkPowerSupply2str(row, col, bulkPowerSupplyID);
         transformer.push([q*bulkPowerSupplyW, p*bulkPowerSupplyH]);
         printElement(bulkPowerSupplyStr, 1, transformer.zero(), bulkPowerSupplyW, bulkPowerSupplyH, 0.2, 0.9, 1.8, 1, "B"+bulkPowerSupplyID);
+        renderPowerModules(row, col, bulkPowerSupplyID);
+        transformer.pop();
+      }
+    }
+    transformer.pop();
+  }
+  
+  function renderPowerModules(row, col, bps) {
+    transformer.push([powerModuleGroupL, powerModuleGroupT]);
+
+    for (var p=0; p<3; p++) {
+      for (var q=0; q<3; q++) {
+        var powerModuleID = p*3+q;
+        var powerModuleStr = mira.powerModule2str(row, col, bps, powerModuleID);
+        transformer.push([q*powerModuleW, p*powerModuleH]);
+        printElement(powerModuleStr, 0, transformer.zero(), powerModuleW, powerModuleH, 0.05, 0.05, 0.4, 0.25, "P"+powerModuleID);
         transformer.pop();
       }
     }
@@ -294,86 +342,6 @@ function machineView() {
     transformer.pop();
   }
 
-
-  function renderLinkModules(nodeBoard) {
-    var row = +nodeBoard.attr("_row");
-    var col = +nodeBoard.attr("_col");
-    var mp = +nodeBoard.attr("_mp");
-    var nb = +nodeBoard.attr("_nb");
-
-    var linkModuleGroup = nodeBoard.append("g")
-      .attr("transform", "translate(" + linkModuleGroupL + "," + linkModuleGroupT + ")")
-      .attr("class", "L0");
-
-    for (p=0; p<3; p++) {
-      for (q=0; q<3; q++) {
-        var linkModuleID = p*3+q;
-        var linkModuleStr = linkModule2str(row, col, mp, nb, linkModuleID);
-        var linkModule = linkModuleGroup.append("g")
-          .attr("id", linkModuleStr)
-          .attr("transform", "translate(" + q*linkModuleW + "," + p*linkModuleH + ")")
-          .attr("class", "RMNU");
-        linkModule.append("rect")
-          .attr("class", "c RMNUBox")
-          .attr("id", linkModuleStr)
-          .attr("width", linkModuleW)
-          .attr("height", linkModuleH);
-      }
-    }
-  }
-
-  function renderOpticalModules(nodeBoard) {
-    var row = +nodeBoard.attr("_row");
-    var col = +nodeBoard.attr("_col");
-    var mp = +nodeBoard.attr("_mp");
-    var nb = +nodeBoard.attr("_nb");
-
-    var opticalModuleGroup = nodeBoard.append("g")
-      .attr("transform", "translate(" + opticalModuleGroupL + "," + opticalModuleGroupT + ")")
-      .attr("class", "L0");
-
-    for (p=0; p<6; p++) {
-      for (q=0; q<6; q++) {
-        var opticalModuleID = p*6+q;
-        var opticalModuleStr = opticalModule2str(row, col, mp, nb, opticalModuleID);
-        var opticalModule = opticalModuleGroup.append("g")
-          .attr("id", opticalModuleStr)
-          .attr("transform", "translate(" + q*opticalModuleW + "," + p*opticalModuleH + ")")
-          .attr("class", "RMNO");
-        opticalModule.append("rect")
-          .attr("class", "c RMNOBox")
-          .attr("id", opticalModuleStr)
-          .attr("width", opticalModuleW)
-          .attr("height", opticalModuleH);
-      }
-    }
-  }
-
-  function renderPowerModules(bulkPowerSupply) {
-    var row = +bulkPowerSupply.attr("_row");
-    var col = +bulkPowerSupply.attr("_col");
-    var bps = +bulkPowerSupply.attr("_bps");
-
-    var powerModuleGroup = bulkPowerSupply.append("g")
-      .attr("transform", "translate(" + powerModuleGroupL + "," + powerModuleGroupT + ")")
-      .attr("class", "L0");
-
-    for (p=0; p<3; p++) {
-      for (q=0; q<3; q++) {
-        var powerModuleID = p*3+q;
-        var powerModuleStr = powerModule2str(row, col, bps, powerModuleID);
-        var powerModule = powerModuleGroup.append("g")
-          .attr("id", powerModuleStr)
-          .attr("transform", "translate(" + q*powerModuleW + "," + p*powerModuleH + ")")
-          .attr("class", "RMND L0");
-        powerModule.append("rect")
-          .attr("class", "c RMNDBox")
-          .attr("id", powerModuleStr)
-          .attr("width", powerModuleW)
-          .attr("height", powerModuleH);
-      }
-    }
-  }
 }
 
 machineView();
