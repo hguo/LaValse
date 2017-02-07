@@ -195,11 +195,6 @@ function init() {
 
   refreshCobaltLog({T0: query.T0, T1: query.T1});
 
-  $("#volumeBy").change(function() {
-    query.volumeBy = $(this).val();
-    $(this).blur();
-    refresh();
-  })
   $("#toggleLogScale").on("click", toggleLogScale); 
 
   var defaultQuery = Object.assign({}, query);
@@ -435,7 +430,8 @@ function initControlPanel() {
     console.log(val);
   });
   f1.add(text, "volumeBy", ["all", "severity", "component", "category", "locationType"]).onChange(function(val) {
-    console.log(val);
+    query.volumeBy = val;
+    refresh();
   });
   f1.add(text, "showJobs").onChange(function(val) {
     timeVolumeChart.toggleJobs(val);
