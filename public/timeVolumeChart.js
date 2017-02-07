@@ -8,6 +8,7 @@ function timeVolumeChart(geom) {
   var cobaltWidth, volumeWidth, overviewWidth;
   var cobaltHeight, volumeHeight, overviewHeight;
   var useLogScale = true;
+  var toggleJobs = true;
 
   var midplaneVolumes = [];
   var midplaneVolumeMax = 1;
@@ -595,6 +596,9 @@ function timeVolumeChart(geom) {
         }
       });
 
+    if (!toggleJobs) 
+      cobalt.style("display", "none");
+
     cobalt.append("g")
       .attr("class", "backendGroup")
       .style("display", "none");
@@ -665,6 +669,18 @@ function timeVolumeChart(geom) {
     svgVolume.select(".axis-y")
       .transition()
       .call(yAxis.scale(y));
+  }
+
+  this.toggleJobs = function(b) {
+    toggleJobs = b;
+    if (b) svgCobaltContent.selectAll(".cobalt").style("display", "block");
+    else svgCobaltContent.selectAll(".cobalt").style("display", "none");
+  }
+
+  this.toggleHeatMap = function(b) {
+    toggleHeatMap = b;
+    if (b) cobaltCanvas.style("display", "block");
+    else cobaltCanvas.style("display", "none");
   }
 
   this.reset = function() {

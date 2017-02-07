@@ -418,8 +418,6 @@ function adjustCanvasResolution(canvas, ctx) {
 }
 
 function initControlPanel() {
-  return; // WIP
-
   var text = new function() {
     this.reset = function () {
     };
@@ -440,15 +438,16 @@ function initControlPanel() {
     console.log(val);
   });
   f1.add(text, "showJobs").onChange(function(val) {
-    console.log(val);
+    timeVolumeChart.toggleJobs(val);
   });
   f1.add(text, "showHeatMap").onChange(function(val) {
-    console.log(val);
+    timeVolumeChart.toggleHeatMap(val);
   });
   f1.open();
 
+  /*
   var f2 = gui.addFolder("stats");
   f2.add(text, "matched");
   f2.add(text, "queryTime");
-  f2.open();
+  f2.open();*/
 }
