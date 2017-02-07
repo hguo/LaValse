@@ -619,6 +619,7 @@ function enumerateL4Locations() {
 
 var partitionParser = new function() {
   var cache = {};
+  var cacheList = {};
   var cacheComponents = {};
   
   this.init = function(data) { // init from pre-generated maps
@@ -641,7 +642,17 @@ var partitionParser = new function() {
       return result;
     }
   }
-  
+ 
+  this.list = function(str) {
+    if (str in cacheList) {
+      return cacheList[str];
+    } else {
+      var result = this.list1(str);
+      cacheList[str] = result;
+      return result;
+    }
+  }
+
   this.contour = function(str) {
     const N = 96;
     var array = this.parse(str);
@@ -697,6 +708,18 @@ var partitionParser = new function() {
     return results;
   }
 
+  this.list1 = function(str) {
+    var array = this.parse(str);
+    var L = [];
+    for (var i=0; i<96; i++) {
+      if (array[i]) {
+        var row = Math.floor(i/32), col = Math.floor(i/2)%16, mp = i%2;
+        L.push(midplane2str(row, col, mp));
+      }
+    }
+    return L;
+  }
+
   this.parse1 = function(str) {
     var substrings = str.split("-");
     var midplanes = new Array(96);
@@ -733,6 +756,13 @@ var partitionParser = new function() {
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
   module.exports = {
+    pad: pad,
+    rack2str: rack2str,
+    ioRack2str: ioRack2str,
+    ioDrawer2str: ioDrawer2str,
+    midplane2str: midplane2str,
+    nodeBoard2str: nodeBoard2str,
+    computeCard2str: computeCard2str,
     partitionParser: partitionParser,
     parseLocation: parseLocation,
     parseLocationType: parseLocationType,

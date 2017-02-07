@@ -105,7 +105,7 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
   if (query.top == 0) query.top = 10;
  
   query.LOD = input->Get(String::NewFromUtf8(isolate, "LOD"))->IntegerValue();
-  if (query.LOD == 0) query.LOD = 2;
+  // if (query.LOD == 0) query.LOD = 2;
 
   query.tg = input->Get(String::NewFromUtf8(isolate, "tg"))->IntegerValue();
   if (query.tg == 0) query.tg = ras::TIME_DAY;

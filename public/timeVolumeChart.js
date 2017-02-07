@@ -563,7 +563,7 @@ function timeVolumeChart(geom) {
       .attr("class", "cobalt")
       .attr("id", function(d, i) {return "cobalt" + d._id;})
       .on("mouseover", function(d) {
-        highlightBlock(d.machinePartition, d.color);
+        machineView.highlightBlock(d.machinePartition, d.color);
         requestBackendJobs(d._id);
         svgCobaltContent.select("#cobalt" + d._id)
           // .each(function(){ // bring to front
@@ -575,7 +575,7 @@ function timeVolumeChart(geom) {
           // .style("display", "block");
       })
       .on("mouseleave", function(d) {
-        highlightBlock("");
+        machineView.highlightBlock("");
         svgCobaltContent.select("#cobalt" + d._id)
           .select(".backendGroup")
           .style("display", "none");

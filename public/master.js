@@ -6,7 +6,7 @@ var query = {
   T1: 1451520000000, // 2015-12-31
   t0: 1420070400000, // 2015-01-01
   t1: 1451520000000, // 2015-12-31
-  tg: 27587368 // (t1 - t0) / width_of_time_chart // aggregation resolution
+  tg: 95301818 // (t1 - t0) / width_of_time_chart // aggregation resolution
 };
 var severityChart, componentChart, categoryChart, locationTypeChart, maintenanceChart,
     controlActionChart, timeVolumeChart, treeMapView;
@@ -223,8 +223,6 @@ function refresh() {
 
     if ("top" in d) refreshTops(d["top"]);
     if ("recIDs" in d) refreshRecIDs(d["recIDs"]);
-   
-    console.log(d.maintenance);
 
     severityChart.updateData(histogramToArray(d.severity));
     maintenanceChart.updateData(histogramToArray(d.maintenance));
