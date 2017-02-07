@@ -137,27 +137,27 @@ function init() {
 
     severityChart = new barChart(
         "severity", "#severityChart", histogramToArray(d.severity), severities,
-        {L: 0, T: 25, W: 120, H: 90});
+        {L: 0, T: 0, W: 120, H: 90});
     maintenanceChart = new barChart(
         "maintenance", "#maintenanceChart", histogramToArray(d.maintenance), maintenanceStates,
-        {L: 0, T: 115, W: 120, H: 65});
+        {L: 0, T: 90, W: 120, H: 65});
     controlActionChart = new barChart(
         "controlAction", "#controlActionChart", histogramToArray(d.controlAction), controlActions,
-        {L: 0, T: 180, W: 120, H: 135});
+        {L: 0, T: 155, W: 120, H: 135});
     componentChart = new barChart(
         "component", "#componentChart", histogramToArray(d.component), components,
-        {L: 120, T: 25, W: 120, H: 290});
+        {L: 120, T: 0, W: 120, H: 290});
     categoryChart = new barChart(
         "category", "#categoryChart", histogramToArray(d.category), categories,
-        {L: 0, T: 315, W: 120, H: 290});
+        {L: 0, T: 290, W: 120, H: 290});
     locationTypeChart = new barChart(
         "locationType", "#locationTypeChart", histogramToArray(d.locationType), locationTypes,
-        {L: 120, T: 315, W: 120, H: 290});
+        {L: 120, T: 290, W: 120, H: 290});
     treeMapView = new treeMapView(
         "#messageIdChart");
 
     const timeVolumeChartHeight = 300;
-    const geom = {L: 240, T: 330, W: 720, H: 300};
+    const geom = {L: 240, T: 315, W: 720, H: 300};
     /* const geom = {
       L: 0, 
       T: window.innerHeight - timeVolumeChartHeight,
@@ -194,8 +194,6 @@ function init() {
   });
 
   refreshCobaltLog({T0: query.T0, T1: query.T1});
-
-  $("#toggleLogScale").on("click", toggleLogScale); 
 
   var defaultQuery = Object.assign({}, query);
   $("#reset").on("click", function() {
@@ -418,6 +416,7 @@ function initControlPanel() {
     };
     this.scale = "auto";
     this.volumeBy = "all";
+    this.LOD = "2";
     this.matched = 0;
     this.queryTime = 0;
     this.showJobs = true;
@@ -426,11 +425,15 @@ function initControlPanel() {
   var gui = new dat.GUI();
   
   var f1 = gui.addFolder("options");
-  f1.add(text, "scale", ["auto", "log", "linear"]).onChange(function(val) {
-    console.log(val);
-  });
   f1.add(text, "volumeBy", ["all", "severity", "component", "category", "locationType"]).onChange(function(val) {
     query.volumeBy = val;
+    refresh();
+  });
+  f1.add(text, "scale", ["auto", "log", "linear"]).onChange(function(val) {
+    toggleLogScale(); // FIXME
+  });
+  f1.add(text, "LOD", ["0", "1", "2", "3", "4"]).onChange(function(val) {
+    query.LOD = +val;
     refresh();
   });
   f1.add(text, "showJobs").onChange(function(val) {

@@ -37,7 +37,7 @@ var AABB = {
 };
 
 function machineView() {
-  const L = 270, T = 25, W = 690, H = 306;
+  const L = 270, T = 10, W = 690, H = 306;
   const margin = {top: 0, right: 0, bottom: 0, left: 0},
         width = W - margin.left - margin.right,
         height = H - margin.top - margin.bottom;

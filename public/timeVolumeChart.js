@@ -9,6 +9,7 @@ function timeVolumeChart(geom) {
   var cobaltHeight, volumeHeight, overviewHeight;
   var useLogScale = true;
   var toggleJobs = true;
+  var toggleHeatMap = true;
 
   var midplaneVolumes = [];
   var midplaneVolumeMax = 1;
