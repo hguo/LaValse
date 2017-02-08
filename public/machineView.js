@@ -1,10 +1,23 @@
 var aabb = {
-  collide: function (a, b) { // x, y, w, h
+  collide: function(a, b) { // x, y, w, h
     return !(
       a.y > (b.y + b.h) || 
       (a.x + a.w) < b.x || 
       (a.y + a.h) < b.y ||
       a.x > (b.x + b.w)
+    );
+  }, 
+
+  inside: function(a, b) {
+    function top(a) {return a.y;}
+    function bottom(a) {return a.y+a.h;}
+    function left(a) {return a.x;}
+    function right(a) {return a.x+a.w;}
+    return (
+      ((top(b) <= top(a)) && (top(a) <= bottom(b))) &&
+      ((top(b) <= bottom(a)) && (bottom(a) <= bottom(b))) && 
+      ((left(b) <= left(a)) && (left(a) <= right(b))) && 
+      ((left(b) <= right(a)) && (right(a) <= right(b)))
     );
   }
 };
@@ -241,7 +254,7 @@ function machineView() {
       var matched = [];
       rects.forEach(function(d) {
         if (d.lod >= query.LOD) {
-          var b = aabb.collide(box, d);
+          var b = aabb.inside(d, box);
           if (b) {
             matched.push(d.id);
           }
