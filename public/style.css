@@ -24,7 +24,7 @@ svg text {
 }
 
 .chart {
-  position: absolute;
+  
 }
 
 #tabs {
@@ -247,3 +247,4 @@ svg text {
 .dg .c .slider:hover {
     background: #eee;
 }
+

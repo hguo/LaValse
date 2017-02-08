@@ -22,33 +22,6 @@ var aabb = {
   }
 };
 
-var AABB = {
-  collide: function (el1, el2) {
-    var rect1 = el1.getBoundingClientRect();
-    var rect2 = el2.getBoundingClientRect();
-
-    return !(
-      rect1.top > rect2.bottom ||
-      rect1.right < rect2.left ||
-      rect1.bottom < rect2.top ||
-      rect1.left > rect2.right
-    );
-  },
-
-  inside: function (el1, el2) {
-    var rect1 = el1.getBoundingClientRect();
-    var rect2 = el2.getBoundingClientRect();
-    console.log(el1, el2);
-
-    return (
-      ((rect2.top <= rect1.top) && (rect1.top <= rect2.bottom)) &&
-      ((rect2.top <= rect1.bottom) && (rect1.bottom <= rect2.bottom)) &&
-      ((rect2.left <= rect1.left) && (rect1.left <= rect2.right)) &&
-      ((rect2.left <= rect1.right) && (rect1.right <= rect2.right))
-    );
-  }
-};
-
 function machineView() {
   const L = 270, T = 10, W = 690, H = 306;
   const margin = {top: 0, right: 0, bottom: 0, left: 0},
@@ -71,33 +44,21 @@ function machineView() {
 
   var zoom = d3.zoom()
     .scaleExtent([1, 100])
-    .translateExtent([[0, 0], [W, H]])
-    .extent([[0, 0], [W, H]])
     .on("zoom", zoomed);
   
   var brush = d3.brush()
-    .extent([[0, 0], [W, H]])
     .on("end", brushed);
 
   var canvas = d3.select("#machineView")
     .append("canvas")
     .style("position", "absolute")
-    .style("left", L)
-    .style("top", T)
-    .attr("width", W)
-    .attr("height", H);
   var ctx = canvas.node().getContext("2d");
-  adjustCanvasResolution(canvas.node(), ctx);
   
-  var svg = d3.select("#machineView").append("svg")
+  var svg = d3.select("#machineView")
+    .append("svg")
     .attr("class", "chart")
     .attr("id", "machineViewSvg")
-    .style("left", L)
-    .style("top", T)
-    .attr("width", W)
-    .attr("height", H)
     .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
     .call(zoom);
   
   svg.append("g")
@@ -329,5 +290,24 @@ function machineView() {
     histogram = data;
     updateColorScale(data);
     renderRects();
+  }
+
+  this.resize = function(geom) {
+    zoom.translateExtent([[0, 0], [W, H]])
+      .extent([[0, 0], [W, H]]);
+    
+    brush.extent([[0, 0], [W, H]]);
+
+    canvas.style("left", L)
+      .style("top", T)
+      .attr("width", W)
+      .attr("height", H);
+    adjustCanvasResolution(canvas.node(), ctx);
+
+    d3.select("#machineViewSvg")
+      .style("left", L)
+      .style("top", T)
+      .attr("width", W)
+      .attr("height", H);
   }
 }

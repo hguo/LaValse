@@ -8,6 +8,7 @@ var query = {
   t1: 1451520000000, // 2015-12-31
   tg: 95301818 // (t1 - t0) / width_of_time_chart // aggregation resolution
 };
+
 var severityChart, componentChart, categoryChart, locationTypeChart, maintenanceChart,
     controlActionChart, timeVolumeChart, treeMapView;
 var machineView;
@@ -119,7 +120,6 @@ $(function() {
   initControlPanel();
 
   window.addEventListener("resize", function() {
-    return; // TODO
     const timeVolumeChartHeight = 300;
     timeVolumeChart.resize({
       L: 0, 
@@ -165,11 +165,18 @@ function init() {
       H: timeVolumeChartHeight
     }; */
     timeVolumeChart = new timeVolumeChart(geom);
+    timeVolumeChart.resize({
+      L: 0, 
+      T: window.innerHeight - 300,
+      W: window.innerWidth, 
+      H: 300
+    });
     timeVolumeChart.updateVolume(d.timeVolumes);
     timeVolumeChart.updateOverviewVolume(d.overviewVolume);
     timeVolumeChart.updateMidplaneVolumes(d.midplaneVolumes);
     
     machineView = new machineView();
+    machineView.resize({L: 0, T: 0, W: 300, H: 200});
     machineView.updateData(d.location, histogramToArray(d.location));
     $("#controlPanel").css("display", "block");
     $("#tableView").css("display", "block");
