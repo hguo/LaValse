@@ -17,6 +17,7 @@ var buildUserInfo = function(db, cb) {
         }
     ])
     .toArray(function(err, docs) {
+      console.log(docs); return;
       docs.forEach(function(d) {
         var array = mira.partitionParser.parse(d._id);
         var str = "";

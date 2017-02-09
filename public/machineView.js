@@ -235,7 +235,7 @@ function machineView() {
 
     if (autoLOD) {
       if (t.k >= 8) setLOD(0);
-      else if (t.k >= 3) setLOD(1);
+      // else if (t.k >= 3) setLOD(1);
       else setLOD(2);
       renderRects();
     } else
