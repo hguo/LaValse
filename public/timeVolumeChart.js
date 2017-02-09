@@ -25,11 +25,13 @@ function timeVolumeChart(id) {
 
   var cobaltCanvas = d3.select(id)
     .append("canvas")
-    .style("position", "fixed");
+    .style("position", "absolute");
 
   var svg = d3.select(id)
     .append("svg")
     .attr("id", "timeVolumeChartSvg")
+    .style("position", "fixed")
+    .style("z-index", 1)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -204,17 +206,14 @@ function timeVolumeChart(id) {
   };
 
   this.resize = function(geom) {
-    var svgRect = d3.select("#timeVolumeChart").node().getBoundingClientRect();
-    
-    $("#timeVolumeChartSvg").css({
-      top: geom.T, 
-      left: geom.L, 
-      width: geom.W, 
-      height: geom.H
-    });
+    d3.select("#timeVolumeChartSvg")
+      .style("top", geom.top)
+      .style("left", geom.left)
+      .attr("width", geom.width)
+      .attr("height", geom.height);
 
-    width = geom.W - margin.left - margin.right,
-    height = geom.H - margin.top - margin.bottom;
+    width = geom.width - margin.left - margin.right,
+    height = geom.height - margin.top - margin.bottom;
 
     const cobaltRatio = 0.4, volumeRatio = 0.4, overviewRatio = 0.2;
     const padding = 20;
@@ -229,8 +228,8 @@ function timeVolumeChart(id) {
     overviewHeight = overviewRatio * height - padding;
 
     cobaltCanvas
-      .style("left", svgRect.left + margin.left)
-      .style("top", svgRect.top + margin.top + cobaltTop)
+      .style("left", geom.left + margin.left)
+      .style("top", geom.top + margin.top + cobaltTop)
       .attr("width", width)
       .attr("height", cobaltHeight);
     var ctx = cobaltCanvas.node().getContext("2d");
