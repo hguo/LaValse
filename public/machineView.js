@@ -126,7 +126,7 @@ function machineView(id) {
       x: -currentTransform.x / currentTransform.k,
       y: -currentTransform.y / currentTransform.k,
       w: width / currentTransform.k,
-      h: width / currentTransform.k
+      h: height / currentTransform.k
     };
     
     ctx.clearRect(0, 0, width, height);
