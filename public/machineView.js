@@ -22,16 +22,8 @@ var aabb = {
   }
 };
 
-function machineView() {
-  const L = 270, T = 10, W = 690, H = 306;
-  const margin = {top: 0, right: 0, bottom: 0, left: 0},
-        width = W - margin.left - margin.right,
-        height = H - margin.top - margin.bottom;
-  const legendL = L+W, legendT = T, legendW = 40, legendH = H;
-  const legendMargin = {top: 20, bottom: 20, right: 30, left: 0};
-  const legendWidth = legendW - legendMargin.left - legendMargin.right,
-        legendHeight = legendH - legendMargin.top - legendMargin.bottom;
-  
+function machineView(id) {
+  var width, height;
   var useLogScale = true;
   
   var colorScaleLog = d3.scaleLog()
@@ -43,37 +35,31 @@ function machineView() {
     .range(["white", "steelblue"]);
 
   var zoom = d3.zoom()
-    .scaleExtent([1, 100])
+    .scaleExtent([0.1, 100])
     .on("zoom", zoomed);
   
   var brush = d3.brush()
     .on("end", brushed);
 
-  var canvas = d3.select("#machineView")
+  var canvas = d3.select(id)
     .append("canvas")
     .style("position", "absolute")
   var ctx = canvas.node().getContext("2d");
   
-  var svg = d3.select("#machineView")
+  var svg = d3.select(id)
     .append("svg")
-    .attr("class", "chart")
     .attr("id", "machineViewSvg")
-    .append("g")
-    .call(zoom);
+    .style("position", "absolute")
+    .style("z-index", 1);
   
   svg.append("g")
-    .attr("class", "brush")
-    .attr("id", "machineViewBrush")
-    .call(brush);
+    .attr("class", "brush");
   
-  var legendSvg = d3.select("#machineViewLegend").append("svg")
-    .attr("class", "chart")
-    .style("left", legendL)
-    .style("top", legendT)
-    .attr("width", legendW)
-    .attr("height", legendH)
-    .append("g")
-    .attr("transform", "translate(" + legendMargin.left + "," + legendMargin.top + ")");
+  var legendSvg = d3.select(id)
+    .append("svg")
+    .attr("id", "legendSvg")
+    .style("position", "absolute")
+    .append("g");
   
   var legendAxis = d3.axisRight()
     .ticks(4).tickSize(3)
@@ -99,20 +85,17 @@ function machineView() {
     .attr("stop-opacity", 1);
 
   legendSvg.append("rect")
+    .attr("id", "legendRect")
     .attr("x1", 0)
     .attr("y1", 0)
-    .attr("width", legendWidth)
-    .attr("height", legendHeight)
     .style("fill", "url(#gradient)");
 
   legendSvg.append("g")
-    .attr("class", "axis")
-    .attr("transform", "translate(" + legendWidth + ",0)");
+    .attr("class", "axis");
+    // .attr("transform", "translate(" + legendWidth + ",0)");
   
-  var legendScaleLog = d3.scaleLog()
-    .rangeRound([legendHeight, 0]);
-  var legendScaleLinear = d3.scaleLinear()
-    .rangeRound([legendHeight, 0]);
+  var legendScaleLog = d3.scaleLog();
+  var legendScaleLinear = d3.scaleLinear();
 
   var rects = [];
   var histogram = {};
@@ -132,21 +115,21 @@ function machineView() {
       d.h = +d.h;
     });
     rects = data;
-    ctx.clearRect(0, 0, W, H);
     renderRects();
   });
 
   function renderRects() {
+    ctx.clearRect(0, 0, width, height);
+    
     var colorScale = useLogScale ? colorScaleLog : colorScaleLinear;
-   
     var box = {
       x: -currentTransform.x / currentTransform.k,
       y: -currentTransform.y / currentTransform.k,
-      w: W / currentTransform.k,
-      h: H / currentTransform.k
+      w: width / currentTransform.k,
+      h: width / currentTransform.k
     };
     
-    ctx.clearRect(0, 0, W, H);
+    ctx.clearRect(0, 0, width, height);
     ctx.save();
     ctx.translate(currentTransform.x, currentTransform.y);
     ctx.scale(currentTransform.k, currentTransform.k);
@@ -293,21 +276,54 @@ function machineView() {
   }
 
   this.resize = function(geom) {
-    zoom.translateExtent([[0, 0], [W, H]])
-      .extent([[0, 0], [W, H]]);
+    const legendW = 40;
     
-    brush.extent([[0, 0], [W, H]]);
+    width = geom.width - legendW;
+    height = geom.height;
 
-    canvas.style("left", L)
-      .style("top", T)
-      .attr("width", W)
-      .attr("height", H);
+    const legendMargin = {top: 20, bottom: 20, right: 20, left: 10};
+    const legendWidth = legendW - legendMargin.left - legendMargin.right,
+          legendHeight = height - legendMargin.top - legendMargin.bottom;
+
+    zoom.extent([[0, 0], [width, height]]);
+      // .translateExtent([[0, 0], [width, height]])
+    svg.call(zoom);
+    
+    brush.extent([[0, 0], [width, height]]);
+    // svg.select(".brush").call(brush);
+
+    canvas.style("left", geom.left)
+      .style("top", geom.top)
+      .attr("width", width)
+      .attr("height", height);
     adjustCanvasResolution(canvas.node(), ctx);
 
     d3.select("#machineViewSvg")
-      .style("left", L)
-      .style("top", T)
-      .attr("width", W)
-      .attr("height", H);
+      .style("left", geom.left)
+      .style("top", geom.top)
+      .attr("width", width)
+      .attr("height", height);
+
+    d3.select("#legendSvg")
+      .style("left", geom.right - legendW)
+      .style("top", geom.top)
+      .style("width", legendW)
+      .style("height", height);
+
+    legendSvg.attr("transform", "translate(" + legendMargin.left + "," + legendMargin.top + ")");
+    legendSvg.select("#legendRect")
+      .attr("width", legendWidth)
+      .attr("height", legendHeight);
+
+    legendScaleLog.rangeRound([legendHeight, 0]);
+    legendScaleLinear.rangeRound([legendHeight, 0]);
+
+    var legendScale = useLogScale ? legendScaleLog : legendScaleLinear;
+    legendAxis.scale(legendScale);
+    legendSvg.select(".axis")
+      // .attr("transform", "translate(" + legendWidth + ",0)")
+      .call(legendAxis);
+
+    renderRects();
   }
 }
