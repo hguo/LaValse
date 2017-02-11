@@ -9,7 +9,7 @@ function barChart(name, id, data, humanReadableText, geom) {
   $(id).html("");
   var svg = d3.select(id)
     .append("svg")
-    .attr("class", "chart")
+    .style("position", "absolute")
     .style("top", geom.T)
     .style("left", geom.L)
     .attr("width", geom.W)

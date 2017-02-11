@@ -179,7 +179,7 @@ function machineView(id) {
 
     if (autoLOD) {
       if (t.k >= 8) setLOD(0);
-      else if (t.k >= 3) setLOD(1);
+      // else if (t.k >= 3) setLOD(1);
       else setLOD(2);
       renderRects();
     } else
@@ -305,7 +305,7 @@ function machineView(id) {
       .attr("height", height);
 
     d3.select("#legendSvg")
-      .style("left", geom.right - legendW)
+      .style("left", geom.left + geom.width - legendW)
       .style("top", geom.top)
       .style("width", legendW)
       .style("height", height);

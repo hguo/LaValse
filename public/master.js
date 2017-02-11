@@ -120,6 +120,7 @@ $(function() {
   initControlPanel();
 
   window.addEventListener("resize", function() {
+    return;
     const timeVolumeChartHeight = 300;
     timeVolumeChart.resize({
       L: 0, 
@@ -156,27 +157,14 @@ function init() {
     treeMapView = new treeMapView(
         "#messageIdChart");
 
-    const timeVolumeChartHeight = 300;
-    const geom = {L: 240, T: 315, W: 720, H: 300};
-    /* const geom = {
-      L: 0, 
-      T: window.innerHeight - timeVolumeChartHeight,
-      W: window.innerWidth, 
-      H: timeVolumeChartHeight
-    }; */
-    timeVolumeChart = new timeVolumeChart(geom);
-    timeVolumeChart.resize({
-      L: 0, 
-      T: window.innerHeight - 300,
-      W: window.innerWidth, 
-      H: 300
-    });
+    timeVolumeChart = new timeVolumeChart("#timeVolumeChart");
+    timeVolumeChart.resize({left: 240, top: 315, width: 720, height: 300});
     timeVolumeChart.updateVolume(d.timeVolumes);
     timeVolumeChart.updateOverviewVolume(d.overviewVolume);
     timeVolumeChart.updateMidplaneVolumes(d.midplaneVolumes);
     
-    machineView = new machineView();
-    machineView.resize({L: 0, T: 0, W: 300, H: 200});
+    machineView = new machineView("#machineView");
+    machineView.resize({left: 270, top: 5, width: 725, height: 306});
     machineView.updateData(d.location, histogramToArray(d.location));
     $("#controlPanel").css("display", "block");
     $("#tableView").css("display", "block");
