@@ -768,6 +768,7 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     nodeBoard2str: nodeBoard2str,
     DCA2str: DCA2str,
     computeCard2str: computeCard2str,
+    ioComputeCard2str: ioComputeCard2str,
     linkModule2str: linkModule2str,
     opticalModule2str: opticalModule2str,
     powerModule2str: powerModule2str,

@@ -27,8 +27,11 @@ function machineView() {
   const DCAGroupL = 3.75, DCAGroupT = 0.25;
   const DCAW = 1.75, DCAH = 1;
 
-  const ioDrawerGroupL = 2, ioDrawerGroupT = 12, ioDrawerGroupW = 30, ioDrawerGroupH = 82;
-  const ioDrawerW = ioDrawerGroupW/3, ioDrawerH = ioDrawerGroupH/3;
+  const ioDrawerGroupL = 2, ioDrawerGroupT = 10, ioDrawerGroupW = 30, ioDrawerGroupH = 84;
+  const ioDrawerW = ioDrawerGroupW/2, ioDrawerH = ioDrawerGroupH/4;
+
+  const ioComputeCardGroupL = 0, ioComputeCardGroupT = 6, ioComputeCardGroupW = 15, ioComputeCardGroupH = 15;
+  const ioComputeCardW = ioComputeCardGroupW/4, ioComputeCardH = ioComputeCardGroupH/2;
 
   const bulkPowerSupplyGroupL = 19.75, bulkPowerSupplyGroupT = 2;
   const bulkPowerSupplyW = 3, bulkPowerSupplyH = 3;
@@ -199,13 +202,14 @@ function machineView() {
 
   function renderIODrawers(row, col) {
     transformer.push([ioDrawerGroupL, ioDrawerGroupT]);
-    for (p=0; p<3; p++) {
-      for (q=0; q<3; q++) {
-        var ioDrawerID = p*3+q;
+    for (p=0; p<4; p++) {
+      for (q=0; q<2; q++) {
+        var ioDrawerID = p*2+q;
         var ioDrawerStr = mira.ioDrawer2str(row, col, ioDrawerID);
 
         transformer.push([q*ioDrawerW, p*ioDrawerH]);
         printElement(ioDrawerStr, 3, transformer.zero(), ioDrawerW, ioDrawerH, 0.3, 2, 4, 3, "I"+ioDrawerID);
+        renderIOComputeCards(row, col, ioDrawerID);
         transformer.pop();
       }
     }
@@ -241,6 +245,21 @@ function machineView() {
 
         transformer.push([q*computeCardW, p*computeCardH]);
         printElement(computeCardStr, 0, transformer.zero(), computeCardW, computeCardH, 0.05, 0.25, 0.4, 0.25, "J"+mira.pad(computeCardID, 10, 2));
+        transformer.pop();
+      }
+    }
+    transformer.pop();
+  }
+
+  function renderIOComputeCards(row, col, ioDrawer) {
+    transformer.push([ioComputeCardGroupL, ioComputeCardGroupT]);
+    for (var p=0; p<2; p++) {
+      for (var q=0; q<4; q++) {
+        var ioComputeCardID = p*4+q;
+        var ioComputeCardStr = mira.ioComputeCard2str(row, col, ioDrawer, ioComputeCardID);
+
+        transformer.push([q*ioComputeCardW, p*ioComputeCardH]);
+        printElement(ioComputeCardStr, 1, transformer.zero(), ioComputeCardW, ioComputeCardH, 0.05, 0.25, 0.4, 0.25, "J"+mira.pad(ioComputeCardID, 10, 2));
         transformer.pop();
       }
     }
@@ -293,7 +312,7 @@ function machineView() {
         var bulkPowerSupplyID = p*2+q;
         var bulkPowerSupplyStr = mira.bulkPowerSupply2str(row, col, bulkPowerSupplyID);
         transformer.push([q*bulkPowerSupplyW, p*bulkPowerSupplyH]);
-        printElement(bulkPowerSupplyStr, 1, transformer.zero(), bulkPowerSupplyW, bulkPowerSupplyH, 0.2, 0.9, 1.8, 1, "B"+bulkPowerSupplyID);
+        printElement(bulkPowerSupplyStr, 2, transformer.zero(), bulkPowerSupplyW, bulkPowerSupplyH, 0.2, 0.9, 1.8, 1, "B"+bulkPowerSupplyID);
         renderPowerModules(row, col, bulkPowerSupplyID);
         transformer.pop();
       }
@@ -319,14 +338,14 @@ function machineView() {
   function renderClockCard(row, col) {
     var clockCardStr = mira.clockCard2str(row, col);
     transformer.push([clockCardL, clockCardT]);
-    printElement(clockCardStr, 1, transformer.zero(), clockCardW, clockCardH, 0.2, 1.1, 1.8, 1, "K");
+    printElement(clockCardStr, 2, transformer.zero(), clockCardW, clockCardH, 0.2, 1.1, 1.8, 1, "K");
     transformer.pop();
   }
 
   function renderCoolantMonitor(row, col) {
     var coolantMonitorStr = mira.coolantMonitor2str(row, col);
     transformer.push([coolantMonitorL, coolantMonitorT]);
-    printElement(coolantMonitorStr, 1, transformer.zero(), coolantMonitorW, coolantMonitorH, 0.2, 1.1, 1.8, 1, "L");
+    printElement(coolantMonitorStr, 2, transformer.zero(), coolantMonitorW, coolantMonitorH, 0.2, 1.1, 1.8, 1, "L");
     transformer.pop();
   }
   

@@ -167,7 +167,6 @@ function init() {
     machineView.resize({left: 270, top: 5, width: 725, height: 306});
     machineView.updateData(d.location, histogramToArray(d.location));
     $("#controlPanel").css("display", "block");
-    $("#tableView").css("display", "block");
     $("#cobaltTableView").css("display", "block");
     $("#tabs").css("display", "block");
   
@@ -416,6 +415,7 @@ function initControlPanel() {
     this.queryTime = 0;
     this.showJobs = true;
     this.showHeatMap = true;
+    this.showTable = false;
   };
   var gui = new dat.GUI();
   
@@ -440,6 +440,10 @@ function initControlPanel() {
   });
   f1.add(text, "showHeatMap").onChange(function(val) {
     timeVolumeChart.toggleHeatMap(val);
+  });
+  f1.add(text, "showTable").onChange(function(val) {
+    if (val) $("#tableView").css("display", "block");
+    else $("#tableView").css("display", "none");
   });
   f1.open();
 
