@@ -416,6 +416,7 @@ function initControlPanel() {
     this.showJobs = true;
     this.showHeatMap = true;
     this.showTable = false;
+    this.brush = false;
   };
   var gui = new dat.GUI();
   
@@ -444,6 +445,10 @@ function initControlPanel() {
   f1.add(text, "showTable").onChange(function(val) {
     if (val) $("#tableView").css("display", "block");
     else $("#tableView").css("display", "none");
+  });
+  f1.add(text, "brush").onChange(function(val) {
+    machineView.toggleBrush(val);
+    timeVolumeChart.toggleBrush(val);
   });
   f1.open();
 

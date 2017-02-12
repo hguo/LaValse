@@ -30,7 +30,7 @@ function timeVolumeChart(id) {
   var svg = d3.select(id)
     .append("svg")
     .attr("id", "timeVolumeChartSvg")
-    .style("position", "fixed")
+    .style("position", "absolute")
     .style("z-index", 1)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -181,9 +181,9 @@ function timeVolumeChart(id) {
 
   var volumeBrush = d3.brushX()
     .on("end", volumeBrushed);
-  svgVolume.append("g")
-    .attr("id", "volumeBrush")
-    .attr("class", "brush");
+  // svgVolume.append("g")
+  //   .attr("id", "volumeBrush")
+  //   .attr("class", "brush");
 
   var overviewBrush = d3.brushX()
     .on("brush end", overviewBrushed);
@@ -240,9 +240,9 @@ function timeVolumeChart(id) {
       .extent([[0, volumeTop], [width, volumeHeight]]);
     svgVolume.call(volumeZoom);
 
-    volumeBrush.extent([[0, 0], [width, height]]);
-    svg.select("#volumeBrush")
-      .call(volumeBrush);
+    volumeBrush.extent([[0, 0], [width, volumeHeight]]);
+    // svg.select("#volumeBrush")
+    //   .call(volumeBrush);
 
     cobaltZoom.scaleExtent([1, 100])
       .translateExtent([[0, cobaltTop], [width, cobaltHeight]])
@@ -680,6 +680,17 @@ function timeVolumeChart(id) {
       .call(yAxis.scale(y));
   }
 
+  this.toggleBrush = function(b) {
+    if (b) {
+      svgVolume.append("g")
+        .attr("class", "brush")
+        .call(volumeBrush);
+    } else {
+      svgVolume.select(".brush")
+        .remove();
+    }
+  }
+
   this.toggleJobs = function(b) {
     toggleJobs = b;
     if (b) svgCobaltContent.selectAll(".cobalt").style("display", "block");
@@ -694,7 +705,7 @@ function timeVolumeChart(id) {
 
   this.reset = function() {
     useLogScale = true;
-    svgVolume.select("#volumeBrush")
+    svgVolume.select("#volumeBrush") // FIXME
       .call(volumeBrush.move, null)
       .call(volumeZoom.transform, d3.zoomIdentity);
   }

@@ -52,8 +52,8 @@ function machineView(id) {
     .style("position", "absolute")
     .style("z-index", 1);
   
-  svg.append("g")
-    .attr("class", "brush");
+  // svg.append("g")
+  //   .attr("class", "brush");
   
   var legendSvg = d3.select(id)
     .append("svg")
@@ -247,6 +247,16 @@ function machineView(id) {
     legendSvg.select(".axis")
       .transition()
       .call(legendAxis);
+  }
+
+  this.toggleBrush = function(b) {
+    if (b) {
+      svg.append("g")
+        .attr("class", "brush")
+        .call(brush);
+    } else {
+      svg.select(".brush").remove();
+    }
   }
 
   this.toggleAutoLOD = function(b) {
