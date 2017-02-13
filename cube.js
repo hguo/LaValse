@@ -57,6 +57,9 @@ function translateResults(r, fullResult) {
   r.recIDs = filterRecIDs(r.timeVolumes, r.timeVolumesRecID);
   delete r["timeVolumesRecID"];
 
+  r.arcs = translateTimeVolumesMsgID(r.timeVolumesMsgID);
+  delete r["timeVolumesMsgID"];
+
   return r;
 
   function translateIndicesToNames(src, bimap) { // src is [], book is {}
@@ -76,6 +79,23 @@ function translateResults(r, fullResult) {
       else 
         dst[key] = 0;
     return dst;
+  }
+
+  function translateTimeVolumesMsgID(volumes) {
+    const nslots = volumes.length;
+    const n = volumes[0].length;
+    var results = {};
+
+    for (var i=0; i<nslots; i++) {
+      for (var j=0; j<n; j++) {
+        if (volumes[i][j] == '1') {
+          var msgID = ras.eventMap.val(j);
+          if (!(msgID in results)) results[msgID] = [];
+          results[msgID].push(i);
+        }
+      }
+    }
+    return results;
   }
 }
 
