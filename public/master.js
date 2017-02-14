@@ -162,6 +162,7 @@ function init() {
     timeVolumeChart.updateVolume(d.timeVolumes);
     timeVolumeChart.updateOverviewVolume(d.overviewVolume);
     timeVolumeChart.updateMidplaneVolumes(d.midplaneVolumes);
+    timeVolumeChart.updateArcDiagram(d.arcs);
     
     machineView = new machineView("#machineView");
     machineView.resize({left: 270, top: 5, width: 725, height: 306});
@@ -220,6 +221,7 @@ function refresh() {
     timeVolumeChart.updateVolume(d.timeVolumes);
     timeVolumeChart.updateOverviewVolume(d.overviewVolume);
     timeVolumeChart.updateMidplaneVolumes(d.midplaneVolumes);
+    timeVolumeChart.updateArcDiagram(d.arcs);
     machineView.updateData(d.location, histogramToArray(d.location));
     
     treeMapView.updateData(buildMessageIdHierarchy(query.volumeBy, d.msgID));
@@ -415,6 +417,7 @@ function initControlPanel() {
     this.queryTime = 0;
     this.showJobs = true;
     this.showHeatMap = true;
+    this.showArcs = true;
     this.showTable = false;
     this.brush = false;
   };
@@ -441,6 +444,10 @@ function initControlPanel() {
   });
   f1.add(text, "showHeatMap").onChange(function(val) {
     timeVolumeChart.toggleHeatMap(val);
+  });
+  f1.add(text, "showArcs").onChange(function(val) {
+    if (val) $("#arcDiagram").css("display", "block");
+    else $("#arcDiagram").css("display", "none");
   });
   f1.add(text, "showTable").onChange(function(val) {
     if (val) $("#tableView").css("display", "block");

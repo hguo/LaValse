@@ -27,6 +27,11 @@ function timeVolumeChart(id) {
     .append("canvas")
     .style("position", "absolute");
 
+  var volumeCanvas = d3.select(id)
+    .append("canvas")
+    .attr("id", "arcDiagram")
+    .style("position", "absolute");
+
   var svg = d3.select(id)
     .append("svg")
     .attr("id", "timeVolumeChartSvg")
@@ -234,6 +239,14 @@ function timeVolumeChart(id) {
       .attr("height", cobaltHeight);
     var ctx = cobaltCanvas.node().getContext("2d");
     adjustCanvasResolution(cobaltCanvas.node(), ctx);
+
+    volumeCanvas
+      .style("left", geom.left + margin.left)
+      .style("top", geom.top + volumeTop + volumeHeight + 5)
+      .attr("width", width)
+      .attr("height", width/2);
+    var ctx1 = volumeCanvas.node().getContext("2d");
+    adjustCanvasResolution(volumeCanvas.node(), ctx1);
 
     volumeZoom.scaleExtent([1, 100000000])
       .translateExtent([[0, volumeTop], [width, volumeHeight]])
@@ -506,6 +519,24 @@ function timeVolumeChart(id) {
     }
   }
 
+  function drawArcDiagram() {
+    var ctx = volumeCanvas.node().getContext("2d");
+    ctx.clearRect(0, 0, width, width/2);
+    ctx.globalAlpha = 0.4;
+
+    for (var msgID in arcs) {
+      var array = arcs[msgID];
+      ctx.beginPath();
+      for (var j=0; j<array.length-2; j++) {
+        var i0 = array[j], i1 = array[j+1];
+        var center = x(query.T0 + query.tg * (i0 + i1)/2);
+        var radius = (x(query.T0 + query.tg * i1) - x(query.T0 + query.tg * i0)) / 2;
+        ctx.arc(center, 0, radius, 0, Math.PI);
+      }
+      ctx.stroke();
+    }
+  }
+
   function drawMidplaneVolumes() {
     var ctx = cobaltCanvas.node().getContext("2d");
     ctx.clearRect(0, 0, width, cobaltHeight);
@@ -533,6 +564,9 @@ function timeVolumeChart(id) {
       }
     }
 
+  }
+
+  this.updateArcDiagram = function(arcs) {
   }
 
   this.updateMidplaneVolumes = function(volumes) {
