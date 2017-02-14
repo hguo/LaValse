@@ -218,9 +218,9 @@ function timeVolumeChart(id) {
     const cobaltRatio = 0.4, volumeRatio = 0.4, overviewRatio = 0.2;
     const padding = 20;
 
-    cobaltTop = 0;
-    volumeTop = cobaltRatio * height + padding;
-    overviewTop = (cobaltRatio + volumeRatio) * height + padding;
+    overviewTop = 0;
+    cobaltTop = overviewRatio * height;
+    volumeTop = (overviewRatio + cobaltRatio) * height + padding;
     
     cobaltWidth = width;
     cobaltHeight = cobaltRatio * height;
