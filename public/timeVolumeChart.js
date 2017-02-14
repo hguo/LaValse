@@ -13,6 +13,8 @@ function timeVolumeChart(id) {
 
   var midplaneVolumes = [];
   var midplaneVolumeMax = 1;
+
+  var arcs = [];
   
   var cobaltJobHighlighted = false;
   var cobaltYTranslate = 0, cobaltYScale = 1;
@@ -107,7 +109,8 @@ function timeVolumeChart(id) {
   var x0 = d3.scaleTime()
     .domain(xDomain);
   var x = d3.scaleTime()
-    .clamp(true)
+    // .clamp(true)
+    .clamp(false)
     .domain(xDomain);
   var X0 = d3.scaleTime() // the overview
     .domain(xDomain);
@@ -338,6 +341,7 @@ function timeVolumeChart(id) {
       .call(overviewBrush.move, X0.range());
 
     drawMidplaneVolumes();
+    drawArcDiagram();
   }
 
   this.updateVolume = function(data) {
@@ -566,7 +570,9 @@ function timeVolumeChart(id) {
 
   }
 
-  this.updateArcDiagram = function(arcs) {
+  this.updateArcDiagram = function(_) {
+    arcs = _;
+    drawArcDiagram();
   }
 
   this.updateMidplaneVolumes = function(volumes) {
@@ -845,6 +851,7 @@ function timeVolumeChart(id) {
     if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
     removeTooltips();
     drawMidplaneVolumes();
+    drawArcDiagram();
 
     var line = useLogScale ? lineLog : lineLinear;
    
