@@ -536,6 +536,10 @@ function timeVolumeChart(id) {
         var center = x(query.T0 + query.tg * (i0 + i1)/2);
         var radius = (x(query.T0 + query.tg * i1) - x(query.T0 + query.tg * i0)) / 2;
         ctx.arc(center, 0, radius, 0, Math.PI);
+
+        if (j==0) {
+          ctx.fillText(msgID, center, radius);
+        }
       }
       ctx.stroke();
     }
