@@ -135,19 +135,23 @@ function machineView(id) {
       }
 
       var targetRect = null;
-      for (var i=0; i<rects.length; i++) {
-        if (rects[i].lod == currentLOD && pointInside(pos, rects[i])) {
-          targetRect = rects[i];
-          break;
-        }
-      }
-     
-      if (targetRect != null) {
+      var matched = [];
+      rects.forEach(function(d) {
+        if (d.lod >= currentLOD && pointInside(pos, d))
+          matched.push(d);
+      });
+
+      if (matched.length > 0) {
+        matched.sort(function(a, b) {return a.lod > b.lod;});
+        targetRect = matched[0];
+        
         tooltip.style("display", "block");
         tooltip.style("left", X);
         tooltip.style("top", Y+20);
         tooltip.html(targetRect.id);
         console.log(targetRect);
+      } else {
+        tooltip.style("display", "none");
       }
     })
     .on("mouseleave", function() {
