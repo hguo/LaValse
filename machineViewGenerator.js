@@ -97,68 +97,6 @@ function machineView() {
 
   renderRacks();
 
-  // renderMachinesL4();
-  // renderMachinesL3();
-  // renderMachinesL2();
-
-  /*
-  function renderMachinesL4() {
-    renderRacks(svg);
-  }
-
-  function renderMachinesL3() {
-    $("#machineView .R").each(function() {
-      renderMidplanes(d3.select(this));
-    });
-  }
-
-  function renderMachinesL2() {
-    $("#machineView .Q").filter(function() {
-      return AABB.collide($(this)[0], $("#machineViewSvg")[0]);
-    }).each(function() {
-      renderIODrawers(d3.select(this));
-    });
-
-    $("#machineView .RM").filter(function() {
-      return AABB.collide($(this)[0], $("#machineViewSvg")[0]);
-    }).each(function() {
-      renderNodeBoards(d3.select(this));
-    });
-  }
-
-  function renderMachinesL1() {
-    $("#machineView .R").filter(function() {
-      return AABB.collide($(this)[0], $("#machineViewSvg")[0]);
-    }).each(function() {
-      renderBulkPowerSupply(d3.select(this));
-      renderClockCard(d3.select(this));
-      renderCoolantMonitor(d3.select(this));
-    });
-
-    $("#machineView .RM").filter(function() {
-      return AABB.collide($(this)[0], $("#machineViewSvg")[0]);
-    }).each(function() {
-      renderServiceCard(d3.select(this));
-    });
-  }
-
-  function renderMachinesL0() {
-    $("#machineView .RMN").filter(function() {
-      return AABB.collide($(this)[0], $("#machineViewSvg")[0]);
-    }).each(function() {
-      renderComputeCards(d3.select(this));
-      renderLinkModules(d3.select(this));
-      renderOpticalModules(d3.select(this));
-      renderDCAs(d3.select(this));
-    });
-
-    $("#machineView .RB").filter(function() {
-      return AABB.collide($(this)[0], $("#machineViewSvg")[0]);
-    }).each(function() {
-      renderPowerModules(d3.select(this));
-    });
-  } */
-
   function renderRacks() {
     for (row=0; row<3; row++) {
       transformer.push([0, (rackH+rackPadding*2)*row]);
@@ -259,7 +197,7 @@ function machineView() {
         var ioComputeCardStr = mira.ioComputeCard2str(row, col, ioDrawer, ioComputeCardID);
 
         transformer.push([q*ioComputeCardW, p*ioComputeCardH]);
-        printElement(ioComputeCardStr, 1, transformer.zero(), ioComputeCardW, ioComputeCardH, 0.05, 0.25, 0.4, 0.25, "J"+mira.pad(ioComputeCardID, 10, 2));
+        printElement(ioComputeCardStr, 0, transformer.zero(), ioComputeCardW, ioComputeCardH, 0.05, 0.25, 0.4, 0.25, "J"+mira.pad(ioComputeCardID, 10, 2));
         transformer.pop();
       }
     }

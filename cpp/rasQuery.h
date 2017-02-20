@@ -60,7 +60,7 @@ struct Query {
   uint64_t O0 = 1420070400000, O1 = 1451606400000, og = TIME_DAY; // overview time scope and granularity
 
   uint8_t volumeBy = VAR_NONE;
-  int LOD = 2;
+  int LOD = 1;
   int top = 100; // return top n recIDs
   int nthreads = 1;
 

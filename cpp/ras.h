@@ -69,7 +69,7 @@ enum {SUBVOL_SEV = 0, SUBVOL_MSGID, SUBVOL_COMP, SUBVOL_LOC, SUBVOL_CAT};
 enum {TIME_SECOND = 1000L, TIME_MINUTE = 60000L, TIME_HOUR = 3600000L, TIME_DAY = 86400000L}; // granularity for time aggregation
 
 static const uint32_t nvolumes[] = {1, NUM_MSGID, NUM_COMP, NUM_LOCTYPE, NUM_CAT, NUM_SEV};
-static const uint32_t nlocations[] = {127603, 8515, 1987, 295, 55}; // L0-->L4
+static const uint32_t nlocations[] = {127357, 2125, 205, 55}; // L0-->L3
 static const int nUsers = 510, nProjs = 223, nMidplanes = 97;
 
 static const uint16_t eventTable[][5] = {
@@ -918,7 +918,7 @@ struct Event {
   uint8_t midplane;
 
   // locations in LODs
-  uint32_t location[5];
+  uint32_t location[4];
   // uint32_t L0;
   // uint16_t L1, L2, L3;
   // uint8_t L4;
@@ -939,15 +939,15 @@ struct Event {
   bool checkRange() const {
     if (msgID>=NUM_MSGID) return false;
     if (locationType>=NUM_LOCTYPE) return false;
-    for (int i=0; i<5; i++)
+    for (int i=0; i<4; i++)
       if (location[0]>=nlocations[0]) return false;
     return true;
   }
 
   void print() const {
-    fprintf(stderr, "recID=%d, msgID=%d, eventTime=%lld, locationType=%d, location=[%d, %d, %d, %d, %d]\n",
+    fprintf(stderr, "recID=%d, msgID=%d, eventTime=%lld, locationType=%d, location=[%d, %d, %d, %d]\n",
         recID, msgID, eventTime, locationType, 
-        location[0], location[1], location[2], location[3], location[4]);
+        location[0], location[1], location[2], location[3]);
   }
 };
 

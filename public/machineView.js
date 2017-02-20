@@ -104,7 +104,7 @@ function machineView(id) {
   var currentTransform = {x: 0, y: 0, k: 1};
   
   var autoLOD = true;
-  var previousLOD = 2, currentLOD = 2;
+  var previousLOD = 1, currentLOD = 1;
 
   d3.csv("/machine.csv", function(err, data) {
     data.forEach(function(d) {
@@ -152,7 +152,8 @@ function machineView(id) {
           ctx.strokeRect(d.x, d.y, d.w, d.h);
         }
 
-        if (d.ts > 0) {
+        if (d.ts * currentTransform.k > 4) {
+        // if (d.ts > 0) {
           ctx.fillStyle = "black";
           ctx.font = d.ts + "px Arial";
           ctx.fillText(d.text, d.tx, d.ty);
@@ -178,9 +179,8 @@ function machineView(id) {
     currentTransform = {k: t.k, x: t.x, y: t.y};
 
     if (autoLOD) {
-      if (t.k >= 8) setLOD(0);
-      // else if (t.k >= 3) setLOD(1);
-      else setLOD(2);
+      if (t.k >= 7) setLOD(0);
+      else setLOD(1);
       renderRects();
     } else
       renderRects();

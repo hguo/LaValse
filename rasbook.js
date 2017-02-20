@@ -1005,8 +1005,7 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
       generateBiMapFromArray(mira.enumerateL0Locations()),
       generateBiMapFromArray(mira.enumerateL1Locations()),
       generateBiMapFromArray(mira.enumerateL2Locations()),
-      generateBiMapFromArray(mira.enumerateL3Locations()),
-      generateBiMapFromArray(mira.enumerateL4Locations())
+      generateBiMapFromArray(mira.enumerateL3Locations())
     ],
     controlActionsToBits: controlActionsToBits
   };

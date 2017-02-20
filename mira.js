@@ -293,40 +293,10 @@ function locationToL1Location(L) {
   case "R": return rack2str(L.row, L.column);
   case "RL": return L.str;
   case "RK": return L.str;
-  case "RB": 
-  case "RBP":
-    return bulkPowerSupply2str(L.row, L.column, L.bulkPowerSupply);
-
-  case "RM":
-    return midplane2str(L.row, L.column, L.midplane);
-  case "RMS":
-    return midplane2str(L.row, L.column, L.midplane) + "-S";
-
-  case "RMN": return nodeBoard2str(L.row, L.column, L.midplane, L.nodeBoard);
-  case "RMNJ": return nodeBoard2str(L.row, L.column, L.midplane, L.nodeBoard) + "-J";
-  case "RMNU": return nodeBoard2str(L.row, L.column, L.midplane, L.nodeBoard) + "-U";
-  case "RMND": return nodeBoard2str(L.row, L.column, L.midplane, L.nodeBoard) + "-D";
-  case "RMNO": return nodeBoard2str(L.row, L.column, L.midplane, L.nodeBoard) + "-O";
- 
-  case "Q": return ioRack2str(L.row, L.column);
-  case "QI": return ioDrawer2str(L.row, L.column, L.IODrawer);
-  case "QIJ": return ioDrawer2str(L.row, L.column, L.IODrawer) + "-J"; 
-  case "QIU": return ioDrawer2str(L.row, L.column, L.IODrawer) + "-U"; 
-  case "QID": return ioDrawer2str(L.row, L.column, L.IODrawer) + "-D"; 
-  case "QIO": return ioDrawer2str(L.row, L.column, L.IODrawer) + "-O";
-  default: return "";
-  }
-}
-
-function locationToL2Location(L) {
-  switch (L.type) {
-  case "R": return rack2str(L.row, L.column);
-  case "RL": return L.str;
-  case "RK": return L.str;
   case "RB":
   case "RBP":
-    // return bulkPowerSupply2str(L.row, L.column, L.bulkPowerSupply);
-    return rack2str(L.row, L.column) + "-B";
+    return bulkPowerSupply2str(L.row, L.column, L.bulkPowerSupply);
+    // return rack2str(L.row, L.column) + "-B";
   case "RM":
     return midplane2str(L.row, L.column, L.midplane);
   case "RMS": 
@@ -352,14 +322,15 @@ function locationToL2Location(L) {
   }
 }
 
-function locationToL3Location(L) {
+function locationToL2Location(L) {
   switch (L.type) {
-  case "R": return rack2str(L.row, L.column);
-  case "RL": return L.str;
-  case "RK": return L.str;
+  case "R": 
+  case "RL": 
+  case "RK": 
   case "RB": 
   case "RBP":
-    return rack2str(L.row, L.column) + "-B";
+    return rack2str(L.row, L.column);
+  
   case "RM":
   case "RMS":
   case "RMN":
@@ -381,7 +352,7 @@ function locationToL3Location(L) {
   }
 }
 
-function locationToL4Location(L) {
+function locationToL3Location(L) {
   switch (L.type) {
   case "R": 
   case "RL":
@@ -441,8 +412,7 @@ function locationToLODLocation(L) {
     locationToL0Location(L),
     locationToL1Location(L),
     locationToL2Location(L),
-    locationToL3Location(L),
-    locationToL4Location(L)
+    locationToL3Location(L)
   ];
 }
 
@@ -482,7 +452,7 @@ function enumerateL0Locations() {
   for (row=0; row<3; row++) {
     for (col=16; col<18; col++) { // G to H
       locations.push(ioRack2str(row, col));
-      for (drawer=0; drawer<10; drawer++) {
+      for (drawer=0; drawer<9; drawer++) {
         var ioDrawer = ioDrawer2str(row, col, drawer);
         locations.push(ioDrawer);
         for (j=0; j<8; j++) locations.push(ioComputeCard2str(row, col, drawer, j));
@@ -504,54 +474,10 @@ function enumerateL1Locations() {
       locations.push(rack);
       locations.push(rack + "-K");
       locations.push(rack + "-L");
-
+      
       for (bulkPowerSupply=0; bulkPowerSupply<4; bulkPowerSupply++) {
         locations.push(bulkPowerSupply2str(row, col, bulkPowerSupply));
       }
-
-      for (mp=0; mp<2; mp++) {
-        var midplane = midplane2str(row, col, mp);
-        locations.push(midplane);
-        locations.push(midplane + "-S");
-
-        for (nb=0; nb<16; nb++) {
-          var nodeBoard = nodeBoard2str(row, col, mp, nb);
-          locations.push(nodeBoard);
-          locations.push(nodeBoard + "-J");
-          locations.push(nodeBoard + "-U");
-          locations.push(nodeBoard + "-D");
-          locations.push(nodeBoard + "-O");
-        }
-      }
-    }
-  }
-
-  for (row=0; row<3; row++) {
-    for (col=16; col<18; col++) { // G to H
-      locations.push(ioRack2str(row, col));
-      for (drawer=0; drawer<10; drawer++) {
-        var ioDrawer = ioDrawer2str(row, col, drawer);
-        locations.push(ioDrawer);
-        locations.push(ioDrawer + "-J");
-        locations.push(ioDrawer + "-U");
-        locations.push(ioDrawer + "-D");
-        locations.push(ioDrawer + "-O");
-      }
-    }
-  }
-
-  return locations;
-}
-
-function enumerateL2Locations() {
-  var locations = [""];
-  for (row=0; row<3; row++) {
-    for (col=0; col<16; col++) {
-      var rack = rack2str(row, col);
-      locations.push(rack);
-      locations.push(rack + "-B");
-      locations.push(rack + "-K");
-      locations.push(rack + "-L");
 
       for (mp=0; mp<2; mp++) {
         var midplane = midplane2str(row, col, mp);
@@ -568,7 +494,30 @@ function enumerateL2Locations() {
   for (row=0; row<3; row++) {
     for (col=16; col<18; col++) {// G to H
       locations.push(ioRack2str(row, col));
-      for (drawer=0; drawer<10; drawer++) {
+      for (drawer=0; drawer<9; drawer++) {
+        locations.push(ioDrawer2str(row, col, drawer));
+      }
+    }
+  }
+
+  return locations;
+}
+
+function enumerateL2Locations() {
+  var locations = [""];
+  for (row=0; row<3; row++) {
+    for (col=0; col<16; col++) {
+      var rack = rack2str(row, col);
+      locations.push(rack);
+      locations.push(rack + "-M0");
+      locations.push(rack + "-M1");
+    }
+  }
+  
+  for (row=0; row<3; row++) {
+    for (col=16; col<18; col++) {// G to H
+      locations.push(ioRack2str(row, col));
+      for (drawer=0; drawer<9; drawer++) {
         locations.push(ioDrawer2str(row, col, drawer));
       }
     }
@@ -578,29 +527,6 @@ function enumerateL2Locations() {
 }
 
 function enumerateL3Locations() {
-  var locations = [""];
-  for (row=0; row<3; row++) {
-    for (col=0; col<16; col++) {
-      var rack = rack2str(row, col);
-      locations.push(rack);
-      locations.push(rack + "-B");
-      locations.push(rack + "-K");
-      locations.push(rack + "-L");
-      locations.push(rack + "-M0");
-      locations.push(rack + "-M1");
-    }
-  }
-  
-  for (row=0; row<3; row++) {
-    for (col=16; col<18; col++) {// G to H
-      locations.push(ioRack2str(row, col));
-    }
-  }
-
-  return locations;
-}
-
-function enumerateL4Locations() {
   var locations = [""];
   for (row=0; row<3; row++) {
     for (col=0; col<16; col++) {
@@ -781,12 +707,10 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     enumerateL1Locations: enumerateL1Locations,
     enumerateL2Locations: enumerateL2Locations,
     enumerateL3Locations: enumerateL3Locations,
-    enumerateL4Locations: enumerateL4Locations,
     locationToL0Location: locationToL0Location,
     locationToL1Location: locationToL1Location,
     locationToL2Location: locationToL2Location,
     locationToL3Location: locationToL3Location,
-    locationToL4Location: locationToL4Location,
     locationToLODLocation: locationToLODLocation,
     locationToMidplane: locationToMidplane,
     computeCard2str: computeCard2str
@@ -794,11 +718,11 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 }
 
 /*
-var locations = enumerateL2Locations();
-// console.log(locations.length);
+var locations = enumerateL3Locations();
+console.log(locations.length);
 for (var i=0; i<locations.length; i++) {
   console.log(locations[i]);
   // var L = parseLocation(locations[i]);
-  // console.log(locations[i], locationToL4Location(L));
+  // console.log(locations[i], locationToL3Location(L));
 }
 */

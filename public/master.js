@@ -1,5 +1,5 @@
 var query = {
-  LOD: 2, // TODO
+  LOD: 1, // TODO
   top: 5,
   // volumeBy: "category",
   T0: 1420070400000, // 2015-01-01
@@ -431,7 +431,7 @@ function initControlPanel() {
   f1.add(text, "scale", ["auto", "log", "linear"]).onChange(function(val) {
     toggleLogScale(); // FIXME
   });
-  f1.add(text, "LOD", ["auto", "0", "1", "2", "3", "4"]).onChange(function(val) {
+  f1.add(text, "LOD", ["auto", "0", "1", "2", "3"]).onChange(function(val) {
     if (val == "auto") {
       machineView.toggleAutoLOD(true);
     } else {

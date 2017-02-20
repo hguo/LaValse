@@ -30,13 +30,11 @@ function printRAS(ras) {
   var L0 = mira.locationToL0Location(L),
       L1 = mira.locationToL1Location(L), 
       L2 = mira.locationToL2Location(L), 
-      L3 = mira.locationToL3Location(L), 
-      L4 = mira.locationToL4Location(L);
+      L3 = mira.locationToL3Location(L);
   var L0i = rasbook.locationMaps[0].key(L0),
       L1i = rasbook.locationMaps[1].key(L1),
       L2i = rasbook.locationMaps[2].key(L2),
-      L3i = rasbook.locationMaps[3].key(L3),
-      L4i = rasbook.locationMaps[4].key(L4);
+      L3i = rasbook.locationMaps[3].key(L3);
   var midplane = mira.locationToMidplane(L);
 
   // console.log(L0, L1, L2, L3, L4);
@@ -51,5 +49,5 @@ function printRAS(ras) {
       // profiles.partitionMap.key(ras.partition),
       rasbook.midplaneMap.key(midplane),
       rasbook.locationTypeMap.key(L.type), // locaitonType
-      L0i, L1i, L2i, L3i, L4i);
+      L0i, L1i, L2i, L3i);
 }
