@@ -144,9 +144,14 @@ function machineView(id) {
       if (matched.length > 0) {
         matched.sort(function(a, b) {return a.lod > b.lod;});
         targetRect = matched[0];
-       
-        var html = "<b>location:</b> " + targetRect.id 
-          + "<br><b>occurrence:</b> " + (targetRect.id in histogram ? histogram[targetRect.id] : 0);
+      
+        var L = parseLocation(targetRect.id);
+
+        var html = "<b>location:</b> " + L.str
+          + "<br><b>occurrence:</b> " + (L.str in histogram ? histogram[L.str] : 0)
+          + "<br><b>LOD:</b> " + targetRect.lod
+          + "<br><b>locationType:</b> " + L.type
+          + "<br><b>locationDetail:</b> " + L.narratives;
 
         tooltip.style("display", "block");
         tooltip.style("left", X);
@@ -189,13 +194,14 @@ function machineView(id) {
         };
         ctx.fillRect(d.x, d.y, d.w, d.h);
         ctx.shadowBlur = 0;
-       
-        if (d.lw > 0) {
+      
+        if (d.lw * currentTransform.k >= 0.1) {
+        // if (d.lw > 0) {
           ctx.lineWidth = d.lw;
           ctx.strokeRect(d.x, d.y, d.w, d.h);
         }
 
-        if (d.ts * currentTransform.k > 4) {
+        if (d.ts * currentTransform.k >= 4) {
         // if (d.ts > 0) {
           ctx.fillStyle = "black";
           ctx.font = d.ts + "px Arial";
