@@ -103,7 +103,7 @@ function machineView() {
       for (col=0; col<16; col++) {
         var rackStr = mira.rack2str(row, col);
         transformer.push([(rackW+rackPadding*2)*col + rackPadding, rackPadding]);
-        printElement(rackStr, 4, transformer.zero(), rackW, rackH, 0.5, 2, 8, 8, rackStr);
+        printElement(rackStr, 3, transformer.zero(), rackW, rackH, 0.5, 2, 8, 8, rackStr);
         renderBulkPowerSupply(row, col);
         renderClockCard(row, col);
         renderCoolantMonitor(row, col);
@@ -114,7 +114,7 @@ function machineView() {
       for (col=16; col<18; col++) {
         var ioRackStr = mira.ioRack2str(row, col);
         transformer.push([(rackW+rackPadding*2)*col + rackPadding, rackPadding]);
-        printElement(ioRackStr, 4, transformer.zero(), rackW, rackH, 0.5, 2, 8, 8, ioRackStr);
+        printElement(ioRackStr, 3, transformer.zero(), rackW, rackH, 0.5, 2, 8, 8, ioRackStr);
         renderIODrawers(row, col);
         transformer.pop();
       }
@@ -129,7 +129,7 @@ function machineView() {
       var midplaneIdx = (row*16+col)*2+mp;
       
       transformer.push([0, (midplaneH+midplanePadding)*mp]);
-      printElement(midplaneStr, 3, transformer.zero(), midplaneW, midplaneH, 0.3, 2, 3.8, 3, midplaneStr);
+      printElement(midplaneStr, 2, transformer.zero(), midplaneW, midplaneH, 0.3, 2, 3.8, 3, midplaneStr);
       /* text 3px, 2, 4 */
       renderServiceCard(row, col, mp);
       renderNodeBoards(row, col, mp);
@@ -146,7 +146,7 @@ function machineView() {
         var ioDrawerStr = mira.ioDrawer2str(row, col, ioDrawerID);
 
         transformer.push([q*ioDrawerW, p*ioDrawerH]);
-        printElement(ioDrawerStr, 3, transformer.zero(), ioDrawerW, ioDrawerH, 0.3, 2, 4, 3, "I"+ioDrawerID);
+        printElement(ioDrawerStr, 1, transformer.zero(), ioDrawerW, ioDrawerH, 0.3, 2, 4, 3, "I"+ioDrawerID);
         renderIOComputeCards(row, col, ioDrawerID);
         transformer.pop();
       }
@@ -163,7 +163,7 @@ function machineView() {
         
         transformer.push([q*nodeBoardW, p*nodeBoardH]);
         // printElement(nodeBoardStr, 2, transformer.zero(), nodeBoardW, nodeBoardH, 0.1, 0.5, 1.25, 1, "N"+mira.pad(nodeBoardID, 10, 2));
-        printElement(nodeBoardStr, 2, transformer.zero(), nodeBoardW, nodeBoardH, 0.1, 0.5, 1.25, 0, "N"+mira.pad(nodeBoardID, 10, 2));
+        printElement(nodeBoardStr, 1, transformer.zero(), nodeBoardW, nodeBoardH, 0.1, 0.5, 1.25, 0, "N"+mira.pad(nodeBoardID, 10, 2));
         renderComputeCards(row, col, mp, nodeBoardID);
         renderLinkModules(row, col, mp, nodeBoardID);
         renderOpticalModules(row, col, mp, nodeBoardID);
@@ -238,7 +238,7 @@ function machineView() {
   function renderServiceCard(row, col, mp) {
     var serviceCardStr = mira.serviceCard2str(row, col, mp);
     transformer.push([serviceCardL, serviceCardT]);
-    printElement(serviceCardStr, 2, transformer.zero(), serviceCardW, serviceCardH, 0.2, 3.3, 2.25, 2, "S");
+    printElement(serviceCardStr, 1, transformer.zero(), serviceCardW, serviceCardH, 0.2, 3.3, 2.25, 2, "S");
     transformer.pop();
   }
 
@@ -250,7 +250,7 @@ function machineView() {
         var bulkPowerSupplyID = p*2+q;
         var bulkPowerSupplyStr = mira.bulkPowerSupply2str(row, col, bulkPowerSupplyID);
         transformer.push([q*bulkPowerSupplyW, p*bulkPowerSupplyH]);
-        printElement(bulkPowerSupplyStr, 2, transformer.zero(), bulkPowerSupplyW, bulkPowerSupplyH, 0.2, 0.9, 1.8, 1, "B"+bulkPowerSupplyID);
+        printElement(bulkPowerSupplyStr, 1, transformer.zero(), bulkPowerSupplyW, bulkPowerSupplyH, 0.2, 0.9, 1.8, 1, "B"+bulkPowerSupplyID);
         renderPowerModules(row, col, bulkPowerSupplyID);
         transformer.pop();
       }
@@ -276,14 +276,14 @@ function machineView() {
   function renderClockCard(row, col) {
     var clockCardStr = mira.clockCard2str(row, col);
     transformer.push([clockCardL, clockCardT]);
-    printElement(clockCardStr, 2, transformer.zero(), clockCardW, clockCardH, 0.2, 1.1, 1.8, 1, "K");
+    printElement(clockCardStr, 1, transformer.zero(), clockCardW, clockCardH, 0.2, 1.1, 1.8, 1, "K");
     transformer.pop();
   }
 
   function renderCoolantMonitor(row, col) {
     var coolantMonitorStr = mira.coolantMonitor2str(row, col);
     transformer.push([coolantMonitorL, coolantMonitorT]);
-    printElement(coolantMonitorStr, 2, transformer.zero(), coolantMonitorW, coolantMonitorH, 0.2, 1.1, 1.8, 1, "L");
+    printElement(coolantMonitorStr, 1, transformer.zero(), coolantMonitorW, coolantMonitorH, 0.2, 1.1, 1.8, 1, "L");
     transformer.pop();
   }
   
