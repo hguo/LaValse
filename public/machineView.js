@@ -104,7 +104,6 @@ function machineView(id) {
   var rects = [];
   var histogram = {};
   var highlightedElements = {};
-  var highlightColor;
   var currentTransform = {x: 0, y: 0, k: 1};
   var currentGeom = {};
   
@@ -147,8 +146,9 @@ function machineView(id) {
       
         var L = parseLocation(targetRect.id);
 
-        var html = "<b>location:</b> " + L.str
-          + "<br><b>occurrence:</b> " + (L.str in histogram ? histogram[L.str] : 0)
+        var html = "<b>occurrence:</b> " + (L.str in histogram ? histogram[L.str] : 0)
+          + "<br><b>location:</b> " + L.str
+          + "<br><b>torus:</b> " + torusRMNJMap.torus(L.str)
           + "<br><b>LOD:</b> " + targetRect.lod
           + "<br><b>locationType:</b> " + L.type
           + "<br><b>locationDetail:</b> " + L.narratives;
@@ -157,12 +157,19 @@ function machineView(id) {
         tooltip.style("left", X);
         tooltip.style("top", Y+20);
         tooltip.html(html);
+
+        highlightedElements = {};
+        highlightLocation(L.str, "red");
       } else {
         tooltip.style("display", "none");
       }
     })
     .on("mouseleave", function() {
       tooltip.style("display", "none");
+      if (Object.keys(highlightedElements).length>0) {
+        highlightedElements = {};
+        renderRects();
+      }
     });
   });
 
@@ -187,7 +194,7 @@ function machineView(id) {
         else ctx.fillStyle = "white";
 
         if (d.id in highlightedElements) {
-          ctx.shadowColor = highlightColor;
+          ctx.shadowColor = highlightedElements[d.id];
           ctx.shadowBlur = 20;
         } else {
           ctx.shadowBlur = 0;
@@ -209,6 +216,7 @@ function machineView(id) {
         }
       }
     });
+
     ctx.restore();
   }
 
@@ -319,12 +327,16 @@ function machineView(id) {
   }
 
   this.highlightBlock = function(str, color) {
-    highlightColor = color;
     var array = partitionParser.list(str);
     highlightedElements = {};
     array.forEach(function(d) {
-      highlightedElements[d] = 1;
+      highlightedElements[d] = color;
     });
+    renderRects();
+  }
+
+  highlightLocation = function(str, color) {
+    highlightedElements[str] = color;
     renderRects();
   }
 
