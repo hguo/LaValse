@@ -366,7 +366,9 @@ function ceilPow(v) {
 }
 
 function removeTooltips() {
-  $(".ui-tooltip").remove();
+  $(".ui-tooltip")
+    .not("#machineViewTooltip")
+    .remove();
 }
 
 function globalCategoryColor(volumeBy, d) {

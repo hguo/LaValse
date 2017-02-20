@@ -19,7 +19,7 @@ var aabb = {
       ((left(b) <= left(a)) && (left(a) <= right(b))) && 
       ((left(b) <= right(a)) && (right(a) <= right(b)))
     );
-  }
+  }, 
 };
 
 function machineView(id) {
@@ -43,17 +43,21 @@ function machineView(id) {
 
   var canvas = d3.select(id)
     .append("canvas")
+    .attr("id", "machineViewCanvas")
     .style("position", "absolute")
   var ctx = canvas.node().getContext("2d");
+
+  var tooltip = d3.select("body")
+    .append("div")
+    .attr("id", "machineViewTooltip")
+    .attr("class", "ui-tooltip ui-corner-all ui-widget-shadow ui-widget ui-widget-content")
+    .style("display", "none");
   
   var svg = d3.select(id)
     .append("svg")
     .attr("id", "machineViewSvg")
     .style("position", "absolute")
     .style("z-index", 1);
-  
-  // svg.append("g")
-  //   .attr("class", "brush");
   
   var legendSvg = d3.select(id)
     .append("svg")
@@ -102,6 +106,7 @@ function machineView(id) {
   var highlightedElements = {};
   var highlightColor;
   var currentTransform = {x: 0, y: 0, k: 1};
+  var currentGeom = {};
   
   var autoLOD = true;
   var previousLOD = 1, currentLOD = 1;
@@ -116,6 +121,38 @@ function machineView(id) {
     });
     rects = data;
     renderRects();
+    
+    svg.on("mousemove", function() {
+      var X = d3.event.x, Y = d3.event.y;
+      var pos = {
+        x: (X - currentGeom.left - currentTransform.x) / currentTransform.k,
+        y: (Y - currentGeom.top - currentTransform.y) / currentTransform.k
+      };
+
+      function pointInside(p, box) {
+        return p.x >= box.x && (p.x < box.x + box.w)
+          && p.y >= box.y && (p.y < box.y + box.h);
+      }
+
+      var targetRect = null;
+      for (var i=0; i<rects.length; i++) {
+        if (rects[i].lod == currentLOD && pointInside(pos, rects[i])) {
+          targetRect = rects[i];
+          break;
+        }
+      }
+     
+      if (targetRect != null) {
+        tooltip.style("display", "block");
+        tooltip.style("left", X);
+        tooltip.style("top", Y+20);
+        tooltip.html(targetRect.id);
+        console.log(targetRect);
+      }
+    })
+    .on("mouseleave", function() {
+      tooltip.style("display", "none");
+    });
   });
 
   function renderRects() {
@@ -286,6 +323,7 @@ function machineView(id) {
   }
 
   this.resize = function(geom) {
+    currentGeom = geom;
     const legendW = 40;
     
     width = geom.width - legendW;
