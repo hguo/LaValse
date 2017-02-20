@@ -145,21 +145,48 @@ function machineView(id) {
         targetRect = matched[0];
       
         var L = parseLocation(targetRect.id);
+        var torusCoords = torusRMNJMap.torus(L.str);
+        var torusNeighbors = torusCoords == undefined ? undefined : torusRMNJMap.neighbors(torusCoords);
 
         var html = "<b>occurrence:</b> " + (L.str in histogram ? histogram[L.str] : 0)
           + "<br><b>location:</b> " + L.str
-          + "<br><b>torus:</b> " + torusRMNJMap.torus(L.str)
           + "<br><b>LOD:</b> " + targetRect.lod
           + "<br><b>locationType:</b> " + L.type
           + "<br><b>locationDetail:</b> " + L.narratives;
+
+        highlightedElements = {};
+        // highlightLocation(L.str, "red");
+        highlightedElements[L.str] = "red";
+      
+        if (torusCoords != undefined) {
+          html += "<br><b>torus:</b> " + torusCoords
+            + "<br><b>Ar:</b> " + torusNeighbors.Ar + "/" + torusRMNJMap.RMNJ(torusNeighbors.Ar)
+            + "<br><b>At:</b> " + torusNeighbors.At + "/" + torusRMNJMap.RMNJ(torusNeighbors.At)
+            + "<br><b>Br:</b> " + torusNeighbors.Br + "/" + torusRMNJMap.RMNJ(torusNeighbors.Br)
+            + "<br><b>Bt:</b> " + torusNeighbors.Bt + "/" + torusRMNJMap.RMNJ(torusNeighbors.Bt)
+            + "<br><b>Cr:</b> " + torusNeighbors.Cr + "/" + torusRMNJMap.RMNJ(torusNeighbors.Cr)
+            + "<br><b>Ct:</b> " + torusNeighbors.Ct + "/" + torusRMNJMap.RMNJ(torusNeighbors.Ct)
+            + "<br><b>Dr:</b> " + torusNeighbors.Dr + "/" + torusRMNJMap.RMNJ(torusNeighbors.Dr)
+            + "<br><b>Dt:</b> " + torusNeighbors.Dt + "/" + torusRMNJMap.RMNJ(torusNeighbors.Dt)
+            + "<br><b>Er:</b> " + torusNeighbors.Er + "/" + torusRMNJMap.RMNJ(torusNeighbors.Er)
+            + "<br><b>Et:</b> " + torusNeighbors.Et + "/" + torusRMNJMap.RMNJ(torusNeighbors.Et);
+        
+          highlightedElements[torusRMNJMap.RMNJ(torusNeighbors.Ar)] = "orange";
+          highlightedElements[torusRMNJMap.RMNJ(torusNeighbors.At)] = "orange";
+          highlightedElements[torusRMNJMap.RMNJ(torusNeighbors.Br)] = "orange";
+          highlightedElements[torusRMNJMap.RMNJ(torusNeighbors.Bt)] = "orange";
+          highlightedElements[torusRMNJMap.RMNJ(torusNeighbors.Cr)] = "orange";
+          highlightedElements[torusRMNJMap.RMNJ(torusNeighbors.Ct)] = "orange";
+          highlightedElements[torusRMNJMap.RMNJ(torusNeighbors.Dr)] = "orange";
+          highlightedElements[torusRMNJMap.RMNJ(torusNeighbors.Dt)] = "orange";
+          highlightedElements[torusRMNJMap.RMNJ(torusNeighbors.Er)] = "orange";
+        }
+        renderRects();
 
         tooltip.style("display", "block");
         tooltip.style("left", X);
         tooltip.style("top", Y+20);
         tooltip.html(html);
-
-        highlightedElements = {};
-        highlightLocation(L.str, "red");
       } else {
         tooltip.style("display", "none");
       }
@@ -202,8 +229,8 @@ function machineView(id) {
         ctx.fillRect(d.x, d.y, d.w, d.h);
         ctx.shadowBlur = 0;
       
-        if (d.lw * currentTransform.k >= 0.1) {
-        // if (d.lw > 0) {
+        // if (d.lw * currentTransform.k >= 0.1) {
+        if (d.lw > 0) {
           ctx.lineWidth = d.lw;
           ctx.strokeRect(d.x, d.y, d.w, d.h);
         }

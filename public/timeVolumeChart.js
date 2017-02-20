@@ -109,8 +109,8 @@ function timeVolumeChart(id) {
   var x0 = d3.scaleTime()
     .domain(xDomain);
   var x = d3.scaleTime()
-    // .clamp(true)
-    .clamp(false)
+    .clamp(true)
+    // .clamp(false)
     .domain(xDomain);
   var X0 = d3.scaleTime() // the overview
     .domain(xDomain);
