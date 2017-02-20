@@ -144,12 +144,14 @@ function machineView(id) {
       if (matched.length > 0) {
         matched.sort(function(a, b) {return a.lod > b.lod;});
         targetRect = matched[0];
-        
+       
+        var html = "<b>location:</b> " + targetRect.id 
+          + "<br><b>occurrence:</b> " + (targetRect.id in histogram ? histogram[targetRect.id] : 0);
+
         tooltip.style("display", "block");
         tooltip.style("left", X);
         tooltip.style("top", Y+20);
-        tooltip.html(targetRect.id);
-        console.log(targetRect);
+        tooltip.html(html);
       } else {
         tooltip.style("display", "none");
       }
