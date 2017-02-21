@@ -426,7 +426,7 @@ function timeVolumeChart(id) {
           + "<br><b>backendJobID: </b> " + d.backendJobID
           + "<br><b>machinePartition:</b> " + d.block
           + "<br><b>location:</b> " + d.location
-          + "<br><b>torus:</b> " + graphRMNJ[d.location].coords // torusRMNJMap.torus(d.location)
+          + "<br><b>torus:</b> " + (d.location in graphRMNJ ? graphRMNJ[d.location].coords : "") // torusRMNJMap.torus(d.location)
           + "<br><b>CPU:</b> " + d.CPU
           + "<br><b>count:</b> " + d.count
           + "<br><b>controlActions:</b> " + String(events[d.messageID].controlAction).replace(/,/g, ', ')
