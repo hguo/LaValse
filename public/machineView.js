@@ -161,23 +161,6 @@ function machineView(id) {
           + "<br><b>locationType:</b> " + L.type
           + "<br><b>locationDetail:</b> " + L.narratives;
 
-        highlightedElements = {};
-        // highlightLocation(L.str, "red");
-        highlightedElements[L.str] = "red";
-        
-        if (neighbors != undefined) {
-          highlightedElements[neighbors.Ar] = "orange";
-          highlightedElements[neighbors.At] = "orange";
-          highlightedElements[neighbors.Br] = "orange";
-          highlightedElements[neighbors.Bt] = "orange";
-          highlightedElements[neighbors.Cr] = "orange";
-          highlightedElements[neighbors.Ct] = "orange";
-          highlightedElements[neighbors.Dr] = "orange";
-          highlightedElements[neighbors.Dt] = "orange";
-          if ("Er" in neighbors) highlightedElements[neighbors.Er] = "orange";
-        }
-        renderRects();
-
         if (L.type === "RMNJ") {
           html += "<br><b>torus:</b> " + graphRMNJ[L.str].coords
             + "<br><b>Ar:</b> " + neighbors.Ar + "/" + graphRMNJ[neighbors.Ar].coords
@@ -205,6 +188,25 @@ function machineView(id) {
         tooltip.style("left", X);
         tooltip.style("top", Y+20);
         tooltip.html(html);
+      
+        var color0 = "black", color1 = "red", color2 = "orange";
+        
+        highlightedElements = {};
+        highlightedElements[L.str] = color0;
+        
+        if (neighbors != undefined) {
+          highlightedElements[neighbors.Ar] = color1;
+          highlightedElements[neighbors.At] = color1;
+          highlightedElements[neighbors.Br] = color1;
+          highlightedElements[neighbors.Bt] = color1;
+          highlightedElements[neighbors.Cr] = color1;
+          highlightedElements[neighbors.Ct] = color1;
+          highlightedElements[neighbors.Dr] = color1;
+          highlightedElements[neighbors.Dt] = color1;
+          if ("Er" in neighbors) highlightedElements[neighbors.Er] = color1;
+        }
+        renderRects();
+
       } else {
         tooltip.style("display", "none");
       }
