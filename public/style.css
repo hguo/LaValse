@@ -3,6 +3,10 @@ body {
   font-size: 9pt;
 }
 
+.ui-tooltip {
+  opacity:0.8;
+}
+
 .tooltipTable {
   font-size: 9pt;
 }
