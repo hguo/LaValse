@@ -63,7 +63,7 @@ var projProfileMap = new function() {
 };
 
 var graphRM = {}, graphRMN = {}, graphRMNJ = {};
-// var torusRMNJMap = {};
+RMNJTorusMap = {};
 
 d3.csv("/graphRM.csv", function(err, data) {
   data.forEach(function(d) {

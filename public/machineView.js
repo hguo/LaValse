@@ -145,12 +145,10 @@ function machineView(id) {
         targetRect = matched[0];
       
         var L = parseLocation(targetRect.id);
-        var coords = undefined;
         var neighbors = undefined;
         
         if (L.type === "RMNJ") {
           neighbors = graphRMNJ[L.str];
-          coords = neighbors.coords; // counter-intuitive...
         } else if (L.type == "RMN") {
           neighbors = graphRMN[L.str];
         } else if (L.type == "RM") {
@@ -178,33 +176,30 @@ function machineView(id) {
           highlightedElements[neighbors.Dt] = "orange";
           if ("Er" in neighbors) highlightedElements[neighbors.Er] = "orange";
         }
-
-        /*
-        if (coords != undefined) {
-          html += "<br><b>torus:</b> " + torusCoords
-            + "<br><b>Ar:</b> " + neighbors.Ar + "/" + torusRMNJMap.RMNJ(neighbors.Ar)
-            + "<br><b>At:</b> " + neighbors.At + "/" + torusRMNJMap.RMNJ(neighbors.At)
-            + "<br><b>Br:</b> " + neighbors.Br + "/" + torusRMNJMap.RMNJ(neighbors.Br)
-            + "<br><b>Bt:</b> " + neighbors.Bt + "/" + torusRMNJMap.RMNJ(neighbors.Bt)
-            + "<br><b>Cr:</b> " + neighbors.Cr + "/" + torusRMNJMap.RMNJ(neighbors.Cr)
-            + "<br><b>Ct:</b> " + neighbors.Ct + "/" + torusRMNJMap.RMNJ(neighbors.Ct)
-            + "<br><b>Dr:</b> " + neighbors.Dr + "/" + torusRMNJMap.RMNJ(neighbors.Dr)
-            + "<br><b>Dt:</b> " + neighbors.Dt + "/" + torusRMNJMap.RMNJ(neighbors.Dt)
-            + "<br><b>Er:</b> " + neighbors.Er + "/" + torusRMNJMap.RMNJ(neighbors.Er)
-            + "<br><b>Et:</b> " + neighbors.Et + "/" + torusRMNJMap.RMNJ(neighbors.Et);
-        
-          highlightedElements[torusRMNJMap.RMNJ(neighbors.Ar)] = "orange";
-          highlightedElements[torusRMNJMap.RMNJ(neighbors.At)] = "orange";
-          highlightedElements[torusRMNJMap.RMNJ(neighbors.Br)] = "orange";
-          highlightedElements[torusRMNJMap.RMNJ(neighbors.Bt)] = "orange";
-          highlightedElements[torusRMNJMap.RMNJ(neighbors.Cr)] = "orange";
-          highlightedElements[torusRMNJMap.RMNJ(neighbors.Ct)] = "orange";
-          highlightedElements[torusRMNJMap.RMNJ(neighbors.Dr)] = "orange";
-          highlightedElements[torusRMNJMap.RMNJ(neighbors.Dt)] = "orange";
-          highlightedElements[torusRMNJMap.RMNJ(neighbors.Er)] = "orange";
-        }
-        */ 
         renderRects();
+
+        if (L.type === "RMNJ") {
+          html += "<br><b>torus:</b> " + graphRMNJ[L.str].coords
+            + "<br><b>Ar:</b> " + neighbors.Ar + "/" + graphRMNJ[neighbors.Ar].coords
+            + "<br><b>At:</b> " + neighbors.At + "/" + graphRMNJ[neighbors.At].coords
+            + "<br><b>Br:</b> " + neighbors.Br + "/" + graphRMNJ[neighbors.Br].coords
+            + "<br><b>Bt:</b> " + neighbors.Bt + "/" + graphRMNJ[neighbors.Bt].coords
+            + "<br><b>Cr:</b> " + neighbors.Cr + "/" + graphRMNJ[neighbors.Cr].coords
+            + "<br><b>Ct:</b> " + neighbors.Ct + "/" + graphRMNJ[neighbors.Ct].coords
+            + "<br><b>Dr:</b> " + neighbors.Dr + "/" + graphRMNJ[neighbors.Dr].coords
+            + "<br><b>Dt:</b> " + neighbors.Dt + "/" + graphRMNJ[neighbors.Dt].coords
+            + "<br><b>Er:</b> " + neighbors.Er + "/" + graphRMNJ[neighbors.Er].coords
+            + "<br><b>Et:</b> " + neighbors.Et + "/" + graphRMNJ[neighbors.Et].coords;
+        } else if (L.type === "RMN" || L.type === "RM") {
+          html += "<br><b>Ar:</b> " + neighbors.Ar
+            + "<br><b>At:</b> " + neighbors.At
+            + "<br><b>Br:</b> " + neighbors.Br
+            + "<br><b>Bt:</b> " + neighbors.Bt
+            + "<br><b>Cr:</b> " + neighbors.Cr
+            + "<br><b>Ct:</b> " + neighbors.Ct
+            + "<br><b>Dr:</b> " + neighbors.Dr
+            + "<br><b>Dt:</b> " + neighbors.Dt;
+        }
 
         tooltip.style("display", "block");
         tooltip.style("left", X);
