@@ -383,8 +383,13 @@ function machineView(id) {
     renderRects();
   }
 
-  highlightLocation = function(str, color) {
+  this.highlightLocation = function(str, color) {
     highlightedElements[str] = color;
+    renderRects();
+  }
+
+  this.dehighlightLocation = function(str) {
+    delete highlightedElements[str];
     renderRects();
   }
 

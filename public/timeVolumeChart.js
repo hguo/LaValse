@@ -434,6 +434,12 @@ function timeVolumeChart(id) {
           + "<br><b>relevantDiagnosticSuites:</b> " + String(events[d.messageID].relevantDiagnosticSuites).replace(/,/g, ', ')
           + "<br><b>message:</b> " + d.message
           + "<br><b>description:</b> " + e.description;
+      })
+      .on("mouseover", function(d) {
+        machineView.highlightLocation(d.location, "red"); // TODO: parent locations
+      })
+      .on("mouseleave", function(d) {
+        machineView.dehighlightLocation(d.location);
       });
   }
 
