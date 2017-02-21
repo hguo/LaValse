@@ -62,6 +62,28 @@ var projProfileMap = new function() {
   });
 };
 
+var graphRM = {}, graphRMN = {}, graphRMNJ = {};
+// var torusRMNJMap = {};
+
+d3.csv("/graphRM.csv", function(err, data) {
+  data.forEach(function(d) {
+    graphRM[d.RM] = d;
+  });
+});
+
+d3.csv("/graphRMN.csv", function(err, data) {
+  data.forEach(function(d) {
+    graphRMN[d.RMN] = d;
+  });
+});
+
+d3.csv("/graphRMNJ.csv", function(err, data) {
+  data.forEach(function(d) {
+    graphRMNJ[d.RMNJ] = d;
+  });
+});
+
+/*
 var torusRMNJMap = new function() {
   var torusMap = {};
   var RMNJMap = {};
@@ -108,7 +130,7 @@ var torusRMNJMap = new function() {
       Et: S(coords, 4, 1),
     };
   }
-}
+} */
 
 function buildMessageIdHierarchy(volumeBy, msgHistogram) { // volumeBy = component/category/severity (locationType will be in future)
   var hierarchy = {name: "root", children: [], nnodes: 0};
@@ -362,7 +384,7 @@ function refreshTops(q) {
         return "<b>location:</b> " + L.str
           + "<br><b>type:</b> " + locationTypes[L.type]; 
       });
-    tr.append("td").html(function(d) {return torusRMNJMap.torus(d.location);}); 
+    tr.append("td").html(function(d) {if (d.location in graphRMNJ) return graphRMNJ[d.location].coords;});
     tr.append("td").html(function(d) {return d.CPU;});
     tr.append("td").html(function(d) {return d.block;})
       .attr("title", function(d) {return d.block;});
