@@ -531,7 +531,7 @@ function timeVolumeChart(id) {
     for (var msgID in arcs) {
       var array = arcs[msgID];
       ctx.beginPath();
-      for (var j=0; j<array.length-2; j++) {
+      for (var j=0; j<array.length-1; j++) {
         var i0 = array[j], i1 = array[j+1];
         var center = x(query.T0 + query.tg * (i0 + i1)/2);
         var radius = (x(query.T0 + query.tg * i1) - x(query.T0 + query.tg * i0)) / 2;

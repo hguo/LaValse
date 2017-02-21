@@ -316,6 +316,7 @@ function machineView(id) {
     } else {
       if (max == 1 || max == 0) {min = 0; max = 1;}
       if (min == max) {min = 0;}
+      min = 0;
     }
 
     colorScaleLog.domain([min, max]);
