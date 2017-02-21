@@ -206,7 +206,9 @@ function machineView(id) {
           if ("Er" in neighbors) highlightedElements[neighbors.Er] = color1;
         }
         renderRects();
-
+     
+        timeVolumeChart.dehighlightGlyphs();
+        timeVolumeChart.highlightGlyphsByLocation(L.str);
       } else {
         tooltip.style("display", "none");
       }

@@ -400,6 +400,17 @@ function timeVolumeChart(id) {
       .transition().call(YAxis);
   }
 
+  this.highlightGlyphsByLocation = function(location) {
+    svgVolume.selectAll(".glyph")
+      .filter(function(d) {return d.location === location;})
+      .attr("color", "red");
+  }
+  
+  this.dehighlightGlyphs = function() {
+    svgVolume.selectAll(".glyph")
+      .attr("color", "steelblue");
+  }
+
   this.updateRecords = function(data) {
     if (useLogScale) toggleLogScale();
 
