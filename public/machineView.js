@@ -50,7 +50,7 @@ function machineView(id) {
   var tooltip = d3.select("body")
     .append("div")
     .attr("id", "machineViewTooltip")
-    .attr("class", "ui-tooltip ui-corner-all ui-widget-shadow ui-widget ui-widget-content")
+    .attr("class", "customTooltip ui-tooltip ui-corner-all ui-widget-shadow ui-widget ui-widget-content")
     .style("display", "none");
   
   var svg = d3.select(id)

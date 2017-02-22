@@ -15,6 +15,11 @@ function timeVolumeChart(id) {
   var midplaneVolumeMax = 1;
 
   var arcs = [];
+  var arcTooltip = d3.select("body")
+    .append("div")
+    .attr("id", "arcTooltip")
+    .attr("class", "customTooltip ui-tooltip ui-corner-all ui-widget-shadow ui-widget ui-widget-content")
+    .style("display", "none");
   
   var cobaltJobHighlighted = false;
   var cobaltYTranslate = 0, cobaltYScale = 1;
@@ -251,7 +256,8 @@ function timeVolumeChart(id) {
       .style("left", geom.left + margin.left)
       .style("top", geom.top + volumeTop + volumeHeight + 5)
       .attr("width", width)
-      .attr("height", width/2);
+      // .attr("height", width/2);
+      .attr("height", 120); // FIXME
     var ctx1 = volumeCanvas.node().getContext("2d");
     adjustCanvasResolution(volumeCanvas.node(), ctx1);
 
@@ -353,7 +359,7 @@ function timeVolumeChart(id) {
       var X = d3.event.x - rect.left, 
           Y = d3.event.y - rect.top;
       const threshold = 400; // 20 pixels
-      console.log(X, Y);
+      // console.log(X, Y);
     
       var picked = false;
       for (var msgID in arcs) {
@@ -369,14 +375,32 @@ function timeVolumeChart(id) {
           if (Math.abs(dist2 - radius2) <= threshold) {
             highlightedArc = msgID;
             picked = true;
+            break;
           }
         }
+        if (picked) break;
       }
 
-      if (highlightedArc != undefined) drawArcDiagram();
+      if (picked && highlightedArc != undefined) drawArcDiagram();
+      if (picked) {
+        var msgID = highlightedArc;
+        var e = events[msgID];
+        var html = "<b>messageID:</b> " + msgID
+          // + "<br><b>count:</b> " + d.data.count
+          + "<br><b>severity:</b> " + e.severity
+          + "<br><b>component:</b> " + e.component
+          + "<br><b>category:</b> " + e.category
+          + "<br><b>controlActions:</b> " + String(e.controlAction).replace(/,/g, ', ')
+          + "<br><b>serviceAction:</b> " + events[msgID].serviceAction
+          + "<br><b>relevantDiagnosticSuites:</b> " + String(e.relevantDiagnosticSuites).replace(/,/g, ', ')
+          + "<br><b>description:</b> " + e.description;
+        arcTooltip.style("display", "block")
+          .html(html);
+      }
     }).on("mouseleave", function() {
       highlightedArc = undefined;
       drawArcDiagram();
+      arcTooltip.style("display", "none");
     });
   }
 
@@ -585,13 +609,16 @@ function timeVolumeChart(id) {
      
       if (highlightedArc == msgID) {
         ctx.globalAlpha = 1.0;
-        ctx.strokeStyle = "red";
+        ctx.strokeStyle = "steelblue";
+        ctx.lineWidth = 2;
       } else if (highlightedArc == undefined) {
         ctx.globalAlpha = 0.4;
         ctx.strokeStyle = "black";
+        ctx.lineWidth = 1;
       } else {
         ctx.globalAlpha = 0.1;
         ctx.strokeStyle = "black";
+        ctx.lineWidth = 1;
       }
       
       ctx.beginPath();

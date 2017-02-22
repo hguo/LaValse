@@ -382,7 +382,7 @@ function ceilPow(v) {
 
 function removeTooltips() {
   $(".ui-tooltip")
-    .not("#machineViewTooltip")
+    .not(".customTooltip")
     .remove();
 }
 
