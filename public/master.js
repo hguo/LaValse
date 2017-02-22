@@ -553,3 +553,12 @@ function frequencyColorMap2(val) {
   else if (val < 1000) return "#4292c6";
   else return "#2171b5";
 }
+
+function frequencyColorMap2bw(val) {
+  if (val == 0) return "#ffffff";
+  else if (val == 1) return "#d9d9d9";
+  else if (val < 10) return "#bdbdbd";
+  else if (val < 100) return "#969696";
+  else if (val < 1000) return "#737373";
+  else return "#525252";
+}

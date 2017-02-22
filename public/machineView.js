@@ -105,6 +105,8 @@ function machineView(id) {
   var rects = [];
   var histogram = {};
   var highlightedElements = {};
+  var selectedElements = new Set;
+
   var currentTransform = {x: 0, y: 0, k: 1};
   var currentGeom = {};
   
@@ -122,17 +124,17 @@ function machineView(id) {
     rects = data;
     renderRects();
     
+    function pointInside(p, box) {
+      return p.x >= box.x && (p.x < box.x + box.w)
+        && p.y >= box.y && (p.y < box.y + box.h);
+    }
+    
     svg.on("mousemove", function() {
       var X = d3.event.x, Y = d3.event.y;
       var pos = {
         x: (X - currentGeom.left - currentTransform.x) / currentTransform.k,
         y: (Y - currentGeom.top - currentTransform.y) / currentTransform.k
       };
-
-      function pointInside(p, box) {
-        return p.x >= box.x && (p.x < box.x + box.w)
-          && p.y >= box.y && (p.y < box.y + box.h);
-      }
 
       var targetRect = null;
       var matched = [];
@@ -220,6 +222,29 @@ function machineView(id) {
         highlightedElements = {};
         renderRects();
       }
+    })
+    .on("click", function() {
+      var X = d3.event.x, Y = d3.event.y;
+      var pos = {
+        x: (X - currentGeom.left - currentTransform.x) / currentTransform.k,
+        y: (Y - currentGeom.top - currentTransform.y) / currentTransform.k
+      };
+
+      var targetRect = null;
+      var matched = [];
+      rects.forEach(function(d) {
+        if (d.lod >= currentLOD && pointInside(pos, d))
+          matched.push(d);
+      });
+
+      if (matched.length > 0) {
+        targetRect = matched[matched.length-1];
+        var id = targetRect.id;
+        if (!(id in histogram)) return; // cannot select an element that does not have events
+        selectedElements.clear();
+        selectedElements.add(id);
+        refresh();
+      }
     });
   });
 
@@ -233,6 +258,16 @@ function machineView(id) {
   }
 
   function renderRects() {
+    function color(id) {
+      if (id in histogram) {
+        var val = histogram[id];
+        if (selectedElements.size == 0 || selectedElements.has(id))
+          return frequencyColorMap2(val);
+        else 
+          return frequencyColorMap2bw(val);
+      } else return "white";
+    }
+
     ctx.clearRect(0, 0, width, height);
     
     // var colorScale = useLogScale ? colorScaleLog : colorScaleLinear;
@@ -244,8 +279,9 @@ function machineView(id) {
     ctx.scale(currentTransform.k, currentTransform.k);
     rects.forEach(function(d) {
       if (d.lod >= currentLOD && aabb.collide(box, d)) {
-        if (d.id in histogram) ctx.fillStyle = frequencyColorMap2(histogram[d.id]); // colorScale(histogram[d.id]); // TODO
-        else ctx.fillStyle = "white";
+        ctx.fillStyle = color(d.id);
+        // if (d.id in histogram) ctx.fillStyle = color(d.id); // frequencyColorMap2(histogram[d.id]); // colorScale(histogram[d.id]); // TODO
+        // else ctx.fillStyle = "white";
 
         if (d.id in highlightedElements) {
           ctx.shadowColor = highlightedElements[d.id];
@@ -293,7 +329,7 @@ function machineView(id) {
 
     if (autoLOD) {
       if (t.k >= 7) currentLOD = 0; // setLOD(0);
-      if (t.k < 0.75) currentLOD = 2;
+      else if (t.k < 0.5) currentLOD = 2;
       else currentLOD = 1; // setLOD(1);
       renderRects();
     } else
@@ -310,9 +346,19 @@ function machineView(id) {
 
     query.LOD = currentLOD;
     query.location = collided.map(function(d) {return d.id;});
+    selectedElements.clear(); // TODO
     refresh();
 
     zoomTimer.stop();
+  }
+
+  function selectElements(array) {
+    selectedElements.clear(); // TODO: intersect, union, ...
+    array.forEach(function(d) {
+      selectedElements.add(d);
+    });
+    query["location"] = array;
+    refresh();
   }
 
   function brushed() {
@@ -333,13 +379,11 @@ function machineView(id) {
           }
         }
       });
-      if (matched.length > 0) {
-        query["location"] = matched;
-        refresh();
-      }
+      selectElements(matched);
     } else {
-      delete query["location"];
-      refresh();
+      // selectedElements([]);
+      selectedElements.clear();
+      zoomTimedOut(); // counter-intuitive. selected all elements in the viewports
     }
   }
   
