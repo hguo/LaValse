@@ -222,16 +222,20 @@ function machineView(id) {
     });
   });
 
-  function renderRects() {
-    ctx.clearRect(0, 0, width, height);
-    
-    var colorScale = useLogScale ? colorScaleLog : colorScaleLinear;
-    var box = {
+  function currentViewportBox() {
+    return {
       x: -currentTransform.x / currentTransform.k,
       y: -currentTransform.y / currentTransform.k,
       w: width / currentTransform.k,
       h: height / currentTransform.k
     };
+  }
+
+  function renderRects() {
+    ctx.clearRect(0, 0, width, height);
+    
+    var colorScale = useLogScale ? colorScaleLog : colorScaleLinear;
+    const box = currentViewportBox();
     
     ctx.clearRect(0, 0, width, height);
     ctx.save();
@@ -280,16 +284,33 @@ function machineView(id) {
   }
   this.setLOD = setLOD;
 
+  var zoomTimer = d3.timer(function() {zoomTimer.stop()});
+  
   function zoomed() {
     var t = d3.event.transform;
     currentTransform = {k: t.k, x: t.x, y: t.y};
 
     if (autoLOD) {
-      if (t.k >= 7) setLOD(0);
-      else setLOD(1);
+      if (t.k >= 7) currentLOD = 0; // setLOD(0);
+      else currentLOD = 1; // setLOD(1);
       renderRects();
     } else
       renderRects();
+
+    zoomTimer.restart(zoomTimedOut, 200);
+  }
+
+  function zoomTimedOut() {
+    const box = currentViewportBox();
+    var collided = rects.filter(function(d) {
+      return d.lod >= currentLOD && aabb.collide(box, d);
+    });
+
+    query.LOD = currentLOD;
+    query.location = collided.map(function(d) {return d.id;});
+    refresh();
+
+    zoomTimer.stop();
   }
 
   function brushed() {

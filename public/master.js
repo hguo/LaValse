@@ -182,61 +182,63 @@ $(function() {
 });
 
 function init() {
-  d3.json("/cube?query=" + JSON.stringify(query), function (d) {
-    if (d == null || d == undefined) return;
-    if ("top" in d) refreshTops(d["top"]);
+  d3.json("/cube_post")
+    .header("Content-Type", "application/json")
+    .post(JSON.stringify(query), function (err, d) {
+      if (d == null || d == undefined) return;
+      if ("top" in d) refreshTops(d["top"]);
 
-    severityChart = new barChart(
-        "severity", "#severityChart", histogramToArray(d.severity), severities,
-        {L: 0, T: 0, W: 120, H: 90});
-    maintenanceChart = new barChart(
-        "maintenance", "#maintenanceChart", histogramToArray(d.maintenance), maintenanceStates,
-        {L: 0, T: 90, W: 120, H: 65});
-    controlActionChart = new barChart(
-        "controlAction", "#controlActionChart", histogramToArray(d.controlAction), controlActions,
-        {L: 0, T: 155, W: 120, H: 135});
-    componentChart = new barChart(
-        "component", "#componentChart", histogramToArray(d.component), components,
-        {L: 120, T: 0, W: 120, H: 290});
-    categoryChart = new barChart(
-        "category", "#categoryChart", histogramToArray(d.category), categories,
-        {L: 0, T: 290, W: 120, H: 290});
-    locationTypeChart = new barChart(
-        "locationType", "#locationTypeChart", histogramToArray(d.locationType), locationTypes,
-        {L: 120, T: 290, W: 120, H: 290});
-    treeMapView = new treeMapView(
-        "#messageIdChart");
+      severityChart = new barChart(
+          "severity", "#severityChart", histogramToArray(d.severity), severities,
+          {L: 0, T: 0, W: 120, H: 90});
+      maintenanceChart = new barChart(
+          "maintenance", "#maintenanceChart", histogramToArray(d.maintenance), maintenanceStates,
+          {L: 0, T: 90, W: 120, H: 65});
+      controlActionChart = new barChart(
+          "controlAction", "#controlActionChart", histogramToArray(d.controlAction), controlActions,
+          {L: 0, T: 155, W: 120, H: 135});
+      componentChart = new barChart(
+          "component", "#componentChart", histogramToArray(d.component), components,
+          {L: 120, T: 0, W: 120, H: 290});
+      categoryChart = new barChart(
+          "category", "#categoryChart", histogramToArray(d.category), categories,
+          {L: 0, T: 290, W: 120, H: 290});
+      locationTypeChart = new barChart(
+          "locationType", "#locationTypeChart", histogramToArray(d.locationType), locationTypes,
+          {L: 120, T: 290, W: 120, H: 290});
+      treeMapView = new treeMapView(
+          "#messageIdChart");
 
-    timeVolumeChart = new timeVolumeChart("#timeVolumeChart");
-    timeVolumeChart.resize({left: 240, top: 315, width: 720, height: 300});
-    timeVolumeChart.updateVolume(d.timeVolumes);
-    timeVolumeChart.updateOverviewVolume(d.overviewVolume);
-    timeVolumeChart.updateMidplaneVolumes(d.midplaneVolumes);
-    timeVolumeChart.updateArcDiagram(d.arcs);
+      timeVolumeChart = new timeVolumeChart("#timeVolumeChart");
+      timeVolumeChart.resize({left: 240, top: 315, width: 720, height: 300});
+      timeVolumeChart.updateVolume(d.timeVolumes);
+      timeVolumeChart.updateOverviewVolume(d.overviewVolume);
+      timeVolumeChart.updateMidplaneVolumes(d.midplaneVolumes);
+      timeVolumeChart.updateArcDiagram(d.arcs);
+      
+      machineView = new machineView("#machineView");
+      machineView.resize({left: 270, top: 5, width: 725, height: 306});
+      machineView.updateData(d.location, histogramToArray(d.location));
+      $("#controlPanel").css("display", "block");
+      $("#cobaltTableView").css("display", "block");
+      $("#tabs").css("display", "block");
     
-    machineView = new machineView("#machineView");
-    machineView.resize({left: 270, top: 5, width: 725, height: 306});
-    machineView.updateData(d.location, histogramToArray(d.location));
-    $("#controlPanel").css("display", "block");
-    $("#cobaltTableView").css("display", "block");
-    $("#tabs").css("display", "block");
-  
-    torusView = new torusView("#tabs-0", {L: 0, T: 0, W: 360, H: 360});
-    
-    treeMapView.resize({L: 0, T: 580, W: 240, H: 140});
-    treeMapView.updateData(buildMessageIdHierarchy(query.volumeBy, d.msgID));
+      torusView = new torusView("#tabs-0", {L: 0, T: 0, W: 360, H: 360});
+      
+      treeMapView.resize({L: 0, T: 580, W: 240, H: 140});
+      treeMapView.updateData(buildMessageIdHierarchy(query.volumeBy, d.msgID));
 
-    updateQueryInfo(d);
-   
-    // load maintenance time
-    d3.csv("/maintenance.csv", function(data) {
-      data.forEach(function(d) {
-        d.startTime = new Date(d.startTime);
-        d.endTime = new Date(d.endTime);
+      updateQueryInfo(d);
+     
+      // load maintenance time
+      d3.csv("/maintenance.csv", function(data) {
+        data.forEach(function(d) {
+          d.startTime = new Date(d.startTime);
+          d.endTime = new Date(d.endTime);
+        });
+        timeVolumeChart.updateMaintenanceData(data);
       });
-      timeVolumeChart.updateMaintenanceData(data);
     });
-  });
 
   refreshCobaltLog({T0: query.T0, T1: query.T1});
 
@@ -256,28 +258,31 @@ function init() {
 }
 
 function refresh() {
-  d3.json("/cube?query=" + JSON.stringify(query), function (d) {
-    removeTooltips();
+  // d3.json("/cube?query=" + JSON.stringify(query), function (d) {
+  d3.json("/cube_post")
+    .header("Content-Type", "application/json")
+    .post(JSON.stringify(query), function (err, d) {
+      removeTooltips();
 
-    if ("top" in d) refreshTops(d["top"]);
-    if ("recIDs" in d) refreshRecIDs(d["recIDs"]);
+      if ("top" in d) refreshTops(d["top"]);
+      if ("recIDs" in d) refreshRecIDs(d["recIDs"]);
 
-    severityChart.updateData(histogramToArray(d.severity));
-    maintenanceChart.updateData(histogramToArray(d.maintenance));
-    controlActionChart.updateData(histogramToArray(d.controlAction));
-    componentChart.updateData(histogramToArray(d.component));
-    categoryChart.updateData(histogramToArray(d.category));
-    locationTypeChart.updateData(histogramToArray(d.locationType));
-    timeVolumeChart.updateVolume(d.timeVolumes);
-    timeVolumeChart.updateOverviewVolume(d.overviewVolume);
-    timeVolumeChart.updateMidplaneVolumes(d.midplaneVolumes);
-    timeVolumeChart.updateArcDiagram(d.arcs);
-    machineView.updateData(d.location, histogramToArray(d.location));
-    
-    treeMapView.updateData(buildMessageIdHierarchy(query.volumeBy, d.msgID));
-    
-    updateQueryInfo(d);
-  });
+      severityChart.updateData(histogramToArray(d.severity));
+      maintenanceChart.updateData(histogramToArray(d.maintenance));
+      controlActionChart.updateData(histogramToArray(d.controlAction));
+      componentChart.updateData(histogramToArray(d.component));
+      categoryChart.updateData(histogramToArray(d.category));
+      locationTypeChart.updateData(histogramToArray(d.locationType));
+      timeVolumeChart.updateVolume(d.timeVolumes);
+      timeVolumeChart.updateOverviewVolume(d.overviewVolume);
+      timeVolumeChart.updateMidplaneVolumes(d.midplaneVolumes);
+      timeVolumeChart.updateArcDiagram(d.arcs);
+      machineView.updateData(d.location, histogramToArray(d.location));
+      
+      treeMapView.updateData(buildMessageIdHierarchy(query.volumeBy, d.msgID));
+      
+      updateQueryInfo(d);
+    });
 }
 
 function toggleLogScale() {

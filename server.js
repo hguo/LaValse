@@ -1,4 +1,5 @@
 const express = require("express");
+const bodyParser = require("body-parser");
 const http = require("http");
 const cube = require("./cube").cube;
 const basicAuth = require('basic-auth-connect');
@@ -9,11 +10,21 @@ const uri = "mongodb://localhost:27017/catalog";
 var mycube = new cube("raslog");
 
 var app = express();
-app.use(express.static("public"));
 // app.use(basicAuth("catalog", "catalog1"));
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+app.use(express.static("public"));
 
 var server = http.createServer(app);
 server.listen(8081);
+
+app.post("/cube_post", function(req, res) {
+  var query = req.body;
+  var results = mycube.query(query);
+
+  res.writeHead(200, {"context-type": "application/json"});
+  res.end(JSON.stringify(results));
+});
 
 app.get("/cube", function(req, res, next) {
   var query = JSON.parse(req.query.query);
