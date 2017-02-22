@@ -261,8 +261,8 @@ function timeVolumeChart(id) {
     //   .call(volumeBrush);
 
     cobaltZoom.scaleExtent([1, 100])
-      .translateExtent([[0, cobaltTop], [width, cobaltHeight]])
-      .extent([[0, cobaltTop], [width, cobaltHeight]]);
+      .translateExtent([[0, 0], [width, cobaltHeight]])
+      .extent([[0, 0], [width, cobaltHeight]]);
     svgCobalt.call(cobaltZoom)
       .on("dblclick.zoom", null);
 

@@ -342,13 +342,29 @@ function machineView(id) {
   }
   
   function updateColorScale(data) {
+    const box = currentViewportBox();
     var min = 1e12; max = 0;
+   
+    /* // viewport dependent coloring
+    rects.forEach(function(d) {
+      if (d.id in data && aabb.collide(box, d)) { // && d in viewport
+        var val = data[d.id];
+        max = d3.max([max, val]);
+        min = d3.min([min, val]);
+      }
+    });
+
+    if (rects.length == 0) { // rects are not loaded yet
+      for (var key in data) {
+        max = d3.max([max, data[key]]);
+        min = d3.min([min, data[key]]);
+      }
+    } */
+      
     for (var key in data) {
       max = d3.max([max, data[key]]);
       min = d3.min([min, data[key]]);
     }
-
-    // console.log(min, max);
 
     if (max/min>10 || max>10000) useLogScale = true;
     if (max<1000) useLogScale = false;
