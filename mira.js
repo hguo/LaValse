@@ -309,14 +309,15 @@ function locationToL1Location(L) {
   case "RMNO": 
     return nodeBoard2str(L.row, L.column, L.midplane, L.nodeBoard);
 
-  case "Q": return ioRack2str(L.row, L.column);
-
+  case "Q": 
+    return ioRack2str(L.row, L.column);
   case "QI":
-  case "QIJ":
   case "QIU":
   case "QID":
   case "QIO": 
     return ioDrawer2str(L.row, L.column, L.IODrawer);
+  case "QIJ":
+    return ioComputeCard2str(L.row, L.column, L.IODrawer, L.computeCard);
 
   default: return "";
   }
@@ -496,6 +497,17 @@ function enumerateL1Locations() {
       locations.push(ioRack2str(row, col));
       for (drawer=0; drawer<9; drawer++) {
         locations.push(ioDrawer2str(row, col, drawer));
+      }
+    }
+  }
+ 
+  for (row=0; row<3; row++) {
+    for (col=16; col<18; col++) { // G to H
+      locations.push(ioRack2str(row, col));
+      for (drawer=0; drawer<9; drawer++) {
+        var ioDrawer = ioDrawer2str(row, col, drawer);
+        locations.push(ioDrawer);
+        for (j=0; j<8; j++) locations.push(ioComputeCard2str(row, col, drawer, j));
       }
     }
   }
@@ -718,11 +730,10 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 }
 
 /*
-var locations = enumerateL3Locations();
+var locations = enumerateL1Locations();
 console.log(locations.length);
 for (var i=0; i<locations.length; i++) {
   console.log(locations[i]);
   // var L = parseLocation(locations[i]);
   // console.log(locations[i], locationToL3Location(L));
-}
-*/
+} */

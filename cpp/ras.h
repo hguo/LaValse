@@ -69,7 +69,7 @@ enum {SUBVOL_SEV = 0, SUBVOL_MSGID, SUBVOL_COMP, SUBVOL_LOC, SUBVOL_CAT};
 enum {TIME_SECOND = 1000L, TIME_MINUTE = 60000L, TIME_HOUR = 3600000L, TIME_DAY = 86400000L}; // granularity for time aggregation
 
 static const uint32_t nvolumes[] = {1, NUM_MSGID, NUM_COMP, NUM_LOCTYPE, NUM_CAT, NUM_SEV};
-static const uint32_t nlocations[] = {127357, 2125, 205, 55}; // L0-->L3
+static const uint32_t nlocations[] = {127357, 2617, 205, 55}; // L0-->L3
 static const int nUsers = 510, nProjs = 223, nMidplanes = 97;
 
 static const uint16_t eventTable[][5] = {

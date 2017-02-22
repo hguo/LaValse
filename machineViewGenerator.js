@@ -197,7 +197,8 @@ function machineView() {
         var ioComputeCardStr = mira.ioComputeCard2str(row, col, ioDrawer, ioComputeCardID);
 
         transformer.push([q*ioComputeCardW, p*ioComputeCardH]);
-        printElement(ioComputeCardStr, 0, transformer.zero(), ioComputeCardW, ioComputeCardH, 0.01, 0.25, 0.4, 0.25, "J"+mira.pad(ioComputeCardID, 10, 2));
+        printElement(ioComputeCardStr, 1, transformer.zero(), ioComputeCardW, ioComputeCardH, 0.1, 0.25, 0.4, 0.25, "J"+mira.pad(ioComputeCardID, 10, 2));
+        // printElement(nodeBoardStr, 1, transformer.zero(), nodeBoardW, nodeBoardH, 0.1, 0.5, 1.25, 0, "N"+mira.pad(nodeBoardID, 10, 2));
         transformer.pop();
       }
     }

@@ -141,8 +141,8 @@ function machineView(id) {
       });
 
       if (matched.length > 0) {
-        matched.sort(function(a, b) {return a.lod > b.lod;});
-        targetRect = matched[0];
+        // matched.sort(function(a, b) {return a.lod > b.lod;});
+        targetRect = matched[matched.length-1];
       
         var L = parseLocation(targetRect.id);
         var neighbors = undefined;
