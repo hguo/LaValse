@@ -239,12 +239,9 @@ function machineView(id) {
 
       if (matched.length > 0) {
         targetRect = matched[matched.length-1];
-        var id = targetRect.id;
-        if (!(id in histogram)) return; // cannot select an element that does not have events
-        selectedElements.clear();
-        selectedElements.add(id);
-        refresh();
-      }
+        selectElements([targetRect.id]);
+      } else
+        selectElements([]);
     });
   });
 
