@@ -580,7 +580,8 @@ function timeVolumeChart(id) {
     ctx.globalAlpha = 1;
     for (var i=0; i<N; i++) {
       for (var j=0; j<M; j++) {
-        ctx.fillStyle = color(midplaneVolumes[i][j]);
+        // ctx.fillStyle = color(midplaneVolumes[i][j]);
+        ctx.fillStyle = frequencyColorMap2(midplaneVolumes[i][j]);
         ctx.fillRect(
             x(query.T0 + query.tg * j),
             yCobalt(i), 

@@ -522,3 +522,34 @@ function initControlPanel() {
   f2.add(text, "queryTime");
   f2.open();*/
 }
+
+function frequencyColorMap(val) {
+  if (val == 0) return "#ffffff";
+  else if (val == 1) return "#d0d1e6";
+  else if (val < 10) return "#a6bddb";
+  else if (val < 100) return "#74a9cf";
+  else if (val < 1000) return "#3690c0";
+  else if (val < 10000) return "#0570b0";
+  else if (val < 100000) return "#045a8d";
+  else return "#023858";
+}
+
+function frequencyColorMap1(val) {
+  if (val == 0) return "#ffffff";
+  else if (val == 1) return "#fee391";
+  else if (val < 10) return "#fec44f";
+  else if (val < 100) return "#fe9929";
+  else if (val < 1000) return "#ec7014";
+  else if (val < 10000) return "#cc4c02";
+  else if (val < 100000) return "#993404";
+  else return "#662506";
+}
+
+function frequencyColorMap2(val) {
+  if (val == 0) return "#ffffff";
+  else if (val == 1) return "#c6dbef";
+  else if (val < 10) return "#9ecae1";
+  else if (val < 100) return "#6baed6";
+  else if (val < 1000) return "#4292c6";
+  else return "#2171b5";
+}

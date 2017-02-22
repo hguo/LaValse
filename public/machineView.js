@@ -63,6 +63,7 @@ function machineView(id) {
     .append("svg")
     .attr("id", "legendSvg")
     .style("position", "absolute")
+    .style("display", "none") // TODO: remove this component
     .append("g");
   
   var legendAxis = d3.axisRight()
@@ -162,26 +163,26 @@ function machineView(id) {
           + "<br><b>locationDetail:</b> " + L.narratives;
 
         if (L.type === "RMNJ") {
-          html += "<br><b>torus:</b> " + graphRMNJ[L.str].coords
-            + "<br><b>Ar:</b> " + neighbors.Ar + "/" + graphRMNJ[neighbors.Ar].coords
-            + "<br><b>At:</b> " + neighbors.At + "/" + graphRMNJ[neighbors.At].coords
-            + "<br><b>Br:</b> " + neighbors.Br + "/" + graphRMNJ[neighbors.Br].coords
-            + "<br><b>Bt:</b> " + neighbors.Bt + "/" + graphRMNJ[neighbors.Bt].coords
-            + "<br><b>Cr:</b> " + neighbors.Cr + "/" + graphRMNJ[neighbors.Cr].coords
-            + "<br><b>Ct:</b> " + neighbors.Ct + "/" + graphRMNJ[neighbors.Ct].coords
-            + "<br><b>Dr:</b> " + neighbors.Dr + "/" + graphRMNJ[neighbors.Dr].coords
-            + "<br><b>Dt:</b> " + neighbors.Dt + "/" + graphRMNJ[neighbors.Dt].coords
-            + "<br><b>Er:</b> " + neighbors.Er + "/" + graphRMNJ[neighbors.Er].coords
-            + "<br><b>Et:</b> " + neighbors.Et + "/" + graphRMNJ[neighbors.Et].coords;
+          const directions = ["Ar", "At", "Br", "Bt", "Cr", "Ct", "Dr", "Dt", "Er", "Et"];
+          html += "<br><b>torus:</b> " + graphRMNJ[L.str].coords;
+          directions.forEach(function (dir) {
+            var n = neighbors[dir];
+            var nNeighborMessages = (n in histogram ? histogram[n] : 0);
+            html += "<br><b>" + dir + ":</b> " + n + "&nbsp;&nbsp;" + graphRMNJ[n].coords;
+            if (nNeighborMessages)
+              html += "&nbsp;&nbsp;" + nNeighborMessages
+                + (nNeighborMessages == 1 ? " msg" : " msg(s)");
+          });
         } else if (L.type === "RMN" || L.type === "RM") {
-          html += "<br><b>Ar:</b> " + neighbors.Ar
-            + "<br><b>At:</b> " + neighbors.At
-            + "<br><b>Br:</b> " + neighbors.Br
-            + "<br><b>Bt:</b> " + neighbors.Bt
-            + "<br><b>Cr:</b> " + neighbors.Cr
-            + "<br><b>Ct:</b> " + neighbors.Ct
-            + "<br><b>Dr:</b> " + neighbors.Dr
-            + "<br><b>Dt:</b> " + neighbors.Dt;
+          const directions = ["Ar", "At", "Br", "Bt", "Cr", "Ct", "Dr", "Dt"];
+          directions.forEach(function (dir) {
+            var n = neighbors[dir];
+            var nNeighborMessages = (n in histogram ? histogram[n] : 0);
+            html += "<br><b>" + dir + ":</b> " + n;
+            if (nNeighborMessages)
+              html += "&nbsp;&nbsp;" + nNeighborMessages
+                + (nNeighborMessages == 1 ? " msg" : " msg(s)");
+          });
         }
 
         tooltip.style("display", "block");
@@ -234,7 +235,7 @@ function machineView(id) {
   function renderRects() {
     ctx.clearRect(0, 0, width, height);
     
-    var colorScale = useLogScale ? colorScaleLog : colorScaleLinear;
+    // var colorScale = useLogScale ? colorScaleLog : colorScaleLinear;
     const box = currentViewportBox();
     
     ctx.clearRect(0, 0, width, height);
@@ -243,7 +244,7 @@ function machineView(id) {
     ctx.scale(currentTransform.k, currentTransform.k);
     rects.forEach(function(d) {
       if (d.lod >= currentLOD && aabb.collide(box, d)) {
-        if (d.id in histogram) ctx.fillStyle = colorScale(histogram[d.id]); // TODO
+        if (d.id in histogram) ctx.fillStyle = frequencyColorMap2(histogram[d.id]); // colorScale(histogram[d.id]); // TODO
         else ctx.fillStyle = "white";
 
         if (d.id in highlightedElements) {
@@ -292,6 +293,7 @@ function machineView(id) {
 
     if (autoLOD) {
       if (t.k >= 7) currentLOD = 0; // setLOD(0);
+      if (t.k < 0.75) currentLOD = 2;
       else currentLOD = 1; // setLOD(1);
       renderRects();
     } else
