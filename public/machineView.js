@@ -351,11 +351,18 @@ function machineView(id) {
 
   function selectElements(array) {
     selectedElements.clear(); // TODO: intersect, union, ...
+    var sum = 0;
     array.forEach(function(d) {
       selectedElements.add(d);
+      sum += d in histogram ? histogram[d] : 0;
     });
-    query["location"] = array;
-    refresh();
+    if (sum == 0) {
+      selectedElements.clear();
+      zoomTimedOut(); // counter-intuitive. selected all elements in the viewports
+    } else {
+      query["location"] = array;
+      refresh();
+    }
   }
 
   function brushed() {
@@ -378,9 +385,7 @@ function machineView(id) {
       });
       selectElements(matched);
     } else {
-      // selectedElements([]);
-      selectedElements.clear();
-      zoomTimedOut(); // counter-intuitive. selected all elements in the viewports
+      selectedElements([]);
     }
   }
   

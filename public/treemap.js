@@ -42,10 +42,10 @@ function treeMapView(id, geom) {
         + "<br><b>severity:</b> " + e.severity
         + "<br><b>component:</b> " + e.component
         + "<br><b>category:</b> " + e.category
-        + "<br><b>description:</b> " + e.description
         + "<br><b>controlActions:</b> " + String(e.controlAction).replace(/,/g, ', ')
         + "<br><b>serviceAction:</b> " + events[msgID].serviceAction
-        + "<br><b>relevantDiagnosticSuites:</b> " + String(e.relevantDiagnosticSuites).replace(/,/g, ', ');
+        + "<br><b>relevantDiagnosticSuites:</b> " + String(e.relevantDiagnosticSuites).replace(/,/g, ', ')
+        + "<br><b>description:</b> " + e.description;
     }
   
     var colorFunc = function(d) {
