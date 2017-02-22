@@ -19,6 +19,8 @@ function timeVolumeChart(id) {
   var cobaltJobHighlighted = false;
   var cobaltYTranslate = 0, cobaltYScale = 1;
 
+  var highlightedArc = undefined; 
+
   var volumeZoom = d3.zoom()
     .on("zoom", volumeZoomed);
 
@@ -110,7 +112,9 @@ function timeVolumeChart(id) {
     .domain(xDomain);
   var x = d3.scaleTime()
     .clamp(true)
-    // .clamp(false)
+    .domain(xDomain);
+  var xNoClamp = d3.scaleTime() // used for the arc view
+    .clamp(false)
     .domain(xDomain);
   var X0 = d3.scaleTime() // the overview
     .domain(xDomain);
@@ -284,6 +288,7 @@ function timeVolumeChart(id) {
 
     x0.range([0, width]);
     x.range([0, width]);
+    xNoClamp.range([0, width]);
     X0.range([0, width]); 
     X.range([0, width]); 
 
@@ -342,6 +347,37 @@ function timeVolumeChart(id) {
 
     drawMidplaneVolumes();
     drawArcDiagram();
+    
+    volumeCanvas.on("mousemove", function() {
+      var rect = volumeCanvas.node().getBoundingClientRect();
+      var X = d3.event.x - rect.left, 
+          Y = d3.event.y - rect.top;
+      const threshold = 400; // 20 pixels
+      console.log(X, Y);
+    
+      var picked = false;
+      for (var msgID in arcs) {
+        var array = arcs[msgID];
+        for (var j=0; j<array.length-1; j++) {
+          var i0 = array[j], i1 = array[j+1];
+          var center = xNoClamp(query.T0 + query.tg * (i0 + i1)/2);
+          var radius = (xNoClamp(query.T0 + query.tg * i1) - xNoClamp(query.T0 + query.tg * i0)) / 2;
+
+          var dist2 = (X-center)*(X-center) + Y*Y, 
+              radius2= radius*radius;
+
+          if (Math.abs(dist2 - radius2) <= threshold) {
+            highlightedArc = msgID;
+            picked = true;
+          }
+        }
+      }
+
+      if (highlightedArc != undefined) drawArcDiagram();
+    }).on("mouseleave", function() {
+      highlightedArc = undefined;
+      drawArcDiagram();
+    });
   }
 
   this.updateVolume = function(data) {
@@ -543,20 +579,30 @@ function timeVolumeChart(id) {
   function drawArcDiagram() {
     var ctx = volumeCanvas.node().getContext("2d");
     ctx.clearRect(0, 0, width, width/2);
-    ctx.globalAlpha = 0.4;
 
     for (var msgID in arcs) {
       var array = arcs[msgID];
+     
+      if (highlightedArc == msgID) {
+        ctx.globalAlpha = 1.0;
+        ctx.strokeStyle = "red";
+      } else if (highlightedArc == undefined) {
+        ctx.globalAlpha = 0.4;
+        ctx.strokeStyle = "black";
+      } else {
+        ctx.globalAlpha = 0.1;
+        ctx.strokeStyle = "black";
+      }
+      
       ctx.beginPath();
       for (var j=0; j<array.length-1; j++) {
         var i0 = array[j], i1 = array[j+1];
-        var center = x(query.T0 + query.tg * (i0 + i1)/2);
-        var radius = (x(query.T0 + query.tg * i1) - x(query.T0 + query.tg * i0)) / 2;
+        var center = xNoClamp(query.T0 + query.tg * (i0 + i1)/2);
+        var radius = (xNoClamp(query.T0 + query.tg * i1) - xNoClamp(query.T0 + query.tg * i0)) / 2;
+
         ctx.arc(center, 0, radius, 0, Math.PI);
 
-        if (j==0) {
-          ctx.fillText(msgID, center, radius);
-        }
+        if (j==0) ctx.fillText(msgID, center, radius);
       }
       ctx.stroke();
     }
@@ -882,6 +928,7 @@ function timeVolumeChart(id) {
     
     var t = d3.event.transform;
     x.domain(t.rescaleX(x0).domain());
+    xNoClamp.domain(t.rescaleX(x0).domain());
 
     svgOverview.select("#overviewBrush")
       .call(overviewBrush.move, x.range().map(t.invertX, t));
