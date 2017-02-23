@@ -342,12 +342,13 @@ function locationToL2Location(L) {
     return midplane2str(L.row, L.column, L.midplane);
 
   case "Q":
+    return ioRack2str(L.row, L.column);
   case "QI":
   case "QIJ":
   case "QIU":
   case "QID":
   case "QIO":
-    return ioRack2str(L.row, L.column);
+    return ioDrawer2str(L.row, L.column, L.IODrawer);
   
   default: return "";
   }
@@ -408,13 +409,20 @@ function enumerateMidplanes() {
   return locations;
 }
 
-function locationToLODLocation(L) {
+function locationToLODLocation(L, targetLOD) {
+  switch (targetLOD) {
+  case 0: return locationToL0Location(L);
+  case 1: return locationToL1Location(L);
+  case 2: return locationToL2Location(L);
+  case 3: return locationToL3Location(L);
+  }
+  /*
   return [
     locationToL0Location(L),
     locationToL1Location(L),
     locationToL2Location(L),
     locationToL3Location(L)
-  ];
+  ]; */
 }
 
 function enumerateL0Locations() {
@@ -730,7 +738,7 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 }
 
 /*
-var locations = enumerateL1Locations();
+var locations = enumerateL2Locations();
 console.log(locations.length);
 for (var i=0; i<locations.length; i++) {
   console.log(locations[i]);

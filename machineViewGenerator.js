@@ -146,7 +146,7 @@ function machineView() {
         var ioDrawerStr = mira.ioDrawer2str(row, col, ioDrawerID);
 
         transformer.push([q*ioDrawerW, p*ioDrawerH]);
-        printElement(ioDrawerStr, 1, transformer.zero(), ioDrawerW, ioDrawerH, 0.3, 2, 4, 3, "I"+ioDrawerID);
+        printElement(ioDrawerStr, 2, transformer.zero(), ioDrawerW, ioDrawerH, 0.3, 2, 4, 3, "I"+ioDrawerID);
         renderIOComputeCards(row, col, ioDrawerID);
         transformer.pop();
       }
