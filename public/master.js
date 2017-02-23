@@ -83,14 +83,13 @@ d3.csv("/graphRMNJ.csv", function(err, data) {
   });
 });
 
-/*
-var graphTraverse(graph, seed, maxDepth) {
+function graphTraverse(graph, seed, maxDepth) { // WIP
   const directions = ["Ar", "At", "Br", "Bt", "Cr", "Ct", "Dr", "Dt", "Er", "Et"];
   var Q = [];
   var visited = new Set();
 
   var results;
-} */
+}
 
 function buildMessageIdHierarchy(volumeBy, msgHistogram) { // volumeBy = component/category/severity (locationType will be in future)
   var hierarchy = {name: "root", children: [], nnodes: 0};
