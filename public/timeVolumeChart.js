@@ -39,7 +39,8 @@ function timeVolumeChart(id) {
   var volumeCanvas = d3.select(id)
     .append("canvas")
     .attr("id", "arcDiagram")
-    .style("position", "absolute");
+    .style("position", "absolute")
+    .style("z-index", 2);
 
   var svg = d3.select(id)
     .append("svg")
@@ -151,7 +152,7 @@ function timeVolumeChart(id) {
   var yCobalt0 = d3.scaleLinear()
     .domain([0, 96]);
 
-  var xAxis = d3.axisBottom().scale(x), 
+  var xAxis = d3.axisTop().scale(x), 
       yAxis = d3.axisLeft().scale(yLog).ticks(3)
         .tickFormat(function(d) {
           return d3.format(".2s")(d);
@@ -307,7 +308,7 @@ function timeVolumeChart(id) {
     yCobalt0.range([0, cobaltHeight]);
 
     svgVolume.select(".axis-x")
-      .attr("transform", "translate(0," + volumeHeight + ")")
+      // .attr("transform", "translate(0," + volumeHeight + ")")
       .call(xAxis);
 
     svgVolume.select(".axis-y")
@@ -354,54 +355,6 @@ function timeVolumeChart(id) {
     drawMidplaneVolumes();
     drawArcDiagram();
     
-    volumeCanvas.on("mousemove", function() {
-      var rect = volumeCanvas.node().getBoundingClientRect();
-      var X = d3.event.x - rect.left, 
-          Y = d3.event.y - rect.top;
-      const threshold = 400; // 20 pixels
-      // console.log(X, Y);
-    
-      var picked = false;
-      for (var msgID in arcs) {
-        var array = arcs[msgID];
-        for (var j=0; j<array.length-1; j++) {
-          var i0 = array[j], i1 = array[j+1];
-          var center = xNoClamp(query.T0 + query.tg * (i0 + i1)/2);
-          var radius = (xNoClamp(query.T0 + query.tg * i1) - xNoClamp(query.T0 + query.tg * i0)) / 2;
-
-          var dist2 = (X-center)*(X-center) + Y*Y, 
-              radius2= radius*radius;
-
-          if (Math.abs(dist2 - radius2) <= threshold) {
-            highlightedArc = msgID;
-            picked = true;
-            break;
-          }
-        }
-        if (picked) break;
-      }
-
-      if (picked && highlightedArc != undefined) drawArcDiagram();
-      if (picked) {
-        var msgID = highlightedArc;
-        var e = events[msgID];
-        var html = "<b>messageID:</b> " + msgID
-          // + "<br><b>count:</b> " + d.data.count
-          + "<br><b>severity:</b> " + e.severity
-          + "<br><b>component:</b> " + e.component
-          + "<br><b>category:</b> " + e.category
-          + "<br><b>controlActions:</b> " + String(e.controlAction).replace(/,/g, ', ')
-          + "<br><b>serviceAction:</b> " + events[msgID].serviceAction
-          + "<br><b>relevantDiagnosticSuites:</b> " + String(e.relevantDiagnosticSuites).replace(/,/g, ', ')
-          + "<br><b>description:</b> " + e.description;
-        arcTooltip.style("display", "block")
-          .html(html);
-      }
-    }).on("mouseleave", function() {
-      highlightedArc = undefined;
-      drawArcDiagram();
-      arcTooltip.style("display", "none");
-    });
   }
 
   this.updateVolume = function(data) {
@@ -634,6 +587,62 @@ function timeVolumeChart(id) {
       ctx.stroke();
     }
   }
+ 
+  function pickArc(x, y) {
+    var rect = volumeCanvas.node().getBoundingClientRect();
+    var X = x - rect.left, Y = y - rect.top;
+    const threshold = 400; // 20 pixels
+ 
+    for (var msgID in arcs) {
+      var array = arcs[msgID];
+      for (var j=0; j<array.length-1; j++) {
+        var i0 = array[j], i1 = array[j+1];
+        var center = xNoClamp(query.T0 + query.tg * (i0 + i1)/2);
+        var radius = (xNoClamp(query.T0 + query.tg * i1) - xNoClamp(query.T0 + query.tg * i0)) / 2;
+
+        var dist2 = (X-center)*(X-center) + Y*Y, 
+            radius2= radius*radius;
+
+        if (Math.abs(dist2 - radius2) <= threshold) 
+          return msgID;
+      }
+    }
+    return undefined;
+  }
+
+  volumeCanvas.on("mousemove", function() {
+    var picked = pickArc(d3.event.x, d3.event.y);
+
+    if (picked != undefined) {
+      highlightedArc = picked;
+      drawArcDiagram();
+
+      var msgID = highlightedArc;
+      var e = events[msgID];
+      var html = "<b>messageID:</b> " + msgID
+        // + "<br><b>count:</b> " + d.data.count
+        + "<br><b>severity:</b> " + e.severity
+        + "<br><b>component:</b> " + e.component
+        + "<br><b>category:</b> " + e.category
+        + "<br><b>controlActions:</b> " + String(e.controlAction).replace(/,/g, ', ')
+        + "<br><b>serviceAction:</b> " + events[msgID].serviceAction
+        + "<br><b>relevantDiagnosticSuites:</b> " + String(e.relevantDiagnosticSuites).replace(/,/g, ', ')
+        + "<br><b>description:</b> " + e.description;
+      arcTooltip.style("display", "block")
+        .html(html);
+    }
+  }).on("mouseleave", function() {
+    highlightedArc = undefined;
+    drawArcDiagram();
+    arcTooltip.style("display", "none");
+  }).on("click", function() {
+    var picked = pickArc(d3.event.x, d3.event.y);
+
+    if (picked != undefined) {
+      query["msgID"] = [picked];
+      console.log(query);
+    }
+  });
 
   function drawMidplaneVolumes() {
     var ctx = cobaltCanvas.node().getContext("2d");
@@ -850,7 +859,6 @@ function timeVolumeChart(id) {
     var s = d3.event.selection || x.range();
     query.t0 = x.invert(s[0]).getTime();
     query.t1 = x.invert(s[1]).getTime();
-    refresh();
   }
 
   function overviewBrushed() {
