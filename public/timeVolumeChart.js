@@ -40,7 +40,7 @@ function timeVolumeChart(id) {
     .append("canvas")
     .attr("id", "arcDiagram")
     .style("position", "absolute")
-    .style("z-index", 2);
+    .style("z-index", 3);
 
   var svg = d3.select(id)
     .append("svg")
@@ -557,6 +557,20 @@ function timeVolumeChart(id) {
     var ctx = volumeCanvas.node().getContext("2d");
     ctx.clearRect(0, 0, width, width/2);
 
+    function drawArcs(msgID, array) {
+      ctx.beginPath();
+      for (var j=0; j<array.length-1; j++) {
+        var i0 = array[j], i1 = array[j+1];
+        var center = xNoClamp(query.T0 + query.tg * (i0 + i1)/2);
+        var radius = (xNoClamp(query.T0 + query.tg * i1) - xNoClamp(query.T0 + query.tg * i0)) / 2;
+
+        ctx.arc(center, 0, radius, 0, Math.PI);
+
+        if (j==0) ctx.fillText(msgID, center, radius+12);
+      }
+      ctx.stroke();
+    }
+
     for (var msgID in arcs) {
       var array = arcs[msgID];
      
@@ -573,18 +587,8 @@ function timeVolumeChart(id) {
         ctx.strokeStyle = "black";
         ctx.lineWidth = 1;
       }
-      
-      ctx.beginPath();
-      for (var j=0; j<array.length-1; j++) {
-        var i0 = array[j], i1 = array[j+1];
-        var center = xNoClamp(query.T0 + query.tg * (i0 + i1)/2);
-        var radius = (xNoClamp(query.T0 + query.tg * i1) - xNoClamp(query.T0 + query.tg * i0)) / 2;
 
-        ctx.arc(center, 0, radius, 0, Math.PI);
-
-        if (j==0) ctx.fillText(msgID, center, radius+12);
-      }
-      ctx.stroke();
+      drawArcs(msgID, array);
     }
   }
  
