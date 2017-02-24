@@ -2,6 +2,7 @@ function treeMapView(id, geom) {
   const margin = {top: 10, right: 10, bottom: 10, left: 10};
   var width, height;
 
+  var selected = new Set;
   var highlighted = new Set;
 
   $(id).html("");
@@ -49,7 +50,7 @@ function treeMapView(id, geom) {
     }
   
     var colorFunc = function(d) {
-      if (highlighted.size == 0 || highlighted.has(d.data.name)) {
+      if (selected.size == 0 || selected.has(d.data.name)) {
         return color(d.parent.data.id);
       } else {
         return "lightgrey";
@@ -58,18 +59,18 @@ function treeMapView(id, geom) {
 
     var onclickFunc = function(d) {
       var m = d.data.name;
-      if (highlighted.has(m)) highlighted.delete(m);
-      else highlighted.add(m);
-      if (highlighted.size == data.nnodes) 
-        highlighted.clear();
+      if (selected.has(m)) selected.delete(m);
+      else selected.add(m);
+      if (selected.size == data.nnodes) 
+        selected.clear();
 
       svg.selectAll(".cellBox")
         .style("fill", colorFunc);
 
-      if (highlighted.size == 0) delete query["msgID"];
+      if (selected.size == 0) delete query["msgID"];
       else {
         query["msgID"] = [];
-        highlighted.forEach(function(v) {
+        selected.forEach(function(v) {
           query["msgID"].push(v);
         });
         // console.log(query);

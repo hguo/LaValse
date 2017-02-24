@@ -582,7 +582,7 @@ function timeVolumeChart(id) {
 
         ctx.arc(center, 0, radius, 0, Math.PI);
 
-        if (j==0) ctx.fillText(msgID, center, radius);
+        if (j==0) ctx.fillText(msgID, center, radius+12);
       }
       ctx.stroke();
     }
