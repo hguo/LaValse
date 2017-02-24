@@ -154,6 +154,7 @@ function machineView(id) {
           neighbors = graphRMNJ[L.str];
         } else if (L.type == "RMN") {
           neighbors = graphRMN[L.str];
+          // console.log(graphTraverse(graphRMN, L.str, 2));
         } else if (L.type == "RM") {
           neighbors = graphRM[L.str];
         }

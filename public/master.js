@@ -83,12 +83,33 @@ d3.csv("/graphRMNJ.csv", function(err, data) {
   });
 });
 
-function graphTraverse(graph, seed, maxDepth) { // WIP
+function graphTraverse(graph, root, maxDepth) { // WIP
   const directions = ["Ar", "At", "Br", "Bt", "Cr", "Ct", "Dr", "Dt", "Er", "Et"];
   var Q = [];
   var visited = new Set();
+  var output = []; // {id, depth}
 
-  var results;
+  Q.push({id: root, depth: 0});
+  while (Q.length > 0) {
+    var current = Q[0]; Q.shift(); // pop
+    var currentNode = graph[current.id];
+    var currentDepth = current.depth;
+    
+    visited.add(current.id);
+    output.push(current);
+
+    if (currentDepth < maxDepth) {
+      directions.forEach(function(dir) {
+        if (dir in currentNode) {
+          var neighborId = currentNode[dir];
+          if (!visited.has(neighborId)) 
+            Q.push({id: neighborId, depth: currentDepth+1});
+        }
+      });
+    }
+  }
+
+  return output;
 }
 
 function buildMessageIdHierarchy(volumeBy, msgHistogram) { // volumeBy = component/category/severity (locationType will be in future)
