@@ -218,6 +218,43 @@ function init() {
 
 function refresh() {
   // d3.json("/cube?query=" + JSON.stringify(query), function (d) {
+ 
+  function adaptGranularity() {
+    const minUnitWidth = 5; // 5 pixels
+    const width = 660; // width of the timeline
+    const duration = query.t1 - query.t0;
+    const granularities = [
+      1,        // millisecond
+      10,       // 10 milliseconds
+      100,      // 100 milliseconds
+      1000,     // second
+      10000,    // 10 seconds
+      60000,    // minute
+      600000,   // 10 minutes
+      3600000,  // hour
+      7200000,  // 2 hours
+      21600000,  // 6 hours
+      86400000  // day
+    ];
+
+    var targetNumberOfSlots = Math.floor(width/minUnitWidth);
+    var targetGranularity = granularities[granularities.length-1];
+    for (var i=0; i<granularities.length; i++) {
+      if (duration / granularities[i] <= targetNumberOfSlots) {
+        targetGranularity = granularities[i];
+        break;
+      }
+    }
+
+    query.t0 = Math.floor(query.t0 / targetGranularity) * targetGranularity;
+    query.t1 = Math.ceil(query.t1 / targetGranularity) * targetGranularity;
+    query.tg = targetGranularity;
+    console.log(duration / targetGranularity);
+    // console.log(query.t0, query.t1, duration, query.tg, duration/query.tg);
+  }
+
+  adaptGranularity();
+  
   d3.json("/cube_post")
     .header("Content-Type", "application/json")
     .post(JSON.stringify(query), function (err, d) {

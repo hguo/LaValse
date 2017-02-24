@@ -493,7 +493,7 @@ function machineView(id) {
   this.highlightLocation = function(str, color) {
     var L = parseLocation(str);
     var target = locationToLODLocation(L, currentLOD);
-    console.log(currentLOD, target);
+    // console.log(currentLOD, target);
     highlightedElements[target] = color;
     renderRects();
   }

@@ -262,7 +262,7 @@ function timeVolumeChart(id) {
     var ctx1 = volumeCanvas.node().getContext("2d");
     adjustCanvasResolution(volumeCanvas.node(), ctx1);
 
-    volumeZoom.scaleExtent([1, 100000000])
+    volumeZoom.scaleExtent([1, 10000000000])
       .translateExtent([[0, volumeTop], [width, volumeHeight]])
       .extent([[0, volumeTop], [width, volumeHeight]]);
     svgVolume.call(volumeZoom);
@@ -669,7 +669,7 @@ function timeVolumeChart(id) {
         // ctx.fillStyle = color(midplaneVolumes[i][j]);
         ctx.fillStyle = frequencyColorMap2(midplaneVolumes[i][j]);
         ctx.fillRect(
-            x(query.T0 + query.tg * j),
+            xNoClamp(query.T0 + query.tg * j),
             yCobalt(i), 
             xGridSize, 
             yGridSize);
