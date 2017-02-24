@@ -12,6 +12,41 @@ function treeMapView(id, geom) {
     .attr("class", "chart")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  
+  var color = d3.scaleOrdinal(d3.schemeCategory20);
+  var colorFunc = function(d) {
+    if (selected.size == 0 || selected.has(d.data.name)) {
+      return color(d.parent.data.id);
+    } else {
+      return "lightgrey";
+    }
+  }
+
+  this.select = function(m) { // m is msgID
+    if (selected.has(m)) selected.delete(m);
+    else selected.add(m);
+    // if (selected.size == data.nnodes) 
+    //   selected.clear();
+
+    svg.selectAll(".cellBox")
+      .style("fill", colorFunc);
+
+    if (selected.size == 0) delete query["msgID"];
+    else {
+      query["msgID"] = [];
+      selected.forEach(function(v) {
+        query["msgID"].push(v);
+      });
+    }
+
+    refresh();
+  }
+  var select = this.select;
+
+  var onclickFunc = function(d) {
+    var m = d.data.name;
+    select(m);
+  }
 
   this.resize = function(geom) {
     width = geom.W - margin.left - margin.right,
@@ -26,6 +61,28 @@ function treeMapView(id, geom) {
     });
   }
 
+  this.highlight = function(array) {
+    highlighted.clear();
+    array.forEach(function(d) {
+      highlighted.add(d);
+    });
+    
+    svg.selectAll(".cellBox")
+      .style("stroke", function(d) {
+        if (highlighted.has(d.data.name)) return "red";
+      })
+      .style("stroke-width", function(d) {
+        if (highlighted.has(d.data.name)) return 3;
+      });
+  }
+
+  this.dehighlight = function() {
+    highlighted.clear();
+    svg.selectAll(".cellBox")
+      .style("stroke", null)
+      .style("stroke-width", null);
+  }
+
   this.updateData = function(data) {
     var treemap = d3.treemap()
       .tile(d3.treemapResquarify)
@@ -33,7 +90,6 @@ function treeMapView(id, geom) {
       .round(true)
       .paddingInner(1);
 
-    var color = d3.scaleOrdinal(d3.schemeCategory20);
     var format = d3.format(",d");
     var titleFunc = function(d) {
       var msgID = d.data.name;
@@ -49,36 +105,6 @@ function treeMapView(id, geom) {
         + "<br><b>description:</b> " + e.description;
     }
   
-    var colorFunc = function(d) {
-      if (selected.size == 0 || selected.has(d.data.name)) {
-        return color(d.parent.data.id);
-      } else {
-        return "lightgrey";
-      }
-    }
-
-    var onclickFunc = function(d) {
-      var m = d.data.name;
-      if (selected.has(m)) selected.delete(m);
-      else selected.add(m);
-      if (selected.size == data.nnodes) 
-        selected.clear();
-
-      svg.selectAll(".cellBox")
-        .style("fill", colorFunc);
-
-      if (selected.size == 0) delete query["msgID"];
-      else {
-        query["msgID"] = [];
-        selected.forEach(function(v) {
-          query["msgID"].push(v);
-        });
-        // console.log(query);
-      }
-
-      refresh();
-    }
-
     var root = d3.hierarchy(data)
       .eachBefore(function(d) { d.data.id = (d.parent ? d.parent.data.id + "." : "") + d.data.name; })
       // .sum(function(d) {return d.count;})
@@ -124,4 +150,3 @@ function treeMapView(id, geom) {
     //   .text(function(d) { return d.data.id + "\n" + format(d.value); });
   }
 }
-

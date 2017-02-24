@@ -253,7 +253,7 @@ function refresh() {
     // console.log(query.t0, query.t1, duration, query.tg, duration/query.tg);
   }
 
-  adaptGranularity();
+  // adaptGranularity();
   
   d3.json("/cube_post")
     .header("Content-Type", "application/json")

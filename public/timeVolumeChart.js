@@ -435,7 +435,7 @@ function timeVolumeChart(id) {
       .attr("r", "3")
       .style("stroke", "steelblue")
       .style("fill", "white")
-      // .attr("cx", function(d) {return d.timeSlot * 2;})
+      // .attr("cx", function(d) {return (query.t1-query.t0)/query.tg * d.timeSlot;})
       .attr("cx", function(d) {return x(d.eventTime);})
       .attr("cy", function(d) {return yLinearReverse(d.y);})
       .attr("title", function(d) {
@@ -634,17 +634,23 @@ function timeVolumeChart(id) {
         + "<br><b>description:</b> " + e.description;
       arcTooltip.style("display", "block")
         .html(html);
+
+      treeMapView.highlight([msgID]);
+    } else {
+      treeMapView.dehighlight();
     }
   }).on("mouseleave", function() {
     highlightedArc = undefined;
     drawArcDiagram();
     arcTooltip.style("display", "none");
+    treeMapView.dehighlight();
   }).on("click", function() {
     var picked = pickArc(d3.event.x, d3.event.y);
 
     if (picked != undefined) {
-      query["msgID"] = [picked];
-      refresh();
+      treeMapView.select(picked);
+      // query["msgID"] = [picked];
+      // refresh();
     }
   });
 
