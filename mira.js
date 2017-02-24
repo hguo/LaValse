@@ -695,6 +695,16 @@ var partitionParser = new function() {
   }
 }
 
+function midplane2IODrawer(str) {
+  var L = parseLocation(str);
+  var ioRackRow = L.row, 
+      ioRackColumn = Math.floor(L.column/8) + 16, 
+      ioDrawer = L.column % 8;
+  // var ioComputeCard = Math.floor(nb/4) + mp*4;
+
+  return ioDrawer2str(ioRackRow, ioRackColumn, ioDrawer);
+}
+
 // var parser = new partitionParser;
 // console.log(parser.parse("MIR-08000-7BFF1-0010-12288"));
 // console.log(parseLocation("R1A-M1-N13"));

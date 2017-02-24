@@ -482,6 +482,8 @@ function machineView(id) {
     highlightedElements = {};
     array.forEach(function(d) {
       highlightedElements[d] = color;
+      var ioDrawer = midplane2IODrawer(d);
+      highlightedElements[ioDrawer] = color;
     });
     renderRects();
   }
