@@ -640,7 +640,7 @@ function timeVolumeChart(id) {
 
     if (picked != undefined) {
       query["msgID"] = [picked];
-      console.log(query);
+      refresh();
     }
   });
 

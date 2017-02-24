@@ -1010,3 +1010,8 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     controlActionsToBits: controlActionsToBits
   };
 }
+
+/*
+var eventMap = generateBiMap(events);
+console.log(eventMap.val(37));
+console.log(eventMap.key("00020019")); */

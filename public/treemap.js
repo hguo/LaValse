@@ -72,7 +72,7 @@ function treeMapView(id, geom) {
         highlighted.forEach(function(v) {
           query["msgID"].push(v);
         });
-        console.log(query);
+        // console.log(query);
       }
 
       refresh();

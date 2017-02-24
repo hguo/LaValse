@@ -88,7 +88,8 @@ function translateResults(r, fullResult) {
 
     for (var i=0; i<nslots; i++) {
       for (var j=0; j<n; j++) {
-        if (volumes[i][j] == '1') {
+        // if (volumes[i][j] == '1') {
+        if (volumes[i][j] != 0) {
           var msgID = ras.eventMap.val(j);
           if (!(msgID in results)) results[msgID] = [];
           results[msgID].push(i);
