@@ -89,7 +89,7 @@ function graphTraverse(graph, root, maxDepth) { // WIP
   var visited = new Set();
   var output = []; // {id, depth}
 
-  Q.push({id: root, depth: 0});
+  Q.push({id: root, depth: 0, parent: undefined, parentEdge: undefined});
   while (Q.length > 0) {
     var current = Q[0]; Q.shift(); // pop
     var currentNode = graph[current.id];
@@ -103,7 +103,12 @@ function graphTraverse(graph, root, maxDepth) { // WIP
         if (dir in currentNode) {
           var neighborId = currentNode[dir];
           if (!visited.has(neighborId)) 
-            Q.push({id: neighborId, depth: currentDepth+1});
+            Q.push({
+              id: neighborId, 
+              depth: currentDepth+1, 
+              parent: current.id, 
+              parentEdge: dir
+            });
         }
       });
     }

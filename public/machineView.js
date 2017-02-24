@@ -148,16 +148,6 @@ function machineView(id) {
         targetRect = matched[matched.length-1];
       
         var L = parseLocation(targetRect.id);
-        var neighbors = undefined;
-        
-        if (L.type === "RMNJ") {
-          neighbors = graphRMNJ[L.str];
-        } else if (L.type == "RMN") {
-          neighbors = graphRMN[L.str];
-          // console.log(graphTraverse(graphRMN, L.str, 2));
-        } else if (L.type == "RM") {
-          neighbors = graphRM[L.str];
-        }
 
         var html = "<b>occurrence:</b> " + (L.str in histogram ? histogram[L.str] : 0)
           + "<br><b>location:</b> " + L.str
@@ -167,9 +157,11 @@ function machineView(id) {
 
         if (L.type === "RMNJ") {
           const directions = ["Ar", "At", "Br", "Bt", "Cr", "Ct", "Dr", "Dt", "Er", "Et"];
-          html += "<br><b>torus:</b> " + graphRMNJ[L.str].coords;
+          var node = graphRMNJ[L.str];
+
+          html += "<br><b>torus:</b> " + node.coords;
           directions.forEach(function (dir) {
-            var n = neighbors[dir];
+            var n = node[dir];
             var nNeighborMessages = (n in histogram ? histogram[n] : 0);
             html += "<br><b>" + dir + ":</b> " + n + "&nbsp;&nbsp;" + graphRMNJ[n].coords;
             if (nNeighborMessages)
@@ -178,8 +170,9 @@ function machineView(id) {
           });
         } else if (L.type === "RMN" || L.type === "RM") {
           const directions = ["Ar", "At", "Br", "Bt", "Cr", "Ct", "Dr", "Dt"];
+          var node = L.type == "RMN" ? graphRMN[L.str] : graphRM[L.str];
           directions.forEach(function (dir) {
-            var n = neighbors[dir];
+            var n = node[dir];
             var nNeighborMessages = (n in histogram ? histogram[n] : 0);
             html += "<br><b>" + dir + ":</b> " + n;
             if (nNeighborMessages)
@@ -192,23 +185,25 @@ function machineView(id) {
         tooltip.style("left", X);
         tooltip.style("top", Y+20);
         tooltip.html(html);
-      
-        var color0 = "black", color1 = "red", color2 = "orange";
         
-        highlightedElements = {};
-        highlightedElements[L.str] = color0;
-        
-        if (neighbors != undefined) {
-          highlightedElements[neighbors.Ar] = color1;
-          highlightedElements[neighbors.At] = color1;
-          highlightedElements[neighbors.Br] = color1;
-          highlightedElements[neighbors.Bt] = color1;
-          highlightedElements[neighbors.Cr] = color1;
-          highlightedElements[neighbors.Ct] = color1;
-          highlightedElements[neighbors.Dr] = color1;
-          highlightedElements[neighbors.Dt] = color1;
-          if ("Er" in neighbors) highlightedElements[neighbors.Er] = color1;
+        var neighbors = []; 
+        const maxDepth = 3;
+        if (L.type === "RMNJ") {
+          neighbors = graphTraverse(graphRMNJ, L.str, maxDepth);
+        } else if (L.type == "RMN") {
+          neighbors = graphTraverse(graphRMN, L.str, maxDepth);
+        } else if (L.type == "RM") {
+          neighbors = graphTraverse(graphRM, L.str, maxDepth);
         }
+        if (neighbors.length == 0) 
+          neighbors.push({id: L.str, depth: 0, parent: undefined, parendEdge: undefined});
+
+        const colors = ["black", "red", "orange", "green"]; 
+        highlightedElements = {};
+        neighbors.forEach(function(d) {
+          highlightedElements[d.id] = colors[d.depth];
+        });
+        
         renderRects();
      
         timeVolumeChart.dehighlightGlyphs();
