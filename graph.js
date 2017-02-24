@@ -61,7 +61,7 @@ var torusRMNJMap = new function() {
   }
 }
 
-const directions = ["Ar", "At", "Br", "Bt", "Cr", "Ct", "Dr", "Dt"];
+const directions = ["Ar", "At", "Br", "Bt", "Cr", "Ct", "Dr", "Dt", "IO"];
 var RMNMap = {};
 var RMMap = {};
 
@@ -79,16 +79,26 @@ for (var row=0; row<3; row++) {
 
           var RM = RMNJ.substring(0, 6);
           if (!(RM in RMMap)) RMMap[RM] = {};
+              
+          var ioRackRow = row, 
+              ioRackColumn = Math.floor(col/8) + 16, 
+              ioDrawer = col % 8;
+          var ioComputeCard = Math.floor(nb/4) + mp*4;
 
           directions.forEach(function(d) {
-            var RMNJ1 = neighbors[d];
-            var RMN1 = RMNJ1.substring(0, 10);
-            if (!(RMN===RMN1)) {
-              RMNMap[RMN][d] = RMN1;
-            }
-            var RM1 = RMNJ1.substring(0, 6);
-            if (!(RM===RM1)) {
-              RMMap[RM][d] = RM1;
+            if (d == "IO") { // IO compute card 
+              RMNMap[RMN][d] = mira.ioComputeCard2str(ioRackRow, ioRackColumn, ioDrawer, ioComputeCard);
+              RMMap[RM][d] = mira.ioDrawer2str(ioRackRow, ioRackColumn, ioDrawer);
+            } else { // compute card
+              var RMNJ1 = neighbors[d];
+              var RMN1 = RMNJ1.substring(0, 10);
+              if (!(RMN===RMN1)) {
+                RMNMap[RMN][d] = RMN1;
+              }
+              var RM1 = RMNJ1.substring(0, 6);
+              if (!(RM===RM1)) {
+                RMMap[RM][d] = RM1;
+              }
             }
           });
 
@@ -103,22 +113,22 @@ for (var row=0; row<3; row++) {
 // console.log(RMMap);
 
 /*
-console.log("RM,Ar,At,Br,Bt,Cr,Ct,Dr,Dt");
+console.log("RM,Ar,At,Br,Bt,Cr,Ct,Dr,Dt,IO");
 for (var key in RMMap) {
   var RM = RMMap[key];
-  var array = [key, RM.Ar, RM.At, RM.Br, RM.Bt, RM.Cr, RM.Ct, RM.Dr, RM.Dt];
+  var array = [key, RM.Ar, RM.At, RM.Br, RM.Bt, RM.Cr, RM.Ct, RM.Dr, RM.Dt, RM.IO];
   console.log(array.join(","));
 } */
 
 /*
-console.log("RMN,Ar,At,Br,Bt,Cr,Ct,Dr,Dt");
+console.log("RMN,Ar,At,Br,Bt,Cr,Ct,Dr,Dt,IO");
 for (var key in RMNMap) {
   var RMN = RMNMap[key];
-  var array = [key, RMN.Ar, RMN.At, RMN.Br, RMN.Bt, RMN.Cr, RMN.Ct, RMN.Dr, RMN.Dt];
+  var array = [key, RMN.Ar, RMN.At, RMN.Br, RMN.Bt, RMN.Cr, RMN.Ct, RMN.Dr, RMN.Dt, RMN.IO];
   console.log(array.join(","));
-} */
+}*/
 
-console.log("RMNJ,coords,Ar,At,Br,Bt,Cr,Ct,Dr,Dt,Er,Et");
+console.log("RMNJ,coords,Ar,At,Br,Bt,Cr,Ct,Dr,Dt,Er,Et,IO");
 for (var a=0; a<8; a++) {
   for (var b=0; b<12; b++) {
     for (var c=0; c<16; c++) {
@@ -126,8 +136,9 @@ for (var a=0; a<8; a++) {
         for (var e=0; e<2; e++) {
           var coords = torusToString(a, b, c, d, e);
           var RMNJ = torusRMNJMap.RMNJ(coords);
+          var RMN = RMNJ.substring(0, 10);
           var n = torusRMNJMap.neighborsRMNJ(coords);
-          var array = [RMNJ, coords, n.Ar, n.At, n.Br, n.Bt, n.Cr, n.Ct, n.Dr, n.Dt, n.Er, n.Et];
+          var array = [RMNJ, coords, n.Ar, n.At, n.Br, n.Bt, n.Cr, n.Ct, n.Dr, n.Dt, n.Er, n.Et, RMNMap[RMN].IO];
 
           console.log(array.join(","));
         }

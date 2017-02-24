@@ -84,7 +84,7 @@ d3.csv("/graphRMNJ.csv", function(err, data) {
 });
 
 function graphTraverse(graph, root, maxDepth) { // WIP
-  const directions = ["Ar", "At", "Br", "Bt", "Cr", "Ct", "Dr", "Dt", "Er", "Et"];
+  const directions = ["Ar", "At", "Br", "Bt", "Cr", "Ct", "Dr", "Dt", "Er", "Et", "IO"];
   var Q = [];
   var visited = new Set();
   var output = []; // {id, depth}
@@ -98,7 +98,7 @@ function graphTraverse(graph, root, maxDepth) { // WIP
     visited.add(current.id);
     output.push(current);
 
-    if (currentDepth < maxDepth) {
+    if (currentDepth < maxDepth && currentNode != undefined) {
       directions.forEach(function(dir) {
         if (dir in currentNode) {
           var neighborId = currentNode[dir];
