@@ -24,7 +24,7 @@ function timeVolumeChart(id) {
   var cobaltJobHighlighted = false;
   var cobaltYTranslate = 0, cobaltYScale = 1;
 
-  var highlightedArc = undefined; 
+  var highlightedArcs = new Set();
 
   var volumeZoom = d3.zoom()
     .on("zoom", volumeZoomed);
@@ -553,6 +553,19 @@ function timeVolumeChart(id) {
     }
   }
 
+  this.highlightArcs = function(array) {
+    highlightedArcs.clear();
+    array.forEach(function(d) {
+      highlightedArcs.add(d);
+    });
+    drawArcDiagram();
+  }
+
+  this.dehighlightArcs = function() {
+    highlightedArcs.clear();
+    drawArcDiagram();
+  }
+  
   function drawArcDiagram() {
     var ctx = volumeCanvas.node().getContext("2d");
     ctx.clearRect(0, 0, width, width/2);
@@ -573,12 +586,12 @@ function timeVolumeChart(id) {
 
     for (var msgID in arcs) {
       var array = arcs[msgID];
-     
-      if (highlightedArc == msgID) {
+    
+      if (highlightedArcs.has(msgID)) {
         ctx.globalAlpha = 1.0;
         ctx.strokeStyle = "steelblue";
         ctx.lineWidth = 2;
-      } else if (highlightedArc == undefined) {
+      } else if (highlightedArcs.size == 0) {
         ctx.globalAlpha = 0.4;
         ctx.strokeStyle = "black";
         ctx.lineWidth = 1;
@@ -618,10 +631,11 @@ function timeVolumeChart(id) {
     var picked = pickArc(d3.event.x, d3.event.y);
 
     if (picked != undefined) {
-      highlightedArc = picked;
+      highlightedArcs.clear();
+      highlightedArcs.add(picked);
       drawArcDiagram();
 
-      var msgID = highlightedArc;
+      var msgID = picked;
       var e = events[msgID];
       var html = "<b>messageID:</b> " + msgID
         // + "<br><b>count:</b> " + d.data.count
@@ -640,7 +654,7 @@ function timeVolumeChart(id) {
       treeMapView.dehighlight();
     }
   }).on("mouseleave", function() {
-    highlightedArc = undefined;
+    highlightedArcs.clear();
     drawArcDiagram();
     arcTooltip.style("display", "none");
     treeMapView.dehighlight();

@@ -43,11 +43,6 @@ function treeMapView(id, geom) {
   }
   var select = this.select;
 
-  var onclickFunc = function(d) {
-    var m = d.data.name;
-    select(m);
-  }
-
   this.resize = function(geom) {
     width = geom.W - margin.left - margin.right,
     height = geom.H - margin.top - margin.bottom;
@@ -104,6 +99,20 @@ function treeMapView(id, geom) {
         + "<br><b>relevantDiagnosticSuites:</b> " + String(e.relevantDiagnosticSuites).replace(/,/g, ', ')
         + "<br><b>description:</b> " + e.description;
     }
+
+    var onClickFunc = function(d) {
+      var m = d.data.name;
+      select(m);
+    }
+
+    var onMouseOverFunc = function(d) {
+      var m = d.data.name;
+      timeVolumeChart.highlightArcs([m]);
+    }
+
+    var onMouseLeaveFunc = function(d) {
+      timeVolumeChart.dehighlightArcs();
+    }
   
     var root = d3.hierarchy(data)
       .eachBefore(function(d) { d.data.id = (d.parent ? d.parent.data.id + "." : "") + d.data.name; })
@@ -130,7 +139,9 @@ function treeMapView(id, geom) {
       .attr("height", function(d){return d.y1 - d.y0;})
       .attr("fill", colorFunc)
       .attr("title", titleFunc)
-      .on("click", onclickFunc);
+      .on("click", onClickFunc)
+      .on("mouseover", onMouseOverFunc)
+      .on("mouseleave", onMouseLeaveFunc);
 
     cell.append("clipPath")
       .attr("id", function(d) {return "clip-" + d.data.id;})
@@ -144,7 +155,9 @@ function treeMapView(id, geom) {
       .attr("title", titleFunc)
       .attr("x", 4)
       .attr("y", 13)
-      .on("click", onclickFunc);
+      .on("click", onClickFunc)
+      .on("mouseover", onMouseOverFunc)
+      .on("mouseleave", onMouseLeaveFunc);
 
     // cell.append("title")
     //   .text(function(d) { return d.data.id + "\n" + format(d.value); });
