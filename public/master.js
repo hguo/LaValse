@@ -502,6 +502,7 @@ function initControlPanel() {
     this.showArcs = true;
     this.showTable = false;
     this.brush = false;
+    this.probeLayers = 2;
   };
   var gui = new dat.GUI();
   
@@ -520,6 +521,9 @@ function initControlPanel() {
       machineView.toggleAutoLOD(false);
       machineView.setLOD(+val);
     }
+  });
+  f1.add(text, "probeLayers", [0, 1, 2, 3, 4, 5]).onChange(function(val) {
+    // TODO
   });
   f1.add(text, "showJobs").onChange(function(val) {
     timeVolumeChart.toggleJobs(val);

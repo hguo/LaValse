@@ -139,13 +139,12 @@ struct Query {
     for (size_t i=tid; i<events.size(); i+=nthreads) {
       const Event& e = events[i];
       crossfilter_kernel(e, b, c);
-      
+        
+      uint32_t t = e.aggregateTime(T0, tg);
       if (c[0]) {
-        uint32_t t = e.aggregateTime(T0, tg);
         if (/*t>=0 &&*/ t<results.nTimeSlots) {
           if (e.midplane < nMidplanes) add1(results.midplaneVolumes[e.midplane*results.nTimeSlots+t]); // midplane volume
           // results.timeVolumesMsgID[t][e.msgID] = true; // msgID volume
-          results.timeVolumesMsgID[t*NUM_MSGID+e.msgID] = true; // msgID volume
           switch (volumeBy) {
 #if 0
           case VAR_NONE: add1(results.timeVolumes[t]); break;
@@ -166,7 +165,10 @@ struct Query {
           }
         }
       }
-      if (c[1]) add1(results.msgID[e.msgID]);
+      if (c[1]) {
+        add1(results.msgID[e.msgID]);
+        results.timeVolumesMsgID[t*NUM_MSGID+e.msgID] = true; // msgID volume
+      }
       if (c[2]) add1(results.component[e.component()]);
       if (c[3]) add1(results.locationType[e.locationType]);
       if (c[4]) add1(results.category[e.category()]);
