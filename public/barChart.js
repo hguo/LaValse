@@ -1,19 +1,15 @@
-function barChart(name, id, data, humanReadableText, geom) {
-  const margin = {top: 20, right: 10, bottom: 20, left: 10},
-        width = geom.W - margin.left - margin.right,
-        height = geom.H - margin.top - margin.bottom;
+// function barChart(name, id, data, humanReadableText, geom) {
+
+function barChart(name, id, categories, categoryText) {
+  const margin = {top: 20, right: 10, bottom: 20, left: 10};
 
   var useLogScale = true;
   var highlighted = new Set;
 
-  $(id).html("");
+  // $(id).html("");
   var svg = d3.select(id)
     .append("svg")
     .style("position", "absolute")
-    .style("top", geom.T)
-    .style("left", geom.L)
-    .attr("width", geom.W)
-    .attr("height", geom.H)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -25,28 +21,18 @@ function barChart(name, id, data, humanReadableText, geom) {
     .append("text")
     .text(name);
 
-  var xMax = d3.max(data, function(d) {return d.v;});
-  var xDomainLog = [1, xMax], 
-      xDomainLinear = [0, xMax];
-
   var xLog = d3.scaleLog()
-    .rangeRound([0, width])
-    .clamp(true)
-    .domain(xDomainLog);
-  var xLinear = d3.scaleLinear()
-    .rangeRound([0, width])
-    .domain(xDomainLinear);
+    .clamp(true);
+  var xLinear = d3.scaleLinear();
   var y = d3.scaleBand()
-    .rangeRound([height, 0])
     .padding(0.05)
-    .domain(data.map(function(d) {return d.k;}));
+    .domain(categories);
+    // .domain(data.map(function(d) {return d.k;}));
  
   var color0 = d3.scaleOrdinal(d3.schemeCategory10);
-  var keys = [];
-  for (var i=0; i<data.length; i++) 
-    keys.push(data[i].k);
-  color0.domain(keys);
-  var color = function(i) {
+  color0.domain(categories);
+
+  var color = function(i) { // TODO
     if (query.volumeBy == name) {
       return color0(i);
     } else if (highlighted.size == 0) {
@@ -73,27 +59,21 @@ function barChart(name, id, data, humanReadableText, geom) {
 
   svg.append("g")
     .attr("class", "axis axis-x")
-    .attr("transform", "translate(0," + height + ")")
     .call(xAxis);
 
   svg.append("g")
     .attr("class", "axis axis-y")
     .call(yAxis)
     .selectAll("text").remove(); // remove tick labels
-  
+ 
+  /*
   svg.selectAll(".bar").data(data)
     .enter().append("rect")
     .attr("class", "bar")
     .style("fill", "steelblue")
     .style("fill-opacity", 0.5)
-    .attr("y", function(d) {return y(d.k);})
-    .attr("width", function(d) {
-      return d.v == 0 ? 0 : xLog(d.v); // for log
-      // return x(d.v);
-    })
-    .attr("height", function(d) {return y.bandwidth();})
     .attr("title", function(d) {
-      return humanReadableText[d.k] + ": " + d3.format(",")(d.v);
+      return categoryText[d.k] + ": " + d3.format(",")(d.v);
     })
     .on("click", highlight);
   
@@ -102,47 +82,49 @@ function barChart(name, id, data, humanReadableText, geom) {
     .attr("class", "mlabel")
     .text(function(d) {return d.k;})
     .attr("x", function(d) {return 8;})
-    .attr("y", function(d) {return y(d.k) + y.bandwidth()/2 + 4.5;})
     .attr("title", function(d) {
-      return humanReadableText[d.k] + ": " + d3.format(",")(d.v);
+      return categoryText[d.k] + ": " + d3.format(",")(d.v);
     })
-    .on("click", highlight);
+    .on("click", highlight); */
 
-  function highlight(d) {
-    if (d == undefined) {
-      highlighted.clear();
-    } else {
-      if (highlighted.has(d.k)) highlighted.delete(d.k); 
-      else highlighted.add(d.k);
-      if (highlighted.size == data.length) highlighted.clear();
-    }
+  this.resize = function(geom) {
+    const width = geom.W - margin.left - margin.right,
+          height = geom.H - margin.top - margin.bottom;
     
-    svg.selectAll(".bar")
-      .style("fill", function(d) {return color(d.k);});
-    svg.selectAll(".mlabel")
-      .style("font-weight", function(d) {
-        if (highlighted.has(d.k)) return "bold";
-      })
-      .style("fill", function(d) {
-        if (highlighted.size == 0 || highlighted.has(d.k)) return "black";
-        else return "grey";
-      });
+    d3.select(id).select("svg")
+      .style("top", geom.T)
+      .style("left", geom.L)
+      .attr("width", geom.W)
+      .attr("height", geom.H);
 
-    if (highlighted.size == 0) delete query[name];
-    else {
-      query[name] = []; 
-      highlighted.forEach(function(v) {
-        query[name].push(v);
-      });
-    }
-      
-    refresh();
+    xLog.rangeRound([0, width]);
+    xLinear.rangeRound([0, width]);
+    y.rangeRound([height, 0]);
+
+    svg.select(".axis-x")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+    svg.select(".axis-y")
+      .call(yAxis);
+
+    svg.selectAll(".bar").select("rect")
+      .attr("y", function(d) {return y(d.k);})
+      .attr("width", function(d) {
+        return d.v == 0 ? 0 : xLog(d.v); // for log
+        // return x(d.v);
+      })
+      .attr("height", function(d) {return y.bandwidth();});
+
+    svg.selectAll(".mlabel").select("text")
+      .attr("y", function(d) {return y(d.k) + y.bandwidth()/2 + 4.5;});
   }
 
   this.updateData = function(data) {
-    xMax = d3.max(data, function(d) {return d.v;});
-    xDomainLog = [1, xMax];
-    xDomainLinear = [0, xMax];
+    var xMax = d3.max(data, function(d) {return d.v;});
+    var xDomainLog = [1, xMax];
+    var xDomainLinear = [0, xMax];
+    
     xLog.domain(xDomainLog);
     xLinear.domain(xDomainLinear);
 
@@ -152,6 +134,7 @@ function barChart(name, id, data, humanReadableText, geom) {
     bars.enter().append("rect")
       .merge(bars)
       .transition()
+      .attr("class", "bar")
       .style("fill", function(d) {
         return color(d.k);
         // if (highlighted.size == 0) return "steelblue"; 
@@ -161,18 +144,20 @@ function barChart(name, id, data, humanReadableText, geom) {
       .style("fill-opacity", 0.5)
       .attr("y", function(d) {return y(d.k);})
       .attr("title", function(d) {
-        return humanReadableText[d.k] + ": " + d3.format(",")(d.v);
+        return categoryText[d.k] + ": " + d3.format(",")(d.v);
       })
       .attr("width", function(d) {
         return d.v == 0 ? 0 : x(d.v); // for log
         // return x(d.v);
       })
       .attr("height", function(d) {return y.bandwidth();});
+      // .on("click", highlight);
     bars.exit().remove();
   
     var labels = svg.selectAll(".mlabel").data(data);
     labels.enter().append("text")
       .merge(labels)
+      .attr("class", "mlabel")
       .style("font-weight", function(d) {
         if (highlighted.has(d.k)) return "bold";
         else return "regular";
@@ -183,9 +168,15 @@ function barChart(name, id, data, humanReadableText, geom) {
       })
       .text(function(d) {return d.k;})
       .attr("title", function(d) {
-        return humanReadableText[d.k] + ": " + d3.format(",")(d.v);
+        return categoryText[d.k] + ": " + d3.format(",")(d.v);
       })
+      .attr("x", function(d) {return 8;})
       .attr("y", function(d) {return y(d.k) + y.bandwidth()/2 + 4.5;});
+    
+    svg.selectAll(".bar")
+      .on("click", highlight);
+    svg.selectAll(".mlabel")
+      .on("click", highlight);
   
     svg.select(".axis-x")
       .transition().duration(300).call(xAxis);
@@ -193,6 +184,37 @@ function barChart(name, id, data, humanReadableText, geom) {
     svg.select(".axis-y")
       .selectAll("text").remove() // remove tick labels
       .transition().duration(300).call(yAxis)
+    
+    function highlight(d) {
+      if (d == undefined) {
+        highlighted.clear();
+      } else {
+        if (highlighted.has(d.k)) highlighted.delete(d.k); 
+        else highlighted.add(d.k);
+        if (highlighted.size == data.length) highlighted.clear();
+      }
+      
+      svg.selectAll(".bar")
+        .style("fill", function(d) {return color(d.k);});
+      svg.selectAll(".mlabel")
+        .style("font-weight", function(d) {
+          if (highlighted.has(d.k)) return "bold";
+        })
+        .style("fill", function(d) {
+          if (highlighted.size == 0 || highlighted.has(d.k)) return "black";
+          else return "grey";
+        });
+
+      if (highlighted.size == 0) delete query[name];
+      else {
+        query[name] = []; 
+        highlighted.forEach(function(v) {
+          query[name].push(v);
+        });
+      }
+        
+      refresh();
+    }
   };
   
   this.toggleLogScale = function() {

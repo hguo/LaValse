@@ -173,24 +173,27 @@ function init() {
       if (d == null || d == undefined) return;
       if ("top" in d) refreshTops(d["top"]);
 
-      severityChart = new barChart(
-          "severity", "#severityChart", histogramToArray(d.severity), severities,
-          {L: 0, T: 0, W: 120, H: 90});
-      maintenanceChart = new barChart(
-          "maintenance", "#maintenanceChart", histogramToArray(d.maintenance), maintenanceStates,
-          {L: 0, T: 90, W: 120, H: 65});
-      controlActionChart = new barChart(
-          "controlAction", "#controlActionChart", histogramToArray(d.controlAction), controlActions,
-          {L: 0, T: 155, W: 120, H: 135});
-      componentChart = new barChart(
-          "component", "#componentChart", histogramToArray(d.component), components,
-          {L: 120, T: 0, W: 120, H: 290});
-      categoryChart = new barChart(
-          "category", "#categoryChart", histogramToArray(d.category), categories,
-          {L: 0, T: 290, W: 120, H: 290});
-      locationTypeChart = new barChart(
-          "locationType", "#locationTypeChart", histogramToArray(d.locationType), locationTypes,
-          {L: 120, T: 290, W: 120, H: 290});
+      severityChart = new barChart("severity", "#severityChart", Object.keys(d.severity), severities);
+      maintenanceChart = new barChart("maintenance", "#maintenanceChart", Object.keys(d.maintenance), maintenanceStates);
+      controlActionChart = new barChart("controlAction", "#controlActionChart", Object.keys(d.controlAction), controlActions);
+      componentChart = new barChart("component", "#componentChart", Object.keys(d.component), components);
+      categoryChart = new barChart("category", "#categoryChart", Object.keys(d.category), categories);
+      locationTypeChart = new barChart("locationType", "#locationTypeChart", Object.keys(d.locationType), locationTypes);
+
+      severityChart.resize({L: 0, T: 0, W: 120, H: 90});
+      maintenanceChart.resize({L: 0, T: 90, W: 120, H: 65});
+      controlActionChart.resize({L: 0, T: 155, W: 120, H: 135});
+      componentChart.resize({L: 120, T: 0, W: 120, H: 290});
+      categoryChart.resize({L: 0, T: 290, W: 120, H: 290});
+      locationTypeChart.resize({L: 120, T: 290, W: 120, H: 290});
+
+      severityChart.updateData(histogramToArray(d.severity));
+      maintenanceChart.updateData(histogramToArray(d.maintenance));
+      controlActionChart.updateData(histogramToArray(d.controlAction));
+      componentChart.updateData(histogramToArray(d.component));
+      categoryChart.updateData(histogramToArray(d.category));
+      locationTypeChart.updateData(histogramToArray(d.locationType));
+      
       treeMapView = new treeMapView(
           "#messageIdChart");
 
