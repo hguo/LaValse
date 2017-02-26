@@ -120,8 +120,10 @@ function treeMapView(id, geom) {
       // .sum(function(d) {return d.count;})
       // .sum(function(d) {return Math.max(d.count, 200);})
       .sum(function(d) {
-        if (d.count == 0) return 0;
-        else return Math.log10(10+d.count);
+        var q = quantizedFreq(d.count);
+        return q*q;
+        // if (d.count == 0) return 0;
+        // else return Math.log10(10+d.count);
       })
       .sort(function(a, b) { return b.height - a.height || b.value - a.value; });
     

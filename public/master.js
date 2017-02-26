@@ -609,3 +609,26 @@ function frequencyColorMap2bw(val) {
   else if (val < 1000) return "#737373";
   else return "#525252";
 }
+
+function quantizedFreq(v) {
+  if (v == 0) return 0;
+  else if (v == 1) return 1;
+  else if (v > 1 && v < 10) return 2;
+  else if (v > 10 && v < 100) return 3;
+  else if (v > 100 && v < 1000) return 4;
+  else if (v > 1000 && v < 10000) return 5;
+  else if (v > 10000 && v < 100000) return 6;
+  else if (v > 100000) return 7;
+}
+
+var formatQuantizedFreq = function(d) {
+  const superscript = "⁰¹²³⁴⁵⁶⁷⁸⁹";
+  if (d == 0) return "0";
+  else if (d == 1) return "1";
+  else if (d == 2) return "10";
+  else if (d == 3) return "100";
+  else if (d == 4) return "1k";
+  else if (d == 5) return "10k";
+  else if (d == 6) reutnr "100k";
+  else return "";
+};

@@ -1,6 +1,8 @@
 function barChart(name, id, categories, categoryText) {
   const margin = {top: 20, right: 10, bottom: 20, left: 10};
 
+  var currentScale = "quantized"; // log/linear
+
   var useLogScale = true;
   var highlighted = new Set;
 
@@ -47,8 +49,6 @@ function barChart(name, id, categories, categoryText) {
     .ticks(3)
     .tickFormat(function(d) {
       return d3.format(".2s")(d);
-      // if (useLogScale) return "10" + formatPower(Math.round(Math.log10(d)));
-      // else return d;
     });
   var yAxis = d3.axisLeft()
     .scale(y)
