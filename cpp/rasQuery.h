@@ -44,8 +44,7 @@ struct QueryResults {
            maintenance[2];
   uint32_t *location, *locationRecID; 
   uint32_t *timeVolumes, *timeVolumesRecID;
-  bool *timeVolumesMsgID;
-  // std::bitset<NUM_MSGID> *timeVolumesMsgID;
+  uint32_t *timeVolumesMsgID;
   uint32_t *midplaneVolumes; // heat maps
   uint32_t *overviewVolume;  // the second time volume for overview
 
@@ -144,7 +143,6 @@ struct Query {
       if (c[0]) {
         if (/*t>=0 &&*/ t<results.nTimeSlots) {
           if (e.midplane < nMidplanes) add1(results.midplaneVolumes[e.midplane*results.nTimeSlots+t]); // midplane volume
-          // results.timeVolumesMsgID[t][e.msgID] = true; // msgID volume
           switch (volumeBy) {
 #if 0
           case VAR_NONE: add1(results.timeVolumes[t]); break;
@@ -167,7 +165,7 @@ struct Query {
       }
       if (c[1]) {
         add1(results.msgID[e.msgID]);
-        results.timeVolumesMsgID[t*NUM_MSGID+e.msgID] = true; // msgID volume
+        add1(results.timeVolumesMsgID[e.msgID*nslots+t]); // volume per msgID
       }
       if (c[2]) add1(results.component[e.component()]);
       if (c[3]) add1(results.locationType[e.locationType]);
@@ -271,11 +269,8 @@ QueryResults::QueryResults(const Query& q)
   memset(timeVolumes, 0, nTimeSlots*nVolumes*4);
   // memset(timeVolumesRecID, 0, nslots*nvolumes*MAX_EVENTS_PER_SLOT*4);
 
-  timeVolumesMsgID = (bool*)malloc(nTimeSlots * NUM_MSGID);
-  memset(timeVolumesMsgID, 0, nTimeSlots*NUM_MSGID);
-  // timeVolumesMsgID = (std::bitset<NUM_MSGID>*)malloc(nTimeSlots*sizeof(std::bitset<NUM_MSGID>));
-  // for (size_t i=0; i<nTimeSlots; i++)
-  //   timeVolumesMsgID[i].reset();
+  timeVolumesMsgID = (uint32_t*)malloc(nTimeSlots*NUM_MSGID*4);
+  memset(timeVolumesMsgID, 0, nTimeSlots*NUM_MSGID*4);
 
   midplaneVolumes = (uint32_t*)malloc(nTimeSlots*nMidplanes*4);
   memset(midplaneVolumes, 0, nTimeSlots*nMidplanes*4);

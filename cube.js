@@ -1,6 +1,7 @@
 const catalogCube = require("./cpp/build/Release/catalogCube.node");
 // const catalogCube = require("./cpp/build/Debug/catalogCube.node");
 const ras = require("./rasbook");
+const analysis = require("./analysis");
 
 const volumeByMap = {
   "all": 0,
@@ -58,6 +59,7 @@ function translateResults(r, fullResult) {
   delete r["timeVolumesRecID"];
 
   r.arcs = translateTimeVolumesMsgID(r.timeVolumesMsgID);
+  // analysis.temporalCorrelation(r.timeVolumesMsgID);
   delete r["timeVolumesMsgID"];
 
   return r;
@@ -82,17 +84,17 @@ function translateResults(r, fullResult) {
   }
 
   function translateTimeVolumesMsgID(volumes) {
-    const nslots = volumes.length;
-    const n = volumes[0].length;
+    const nMsgIDs = volumes.length;
+    const nSlots = volumes[0].length;
     var results = {};
 
-    for (var i=0; i<nslots; i++) {
-      for (var j=0; j<n; j++) {
-        // if (volumes[i][j] == '1') {
+    for (var i=0; i<nMsgIDs; i++) {
+      var msgID = ras.eventMap.val(i);
+      if (!(msgID in results)) results[msgID] = [];
+
+      for (var j=0; j<nSlots; j++) {
         if (volumes[i][j] != 0) {
-          var msgID = ras.eventMap.val(j);
-          if (!(msgID in results)) results[msgID] = [];
-          results[msgID].push(i);
+          results[msgID].push(j);
         }
       }
     }

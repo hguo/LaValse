@@ -239,10 +239,10 @@ void CatalogCube::Query(const FunctionCallbackInfo<Value>& args) {
   jout->Set(String::NewFromUtf8(isolate, "timeVolumesRecID"), jTimeVolumesRecID);
 
   Local<Array> jTimeVolumesMsgID = Array::New(isolate);
-  for (uint32_t i=0; i<results.nTimeSlots; i++) {
+  for (uint32_t i=0; i<NUM_MSGID; i++) {
     Local<Array> jArray = Array::New(isolate);
-    for (uint32_t j=0; j<NUM_MSGID; j++) 
-      jArray->Set(Number::New(isolate, j), Number::New(isolate, results.timeVolumesMsgID[i*NUM_MSGID+j]));
+    for (uint32_t j=0; j<results.nTimeSlots; j++) 
+      jArray->Set(Number::New(isolate, j), Number::New(isolate, results.timeVolumesMsgID[i*results.nTimeSlots+j]));
 
     jTimeVolumesMsgID->Set(Number::New(isolate, i), jArray);
   }
