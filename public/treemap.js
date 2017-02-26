@@ -16,7 +16,8 @@ function treeMapView(id, geom) {
   var color = d3.scaleOrdinal(d3.schemeCategory20);
   var colorFunc = function(d) {
     if (selected.size == 0 || selected.has(d.data.name)) {
-      return color(d.parent.data.id);
+      // return color(d.parent.data.id);
+      return globalCategoryColor(query.volumeBy, d.parent.data.name);
     } else {
       return "lightgrey";
     }
@@ -118,7 +119,10 @@ function treeMapView(id, geom) {
       .eachBefore(function(d) { d.data.id = (d.parent ? d.parent.data.id + "." : "") + d.data.name; })
       // .sum(function(d) {return d.count;})
       // .sum(function(d) {return Math.max(d.count, 200);})
-      .sum(function(d) {return Math.log10(1+d.count);})
+      .sum(function(d) {
+        if (d.count == 0) return 0;
+        else return Math.log10(10+d.count);
+      })
       .sort(function(a, b) { return b.height - a.height || b.value - a.value; });
     
     treemap(root);

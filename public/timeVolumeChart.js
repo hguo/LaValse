@@ -144,7 +144,7 @@ function timeVolumeChart(id) {
     .clamp(true)
     .domain([0, 20])
     .nice(8);
-  var color = d3.scaleOrdinal(d3.schemeCategory10);
+  // var color = d3.scaleOrdinal(d3.schemeCategory10);
 
   var midplanes = enumerateMidplanes();
   var yCobalt = d3.scaleLinear()
@@ -370,7 +370,7 @@ function timeVolumeChart(id) {
     yLinear.domain(yDomainLinear);
     
     var line = useLogScale ? lineLog : lineLinear;
- 
+
     svgVolume.selectAll(".line").remove();
     svgVolume.selectAll(".line")
       .data(data)
@@ -379,7 +379,9 @@ function timeVolumeChart(id) {
       .attr("class", "line")
       .style("fill", "none")
       // .style("stroke", "steelblue")
-      .style("stroke", function(d, i) {return color(i);})
+      .style("stroke", function(d, i) {
+        return globalCategoryColor(query.volumeBy, i);
+      })
       .attr("d", function(d) {return line(d);});
 
     svgVolume.select(".axis-x")
@@ -586,18 +588,20 @@ function timeVolumeChart(id) {
 
     for (var msgID in arcs) {
       var array = arcs[msgID];
-    
+      var colorBy = events[msgID][query.volumeBy];
+      ctx.strokeStyle = globalCategoryColor(query.volumeBy, colorBy);
+
       if (highlightedArcs.has(msgID)) {
         ctx.globalAlpha = 1.0;
-        ctx.strokeStyle = "steelblue";
+        // ctx.strokeStyle = "steelblue";
         ctx.lineWidth = 2;
       } else if (highlightedArcs.size == 0) {
         ctx.globalAlpha = 0.4;
-        ctx.strokeStyle = "black";
+        // ctx.strokeStyle = "black";
         ctx.lineWidth = 1;
       } else {
         ctx.globalAlpha = 0.1;
-        ctx.strokeStyle = "black";
+        // ctx.strokeStyle = "black";
         ctx.lineWidth = 1;
       }
 

@@ -98,6 +98,8 @@ function translateResults(r, fullResult) {
           results[msgID].push(j);
         }
       }
+
+      if (results[msgID].length == 0) delete results[msgID];
     }
     return results;
   }

@@ -1,5 +1,3 @@
-// function barChart(name, id, data, humanReadableText, geom) {
-
 function barChart(name, id, categories, categoryText) {
   const margin = {top: 20, right: 10, bottom: 20, left: 10};
 
@@ -29,12 +27,12 @@ function barChart(name, id, categories, categoryText) {
     .domain(categories);
     // .domain(data.map(function(d) {return d.k;}));
  
-  var color0 = d3.scaleOrdinal(d3.schemeCategory10);
-  color0.domain(categories);
+  // var color0 = d3.scaleOrdinal(d3.schemeCategory10);
+  // color0.domain(categories);
 
   var color = function(i) { // TODO
     if (query.volumeBy == name) {
-      return color0(i);
+      return globalCategoryColor(name, i);
     } else if (highlighted.size == 0) {
       return "steelblue";
     } else if (highlighted.has(i)) {

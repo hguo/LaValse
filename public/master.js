@@ -1,7 +1,7 @@
 var query = {
   LOD: 1, // TODO
   top: 5,
-  // volumeBy: "category",
+  volumeBy: "severity",
   T0: 1420070400000, // 2015-01-01
   T1: 1451520000000, // 2015-12-31
   t0: 1420070400000, // 2015-01-01
@@ -452,15 +452,33 @@ function removeTooltips() {
 }
 
 function globalCategoryColor(volumeBy, d) {
-  var color = d3.scale.category20();
-  if (volumeBy == "severity") {
+  var color = d3.scaleOrdinal(d3.schemeCategory20);
+  var domain = [];
+  for (var i=0; i<20; i++) domain.push(i);
+  color.domain(domain);
+
+  if (volumeBy == undefined || volumeBy == "all") 
+    return "steelblue";
+  else if (volumeBy == "severity") {
     switch (d) {
-      case "FATAL": return "red";
-      case "WARN": return "yellow";
-      default: return "green";
+      case 2: case "FATAL": return "#d7191c";
+      case 1: case "WARN": return "#fdae61";
+      default: return "#2c7bb6";
     }
   } else {
+    if (isNaN(d)) return color(hash(d)%20);
     return color(d);
+  }
+
+  function hash(str) {
+    var h = 0;
+    if (str.length === 0) return h;
+    for (var i=0; i<str.length; i++) {
+      var chr = str.charCodeAt(i);
+      h = ((h << 5) - h) + chr;
+      hash |= 0; // Convert to 32bit integer
+    }
+    return h;
   }
 }
 
@@ -493,7 +511,7 @@ function initControlPanel() {
     this.reset = function () {
     };
     this.scale = "auto";
-    this.volumeBy = "all";
+    this.volumeBy = "severity";
     this.LOD = "auto";
     this.matched = 0;
     this.queryTime = 0;
