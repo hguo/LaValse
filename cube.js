@@ -60,6 +60,7 @@ function translateResults(r, fullResult) {
 
   r.arcs = translateTimeVolumesMsgID(r.timeVolumesMsgID);
   // analysis.temporalCorrelation(r.timeVolumesMsgID);
+  analysis.temporalMsgIdDistance(r.timeVolumesMsgID);
   delete r["timeVolumesMsgID"];
 
   return r;
