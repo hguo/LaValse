@@ -132,9 +132,8 @@ function timeVolumeChart(id) {
     .clamp(true)
     .domain(yDomainLog)
     .nice(4);
-  var YLog = d3.scaleLog()
-    .clamp(true)
-    .domain(yDomainLog)
+  var Y = d3.scaleLinear()
+    .domain([0, 7])
     .nice(3);
   var yLinear = d3.scaleLinear() 
     .clamp(true)
@@ -161,8 +160,14 @@ function timeVolumeChart(id) {
         });
 
   var XAxis = d3.axisBottom().scale(X),
-      YAxis = d3.axisLeft().scale(YLog).ticks(3)
-        .tickFormat(function(d) {return d3.format(".2s")(d);});
+      YAxis = d3.axisLeft().scale(Y).ticks(8)
+        .tickFormat(function(d) {
+          if (d == 0) return "0";
+          else if (d == 1) return "1";
+          else if (d == 4) return "1k";
+          else if (d == 7) return "1M";
+          else return "";
+        });
 
   var cobaltAxis = d3.axisLeft()
     .scale(yCobalt)
@@ -180,7 +185,7 @@ function timeVolumeChart(id) {
 
   var overviewLineLog = d3.line()
     .x(function(d, i) {return X(O0 + Og*i);})
-    .y(function(d) {return YLog(d);});
+    .y(function(d) {return Y(warpedFreq(d));});
   
   svgVolume.append("g")
     .attr("class", "axis axis-x");
@@ -302,7 +307,7 @@ function timeVolumeChart(id) {
     yLog.rangeRound([volumeHeight, 0]);
     yLinear.rangeRound([volumeHeight, 0]);
     yLinearReverse.rangeRound([0, volumeHeight]);
-    YLog.rangeRound([overviewHeight, 0]);
+    Y.rangeRound([overviewHeight, 0]);
     
     yCobalt.range([0, cobaltHeight]);
     yCobalt0.range([0, cobaltHeight]);
@@ -394,9 +399,6 @@ function timeVolumeChart(id) {
   }
 
   this.updateOverviewVolume = function(data) {
-    YMax = d3.max(data, function(d) {return d;});
-    YLog.domain([1, YMax]);
-
     if (svgOverview.select(".line").empty()) {
       svgOverview.append("path")
         .attr("class", "line")
@@ -408,11 +410,11 @@ function timeVolumeChart(id) {
       .transition()
       .attr("d", overviewLineLog);
 
-    svgOverview.select(".axis-X")
-      .transition().call(XAxis);
+    // svgOverview.select(".axis-X")
+    //   .transition().call(XAxis);
 
-    svgOverview.select(".axis-Y")
-      .transition().call(YAxis);
+    // svgOverview.select(".axis-Y")
+    //   .transition().call(YAxis);
   }
 
   this.highlightGlyphsByLocation = function(location) {
