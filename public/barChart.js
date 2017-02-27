@@ -1,12 +1,8 @@
 function barChart(name, id, categories, categoryText) {
   const margin = {top: 20, right: 10, bottom: 20, left: 10};
 
-  var currentScale = "quantized"; // log/linear
-
-  var useLogScale = true;
   var highlighted = new Set;
 
-  // $(id).html("");
   var svg = d3.select(id)
     .append("svg")
     .style("position", "absolute")
@@ -21,16 +17,11 @@ function barChart(name, id, categories, categoryText) {
     .append("text")
     .text(name);
 
-  var xLog = d3.scaleLog()
-    .clamp(true);
-  var xLinear = d3.scaleLinear();
+  var x = d3.scaleLinear()
+    .domain([0, 7]);
   var y = d3.scaleBand()
     .padding(0.05)
     .domain(categories);
-    // .domain(data.map(function(d) {return d.k;}));
- 
-  // var color0 = d3.scaleOrdinal(d3.schemeCategory10);
-  // color0.domain(categories);
 
   var color = function(i) { // TODO
     if (query.volumeBy == name) {
@@ -38,17 +29,22 @@ function barChart(name, id, categories, categoryText) {
     } else if (highlighted.size == 0) {
       return "steelblue";
     } else if (highlighted.has(i)) {
-      return "orange";
+      // return "orange";
+      return "steelblue";
     } else {
       return "lightgrey";
     }
   }
 
   var xAxis = d3.axisBottom()
-    .scale(xLog)
-    .ticks(3)
+    .scale(x)
+    .ticks(8)
     .tickFormat(function(d) {
-      return d3.format(".2s")(d);
+      if (d == 0) return "0";
+      else if (d == 1) return "1";
+      else if (d == 4) return "1k";
+      else if (d == 7) return "1M";
+      else return "";
     });
   var yAxis = d3.axisLeft()
     .scale(y)
@@ -63,27 +59,6 @@ function barChart(name, id, categories, categoryText) {
     .attr("class", "axis axis-y")
     .call(yAxis)
     .selectAll("text").remove(); // remove tick labels
- 
-  /*
-  svg.selectAll(".bar").data(data)
-    .enter().append("rect")
-    .attr("class", "bar")
-    .style("fill", "steelblue")
-    .style("fill-opacity", 0.5)
-    .attr("title", function(d) {
-      return categoryText[d.k] + ": " + d3.format(",")(d.v);
-    })
-    .on("click", highlight);
-  
-  svg.selectAll(".mlabel").data(data)
-    .enter().append("text")
-    .attr("class", "mlabel")
-    .text(function(d) {return d.k;})
-    .attr("x", function(d) {return 8;})
-    .attr("title", function(d) {
-      return categoryText[d.k] + ": " + d3.format(",")(d.v);
-    })
-    .on("click", highlight); */
 
   this.resize = function(geom) {
     const width = geom.W - margin.left - margin.right,
@@ -95,8 +70,7 @@ function barChart(name, id, categories, categoryText) {
       .attr("width", geom.W)
       .attr("height", geom.H);
 
-    xLog.rangeRound([0, width]);
-    xLinear.rangeRound([0, width]);
+    x.rangeRound([0, width]);
     y.rangeRound([height, 0]);
 
     svg.select(".axis-x")
@@ -109,8 +83,7 @@ function barChart(name, id, categories, categoryText) {
     svg.selectAll(".bar").select("rect")
       .attr("y", function(d) {return y(d.k);})
       .attr("width", function(d) {
-        return d.v == 0 ? 0 : xLog(d.v); // for log
-        // return x(d.v);
+        return x(warpedFreq(d));
       })
       .attr("height", function(d) {return y.bandwidth();});
 
@@ -119,37 +92,21 @@ function barChart(name, id, categories, categoryText) {
   }
 
   this.updateData = function(data) {
-    var xMax = d3.max(data, function(d) {return d.v;});
-    var xDomainLog = [1, xMax];
-    var xDomainLinear = [0, xMax];
-    
-    xLog.domain(xDomainLog);
-    xLinear.domain(xDomainLinear);
-
-    var x = useLogScale ? xLog : xLinear;
-
     var bars = svg.selectAll(".bar").data(data);
     bars.enter().append("rect")
       .merge(bars)
       .transition()
       .attr("class", "bar")
-      .style("fill", function(d) {
-        return color(d.k);
-        // if (highlighted.size == 0) return "steelblue"; 
-        // else if (highlighted.has(d.k)) return "orange"; // color(d.k);
-        // else return "lightgrey";
-      })
+      .style("fill", function(d) {return color(d.k);})
       .style("fill-opacity", 0.5)
       .attr("y", function(d) {return y(d.k);})
       .attr("title", function(d) {
         return categoryText[d.k] + ": " + d3.format(",")(d.v);
       })
       .attr("width", function(d) {
-        return d.v == 0 ? 0 : x(d.v); // for log
-        // return x(d.v);
+        return x(warpedFreq(d.v));
       })
       .attr("height", function(d) {return y.bandwidth();});
-      // .on("click", highlight);
     bars.exit().remove();
   
     var labels = svg.selectAll(".mlabel").data(data);
@@ -170,7 +127,7 @@ function barChart(name, id, categories, categoryText) {
       })
       .attr("x", function(d) {return 8;})
       .attr("y", function(d) {return y(d.k) + y.bandwidth()/2 + 4.5;});
-    
+   
     svg.selectAll(".bar")
       .on("click", highlight);
     svg.selectAll(".mlabel")
@@ -214,21 +171,8 @@ function barChart(name, id, categories, categoryText) {
       refresh();
     }
   };
-  
-  this.toggleLogScale = function() {
-    useLogScale = !useLogScale;
-    var x = useLogScale ? xLog : xLinear;
-
-    svg.selectAll(".bar")
-      .transition()
-      .attr("width", function(d) {return x(d.v);});
-    svg.select(".axis-x")
-      .transition()
-      .call(xAxis.scale(x));
-  }
 
   this.reset = function() {
-    useLogScale = true;
     highlight(undefined);
   }
 }

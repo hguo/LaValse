@@ -122,7 +122,7 @@ function buildMessageIdHierarchy(volumeBy, msgHistogram) { // volumeBy = compone
 
   if (volumeBy == "" || volumeBy == null || volumeBy == undefined) {
     for (var msgID in msgHistogram) {
-      hierarchy.children.push({name: msgID, count: msgHistogram[msgID]});
+      hierarchy.children.push({name: msgID, count: msgHistogram[msgID], area: quantizedFreq(msgHistogram[msgID])});
       hierarchy.nnodes ++;
     }
   } else {
@@ -130,7 +130,7 @@ function buildMessageIdHierarchy(volumeBy, msgHistogram) { // volumeBy = compone
     for (var msgID in msgHistogram) {
       var key = events[msgID][volumeBy];
       if (!(key in histogram)) histogram[key] = [];
-      histogram[key].push({name: msgID, count: msgHistogram[msgID]});
+      histogram[key].push({name: msgID, count: msgHistogram[msgID], area: quantizedFreq(msgHistogram[msgID])});
       hierarchy.nnodes ++;
     }
 
@@ -313,11 +313,6 @@ function refresh() {
 function toggleLogScale() {
   // machineView.toggleLogScale();
   timeVolumeChart.toggleLogScale();
-  severityChart.toggleLogScale();
-  componentChart.toggleLogScale();
-  categoryChart.toggleLogScale();
-  locationTypeChart.toggleLogScale();
-  controlActionChart.toggleLogScale();
 }
 
 function updateQueryInfo(d) {
@@ -610,6 +605,11 @@ function frequencyColorMap2bw(val) {
   else return "#525252";
 }
 
+function warpedFreq(v) {
+  if (v == 0) return 0;
+  else return 1 + Math.log10(v);
+}
+
 function quantizedFreq(v) {
   if (v == 0) return 0;
   else if (v == 1) return 1;
@@ -618,17 +618,6 @@ function quantizedFreq(v) {
   else if (v > 100 && v < 1000) return 4;
   else if (v > 1000 && v < 10000) return 5;
   else if (v > 10000 && v < 100000) return 6;
-  else if (v > 100000) return 7;
+  else if (v > 100000 && v < 1000000) return 7;
+  else return 8;
 }
-
-var formatQuantizedFreq = function(d) {
-  const superscript = "⁰¹²³⁴⁵⁶⁷⁸⁹";
-  if (d == 0) return "0";
-  else if (d == 1) return "1";
-  else if (d == 2) return "10";
-  else if (d == 3) return "100";
-  else if (d == 4) return "1k";
-  else if (d == 5) return "10k";
-  else if (d == 6) reutnr "100k";
-  else return "";
-};
