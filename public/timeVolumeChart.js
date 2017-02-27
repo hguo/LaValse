@@ -145,7 +145,6 @@ function timeVolumeChart(id) {
     .clamp(true)
     .domain([0, 20])
     .nice(8);
-  // var color = d3.scaleOrdinal(d3.schemeCategory10);
 
   var midplanes = enumerateMidplanes();
   var yCobalt = d3.scaleLinear()
@@ -196,7 +195,12 @@ function timeVolumeChart(id) {
   var overviewLineLog = d3.line()
     .x(function(d, i) {return X(O0 + Og*i);})
     .y(function(d) {return Y(warpedFreq(d));});
-  
+
+  var stack = d3.stack(); // for theme river
+  var area = d3.area()
+    .x(function(d, i) {return x(query.T0 + query.tg * i);})
+    .y1(function(d) {return yWarp(warpedFreq(d));});
+
   svgVolume.append("g")
     .attr("class", "axis axis-x");
 
@@ -385,7 +389,15 @@ function timeVolumeChart(id) {
     yLog.domain(yDomainLog);
     yLinear.domain(yDomainLinear);
     // yWarp.domain([0, d3.max(data, function(d) {return d3.max(d, function(dd) {return quantizedFreq(dd);});})]);
+
+    svgVolume.select(".axis-x")
+      .transition()
+      .call(xAxis);
     
+    svgVolume.select(".axis-y")
+      .transition()
+      .call(yAxis)
+   
     // var line = useLogScale ? lineLog : lineLinear;
     var line = lineWarp;
 
@@ -402,13 +414,18 @@ function timeVolumeChart(id) {
       })
       .attr("d", function(d) {return line(d);});
 
-    svgVolume.select(".axis-x")
-      .transition()
-      .call(xAxis);
-    
-    svgVolume.select(".axis-y")
-      .transition()
-      .call(yAxis)
+    /*
+    var layer = svgVolume.selectAll(".layer")
+      .data(stack(data))
+      .enter().append("g")
+      .attr("class", "layer");
+    console.log(stack(data));
+
+    layer.append("path")
+      .attr("class", "area")
+      .style("fill", "red") // TODO
+      .attr("d", area);
+    */
   }
 
   this.updateOverviewVolume = function(data) {

@@ -15,7 +15,11 @@ function barChart(name, id, categories, categoryText) {
 
   svg.select(".barChartTitle")
     .append("text")
-    .text(name);
+    .text(name)
+    .on("click", function() {
+      query.volumeBy = name;
+      refresh();
+    });
 
   var x = d3.scaleLinear()
     .domain([0, 7]);
