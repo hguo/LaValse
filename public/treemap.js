@@ -79,7 +79,13 @@ function treeMapView(id, geom) {
       .style("stroke-width", null);
   }
 
-  this.updateData = function(data) {
+  this.updateData = function(data0, data) {
+    for (let key of highlighted) {
+      if (!(key in data0)) {
+        highlighted.delete(key); // TODO
+      }
+    }
+
     var treemap = d3.treemap()
       .tile(d3.treemapResquarify)
       .size([width, height])

@@ -196,10 +196,13 @@ function timeVolumeChart(id) {
     .x(function(d, i) {return X(O0 + Og*i);})
     .y(function(d) {return Y(warpedFreq(d));});
 
-  var stack = d3.stack(); // for theme river
+  var stack = d3.stack()
+    // .offset(d3.stackOffsetWiggle); // for theme river
+    .offset(d3.stackOffsetSilhouette); 
   var area = d3.area()
     .x(function(d, i) {return x(query.T0 + query.tg * i);})
-    .y1(function(d) {return yWarp(warpedFreq(d));});
+    .y0(function(d) { return yWarp(d[0]); })
+    .y1(function(d) { return yWarp(d[1]); });
 
   svgVolume.append("g")
     .attr("class", "axis axis-x");
@@ -377,6 +380,31 @@ function timeVolumeChart(id) {
     
   }
 
+  function buildStackData(data) {
+    // TODO: build keys
+    const volumeBy = query.volumeBy;
+    const nKeys = data.length;
+    var keys = [];
+    for (var i=0; i<data.length; i++) keys.push(i); 
+
+    var stackData = [];
+    const n = data[0].length; // number of time slots
+    for (var i=0; i<n; i++) {
+      var obj = {};
+      for (var j=0; j<keys.length; j++) {
+        const key = keys[j];
+        // obj[key] = quantizedFreq(data[j][i]) / nKeys;
+        obj[key] = warpedFreq(data[j][i]);
+      }
+      stackData.push(obj);
+    }
+
+    return {
+      keys: keys, 
+      data: stackData
+    };
+  }
+
   this.updateVolume = function(data) {
     yMax = d3.max(data, function(d) {return d3.max(d, function(dd) {return dd;});});
     if (yMax <= 1000 && useLogScale) toggleLogScale();
@@ -414,18 +442,22 @@ function timeVolumeChart(id) {
       })
       .attr("d", function(d) {return line(d);});
 
-    /*
+    var stackData = buildStackData(data);
+    stack.keys(stackData.keys);
+    // console.log(stack(stackData.data));
+
+    svgVolume.selectAll(".layer").remove();
     var layer = svgVolume.selectAll(".layer")
-      .data(stack(data))
+      .data(stack(stackData.data))
       .enter().append("g")
-      .attr("class", "layer");
-    console.log(stack(data));
+      .attr("class", "layer")
+      .style("display", "none"); // disabled
 
     layer.append("path")
       .attr("class", "area")
       .style("fill", "red") // TODO
-      .attr("d", area);
-    */
+      .attr("d", area)
+      .style("fill", function(d) {return globalCategoryColor(query.volumeBy, d.key);});
   }
 
   this.updateOverviewVolume = function(data) {

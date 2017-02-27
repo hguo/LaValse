@@ -214,7 +214,7 @@ function init() {
       torusView = new torusView("#tabs-0", {L: 0, T: 0, W: 360, H: 360});
       
       treeMapView.resize({L: 0, T: 580, W: 240, H: 140});
-      treeMapView.updateData(buildMessageIdHierarchy(query.volumeBy, d.msgID));
+      treeMapView.updateData(d.msgID, buildMessageIdHierarchy(query.volumeBy, d.msgID));
 
       updateQueryInfo(d);
      
@@ -304,7 +304,7 @@ function refresh() {
       timeVolumeChart.updateArcDiagram(d.arcs);
       machineView.updateData(d.location, histogramToArray(d.location));
       
-      treeMapView.updateData(buildMessageIdHierarchy(query.volumeBy, d.msgID));
+      treeMapView.updateData(d.msgID, buildMessageIdHierarchy(query.volumeBy, d.msgID));
       
       updateQueryInfo(d);
     });
