@@ -505,7 +505,7 @@ function initControlPanel() {
   var text = new function() {
     this.reset = function () {
     };
-    this.scale = "auto";
+    // this.scale = "auto";
     this.volumeBy = "severity";
     this.LOD = "auto";
     this.matched = 0;
@@ -524,9 +524,9 @@ function initControlPanel() {
     query.volumeBy = val;
     refresh();
   });
-  f1.add(text, "scale", ["auto", "log", "linear"]).onChange(function(val) {
-    toggleLogScale(); // FIXME
-  });
+  // f1.add(text, "scale", ["auto", "log", "linear"]).onChange(function(val) {
+  //   toggleLogScale(); // FIXME
+  // });
   f1.add(text, "LOD", ["auto", "0", "1", "2", "3"]).onChange(function(val) {
     if (val == "auto") {
       machineView.toggleAutoLOD(true);

@@ -128,6 +128,8 @@ function timeVolumeChart(id) {
     .domain(xDomain)
     .clamp(true);
 
+  var yWarp = d3.scaleLinear()
+    .domain([0, 7]);
   var yLog = d3.scaleLog()
     .clamp(true)
     .domain(yDomainLog)
@@ -152,11 +154,16 @@ function timeVolumeChart(id) {
     .domain([0, 96]);
 
   var xAxis = d3.axisTop().scale(x), 
-      yAxis = d3.axisLeft().scale(yLog).ticks(3)
+      // yAxis = d3.axisLeft().scale(yLog).ticks(3)
+      yAxis = d3.axisLeft().scale(yWarp).ticks(3)
+        .ticks(8)
         .tickFormat(function(d) {
-          return d3.format(".2s")(d);
-          // if (useLogScale) return "10" + formatPower(Math.round(Math.log10(d)));
-          // else return d3.format(".2s")(d);
+          // return d3.format(".2s")(d);
+          if (d == 0) return "0";
+          else if (d == 1) return "1";
+          else if (d == 4) return "1k";
+          else if (d == 7) return "1M";
+          else return "";
         });
 
   var XAxis = d3.axisBottom().scale(X),
@@ -182,6 +189,9 @@ function timeVolumeChart(id) {
   var lineLinear = d3.line() 
     .x(function(d, i) {return x(query.T0 + query.tg * i);})
     .y(function(d) {return yLinear(d);});
+  var lineWarp = d3.line()
+    .x(function(d, i) {return x(query.T0 + query.tg * i);})
+    .y(function(d) {return yWarp(warpedFreq(d));});
 
   var overviewLineLog = d3.line()
     .x(function(d, i) {return X(O0 + Og*i);})
@@ -305,6 +315,7 @@ function timeVolumeChart(id) {
     X.range([0, width]); 
 
     yLog.rangeRound([volumeHeight, 0]);
+    yWarp.rangeRound([volumeHeight, 0]);
     yLinear.rangeRound([volumeHeight, 0]);
     yLinearReverse.rangeRound([0, volumeHeight]);
     Y.rangeRound([overviewHeight, 0]);
@@ -373,8 +384,10 @@ function timeVolumeChart(id) {
     yDomainLinear = [0, yMax];
     yLog.domain(yDomainLog);
     yLinear.domain(yDomainLinear);
+    // yWarp.domain([0, d3.max(data, function(d) {return d3.max(d, function(dd) {return quantizedFreq(dd);});})]);
     
-    var line = useLogScale ? lineLog : lineLinear;
+    // var line = useLogScale ? lineLog : lineLinear;
+    var line = lineWarp;
 
     svgVolume.selectAll(".line").remove();
     svgVolume.selectAll(".line")
@@ -841,6 +854,7 @@ function timeVolumeChart(id) {
   }
 
   this.toggleLogScale = function() {
+    return; // TODO
     useLogScale = !useLogScale;
 
     var line = useLogScale ? lineLog : lineLinear;
@@ -986,7 +1000,8 @@ function timeVolumeChart(id) {
     drawMidplaneVolumes();
     drawArcDiagram();
 
-    var line = useLogScale ? lineLog : lineLinear;
+    // var line = useLogScale ? lineLog : lineLinear;
+    var line = lineWarp;
    
     // svg.select("#volumeBrush")
     //   .call(volumeBrush.move, null);

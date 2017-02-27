@@ -83,7 +83,8 @@ function barChart(name, id, categories, categoryText) {
     svg.selectAll(".bar").select("rect")
       .attr("y", function(d) {return y(d.k);})
       .attr("width", function(d) {
-        return x(warpedFreq(d));
+        // return x(warpedFreq(d));
+        return x(quantizedFreq(d));
       })
       .attr("height", function(d) {return y.bandwidth();});
 
