@@ -65,12 +65,13 @@ function treeMapView(id, geom) {
     
     svg.selectAll(".cellBox")
       .style("stroke", function(d) {
-        if (highlighted.has(d.data.name)) return "red";
+        if (highlighted.has(d.data.name)) return "black";
       })
       .style("stroke-width", function(d) {
         if (highlighted.has(d.data.name)) return 3;
       });
   }
+  var highlight = this.highlight;
 
   this.dehighlight = function() {
     highlighted.clear();
@@ -78,6 +79,7 @@ function treeMapView(id, geom) {
       .style("stroke", null)
       .style("stroke-width", null);
   }
+  var dehighlight = this.dehighlight;
 
   this.updateData = function(data0, data) {
     for (let key of highlighted) {
@@ -115,10 +117,12 @@ function treeMapView(id, geom) {
     var onMouseOverFunc = function(d) {
       var m = d.data.name;
       timeVolumeChart.highlightArcs([m]);
+      highlight([m]);
     }
 
     var onMouseLeaveFunc = function(d) {
       timeVolumeChart.dehighlightArcs();
+      dehighlight();
     }
 
     var root = d3.hierarchy(data)

@@ -190,15 +190,16 @@ function timeVolumeChart(id) {
     .y(function(d) {return yLinear(d);});
   var lineWarp = d3.line()
     .x(function(d, i) {return x(query.T0 + query.tg * i);})
-    .y(function(d) {return yWarp(warpedFreq(d));});
+    .y(function(d) {return yWarp(warpedFreq(d));})
+    .curve(d3.curveStep);
 
   var overviewLineLog = d3.line()
     .x(function(d, i) {return X(O0 + Og*i);})
     .y(function(d) {return Y(warpedFreq(d));});
 
   var stack = d3.stack()
-    // .offset(d3.stackOffsetWiggle); // for theme river
-    .offset(d3.stackOffsetSilhouette); 
+    .offset(d3.stackOffsetWiggle); // for theme river
+    // .offset(d3.stackOffsetSilhouette); 
   var area = d3.area()
     .x(function(d, i) {return x(query.T0 + query.tg * i);})
     .y0(function(d) { return yWarp(d[0]); })
@@ -809,7 +810,8 @@ function timeVolumeChart(id) {
       .attr("class", "cobalt")
       .attr("id", function(d, i) {return "cobalt" + d._id;})
       .on("mouseover", function(d) {
-        machineView.highlightBlock(d.machinePartition, d.color);
+        // machineView.highlightBlock(d.machinePartition, d.color);
+        machineView.highlightBlock(d.machinePartition, "black");
         requestBackendJobs(d._id);
         svgCobaltContent.select("#cobalt" + d._id)
           // .each(function(){ // bring to front
@@ -891,7 +893,7 @@ function timeVolumeChart(id) {
         .style("vector-effect", "non-scaling-stroke")
         .style("fill", cobaltJob.color)
         // .style("fill", "white")
-        .style("fill-opacity", "0.1")
+        .style("fill-opacity", "0.05")
         .style("stroke", cobaltJob.color)
         // .style("stroke", "none")
         .style("stroke-opacity", "0.9")
@@ -1100,7 +1102,7 @@ function timeVolumeChart(id) {
     query.T0 = query.t0; 
     query.T1 = query.t1;
     // query.tg = Math.max((query.T1 - query.T0) / width, 1000); // the finest resolution is 1 second
-    query.tg = (query.T1 - query.T0) / width * 2;
+    query.tg = (query.T1 - query.T0) / width * 10;
     refresh();
 
     var cobaltQuery = {T0: query.T0, T1: query.T1};
