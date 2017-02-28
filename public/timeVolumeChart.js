@@ -10,6 +10,7 @@ function timeVolumeChart(id) {
   var useLogScale = true;
   var toggleJobs = true;
   var toggleHeatMap = true;
+  var toggleThemeRiver = false;
 
   var midplaneVolumes = [];
   var midplaneVolumeMax = 1;
@@ -130,6 +131,7 @@ function timeVolumeChart(id) {
 
   var yWarp = d3.scaleLinear()
     .domain([0, 7]);
+  var yRiver = d3.scaleLinear();
   var yLog = d3.scaleLog()
     .clamp(true)
     .domain(yDomainLog)
@@ -198,12 +200,14 @@ function timeVolumeChart(id) {
     .y(function(d) {return Y(warpedFreq(d));});
 
   var stack = d3.stack()
-    .offset(d3.stackOffsetWiggle); // for theme river
-    // .offset(d3.stackOffsetSilhouette); 
+    // .offset(d3.stackOffsetWiggle); // for theme river
+    .offset(d3.stackOffsetSilhouette); 
   var area = d3.area()
     .x(function(d, i) {return x(query.T0 + query.tg * i);})
-    .y0(function(d) { return yWarp(d[0]); })
-    .y1(function(d) { return yWarp(d[1]); });
+    .y0(function(d) { return yRiver(d[0]); })
+    .y1(function(d) { return yRiver(d[1]); })
+    // .curve(d3.curveStep);
+    .curve(d3.curveMonotoneX);
 
   svgVolume.append("g")
     .attr("class", "axis axis-x");
@@ -324,6 +328,7 @@ function timeVolumeChart(id) {
 
     yLog.rangeRound([volumeHeight, 0]);
     yWarp.rangeRound([volumeHeight, 0]);
+    yRiver.rangeRound([volumeHeight, 0]);
     yLinear.rangeRound([volumeHeight, 0]);
     yLinearReverse.rangeRound([0, volumeHeight]);
     Y.rangeRound([overviewHeight, 0]);
@@ -389,20 +394,25 @@ function timeVolumeChart(id) {
     for (var i=0; i<data.length; i++) keys.push(i); 
 
     var stackData = [];
+    var sums = [];
     const n = data[0].length; // number of time slots
     for (var i=0; i<n; i++) {
       var obj = {};
+      var sum = 0;
       for (var j=0; j<keys.length; j++) {
         const key = keys[j];
-        // obj[key] = quantizedFreq(data[j][i]) / nKeys;
-        obj[key] = warpedFreq(data[j][i]);
+        var val = warpedFreq(data[j][i]);
+        obj[key] = val;
+        sum += val;
       }
       stackData.push(obj);
+      sums.push(sum);
     }
 
     return {
       keys: keys, 
-      data: stackData
+      data: stackData,
+      max: d3.max(sums, function(d) {return d;})
     };
   }
 
@@ -445,20 +455,38 @@ function timeVolumeChart(id) {
 
     var stackData = buildStackData(data);
     stack.keys(stackData.keys);
-    // console.log(stack(stackData.data));
+    
+    const nkeys = stackData.keys.length;
+    // yRiver.domain([-nkeys*3.5, nkeys*3.5]);
+    yRiver.domain([-stackData.max/2, stackData.max/2]);
 
     svgVolume.selectAll(".layer").remove();
     var layer = svgVolume.selectAll(".layer")
       .data(stack(stackData.data))
       .enter().append("g")
-      .attr("class", "layer")
-      .style("display", "none"); // disabled
+      .attr("class", "layer");
 
     layer.append("path")
       .attr("class", "area")
       .style("fill", "red") // TODO
       .attr("d", area)
       .style("fill", function(d) {return globalCategoryColor(query.volumeBy, d.key);});
+    
+    if (toggleThemeRiver) {
+      svgVolume.selectAll(".layer")
+        .style("display", "block");
+      svgVolume.select(".axis-y")
+        .style("display", "none");
+      svgVolume.selectAll(".line")
+        .style("display", "none");
+    } else {
+      svgVolume.selectAll(".layer")
+        .style("display", "none");
+      svgVolume.select(".axis-y")
+        .style("display", "block");
+      svgVolume.selectAll(".line")
+        .style("display", "block");
+    }
   }
 
   this.updateOverviewVolume = function(data) {
@@ -942,6 +970,25 @@ function timeVolumeChart(id) {
     else cobaltCanvas.style("display", "none");
   }
 
+  this.toggleThemeRiver = function(b) {
+    toggleThemeRiver = b;
+    if (b) {
+      svgVolume.selectAll(".layer")
+        .style("display", "block");
+      svgVolume.selectAll(".line")
+        .style("display", "none");
+      svgVolume.select(".axis-y")
+        .style("display", "none");
+    } else {
+      svgVolume.selectAll(".layer")
+        .style("display", "none");
+      svgVolume.selectAll(".line")
+        .style("display", "block");
+      svgVolume.select(".axis-y")
+        .style("display", "block");
+    }
+  }
+
   this.reset = function() {
     useLogScale = true;
     svgVolume.select("#volumeBrush") // FIXME
@@ -1092,6 +1139,8 @@ function timeVolumeChart(id) {
       .text(d3.isoFormat(x.domain()[0]));
     svgVolume.select(".timeLabelRight")
       .text(d3.isoFormat(x.domain()[1]));
+    svgVolume.selectAll(".layer").select("path")
+      .attr("d", area);
 
     volumeZoomTimer.restart(volumeZoomTimedOut, 100);
   }

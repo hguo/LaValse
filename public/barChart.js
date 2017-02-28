@@ -103,7 +103,7 @@ function barChart(name, id, categories, categoryText) {
       .transition()
       .attr("class", "bar")
       .style("fill", function(d) {return color(d.k);})
-      .style("fill-opacity", 0.5)
+      .style("fill-opacity", 0.8)
       .attr("y", function(d) {return y(d.k);})
       .attr("title", function(d) {
         return categoryText[d.k] + ": " + d3.format(",")(d.v);

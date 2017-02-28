@@ -521,6 +521,7 @@ function initControlPanel() {
     this.showArcs = true;
     this.showTable = false;
     this.brush = false;
+    this.themeRiver = false;
     this.probeLayers = 2;
   };
   var gui = new dat.GUI();
@@ -549,6 +550,9 @@ function initControlPanel() {
   });
   f1.add(text, "showHeatMap").onChange(function(val) {
     timeVolumeChart.toggleHeatMap(val);
+  });
+  f1.add(text, "themeRiver").onChange(function(val) {
+    timeVolumeChart.toggleThemeRiver(val);
   });
   f1.add(text, "showArcs").onChange(function(val) {
     if (val) $("#arcDiagram").css("display", "block");
