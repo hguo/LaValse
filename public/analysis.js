@@ -1,7 +1,16 @@
-function createArray2D(m, n) {
+function createMatrix(m, n) {
   var array = new Array(m);
   for (var i=0; i<m; i++) {
     array[i] = new Array(n);
+    array[i].fill(0);
+  }
+  return array;
+}
+
+function createTriangularMatrix(n) {
+  var array = new Array(n);
+  for (var i=0; i<n; i++) {
+    array[i] = new Array(i+1);
     array[i].fill(0);
   }
   return array;
@@ -11,11 +20,10 @@ function temporalMsgIdDistance(data) {
   const msgIDs = Object.keys(data);
   const n = msgIDs.length;
 
-  var mat = createArray2D(n, n);
+  var mat = createTriangularMatrix(n);
   for (var i=0; i<n; i++) {
     const volume = data[msgIDs[i]];
-    for (var j=0; j<n; j++) {
-      if (i == j) continue; 
+    for (var j=0; j<i; j++) {
       const volume1 = data[msgIDs[j]];
       
       var dist2 = 0;
@@ -25,7 +33,6 @@ function temporalMsgIdDistance(data) {
       }
       var dist = Math.sqrt(dist2);
       mat[i][j] = dist; 
-      mat[j][i] = dist;
     }
   }
 
@@ -38,19 +45,14 @@ function temporalMsgIdCorrelation(data) {
 
   var jstat = this.jStat;
 
-  var mat = createArray2D(n, n);
+  var mat = createTriangularMatrix(n);
   for (var i=0; i<n; i++) {
     const volume = data[msgIDs[i]];
-    for (var j=0; j<n; j++) {
-      if (i == j) {
-        mat[i][j] = 1; 
-        continue; 
-      }
+    for (var j=0; j<i; j++) {
       const volume1 = data[msgIDs[j]];
      
       var coef = jstat.corrcoeff(volume, volume1);
       mat[i][j] = coef;
-      mat[j][i] = coef;
     }
   }
 
