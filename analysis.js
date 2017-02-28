@@ -1,7 +1,7 @@
 const ras = require("./rasbook");
 const jstat = require("jstat").jStat;
 
-function createArray2D(m, n) {
+function createMatrix(m, n) {
   var array = new Array(m);
   for (var i=0; i<m; i++) {
     array[i] = new Array(n);
@@ -10,32 +10,19 @@ function createArray2D(m, n) {
   return array;
 }
 
-function preprocess(timeVolumesByMsgID, normalize) { // remove volumes that are all zero; convert arrays to key-value pairs
-  const nslots = timeVolumesByMsgID[0].length;
- 
-  var data = {};
-  for (var i=0; i<timeVolumesByMsgID.length; i++) {
-    var volume = timeVolumesByMsgID[i];
-    var sum = volume.reduce(function(acc, val) {return acc + val;});
-    if (sum != 0) {
-      var msgID = ras.eventMap.val(i);
-      if (normalize)
-        for (var j=0; j<volume.length; j++) 
-          volume[j] = volume[j] == 0 ? 0 : 1;
-      data[msgID] = volume;
-    }
+function createTriangularMatrix(n) {
+  var array = new Array(n);
+  for (var i=0; i<n; i++) {
+    array[i] = new Array(n+1);
+    array[i].fill(0);
   }
-
-  return data;
 }
 
-function temporalMsgIdDistance(timeVolumesByMsgID) {
-  const nslots = timeVolumesByMsgID[0].length;
-  const data = preprocess(timeVolumesByMsgID, true);
+function temporalMsgIdDistance(data) { // msgIDVolumes.
   const msgIDs = Object.keys(data);
   const n = msgIDs.length;
- 
-  var mat = createArray2D(n, n);
+
+  var mat = createMatrix(n, n);
   for (var i=0; i<n; i++) {
     const volume = data[msgIDs[i]];
     for (var j=0; j<n; j++) {
@@ -43,42 +30,43 @@ function temporalMsgIdDistance(timeVolumesByMsgID) {
       const volume1 = data[msgIDs[j]];
       
       var dist2 = 0;
-      for (var i=0; i<nslots; i++) {
-        dist2 += Math.pow(volume1[i] - volume[i], 2);
+      for (var k=0; k<volume.length; k++) {
+        var diff = quantizedFreq(volume1[k]) - quantizedFreq(volume[k]);
+        dist2 += diff * diff;
       }
-      results[i][j] = dist2;
-      results[j][i] = dist2;
+      var dist = Math.sqrt(dist2);
+      mat[i][j] = dist; 
+      mat[j][i] = dist;
     }
   }
 
-  return dist2;
+  return mat;
 }
 
-function pearsonCorrelation(volumes) {
-  const nslots = volumes[0].length;
-  const data = preprocess(timeVolumesByMsgID, false);
+function temporalMsgIdCorrelation(data) {
+  const msgIDs = Object.keys(data);
+  const n = msgIDs.length;
 
-  var keys = Object.keys(data);
-  var mat = [];
-
-  for (var i=0; i<keys.length; i++) {
-
-  }
-
-  for (var msgID in data) {
-    var volume = data[msgID];
-    for (var msgID1 in data) {
-      if (msgID == msgID1) continue; 
-      var volume1 = data[msgID1];
+  var mat = createMatrix(n, n);
+  for (var i=0; i<n; i++) {
+    const volume = data[msgIDs[i]];
+    for (var j=0; j<n; j++) {
+      if (i == j) {
+        mat[i][j] = 1; 
+        continue; 
+      }
+      const volume1 = data[msgIDs[j]];
+     
       var coef = jstat.corrcoeff(volume, volume1);
+      mat[i][j] = coef;
     }
   }
-  
-  var results = {
-  };
+
+  return mat;
 }
 
 module.exports = {
-  temporalCorrelation: temporalCorrelation,
-  temporalMsgIdDistance: temporalMsgIdDistance
+  temporalMsgIdDistance: temporalMsgIdDistance,
+  temporalMsgIdCorrelation: temporalMsgIdCorrelation
 };
+

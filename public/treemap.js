@@ -12,7 +12,7 @@ function treeMapView(id, geom) {
     .attr("class", "chart")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-  
+
   var color = d3.scaleOrdinal(d3.schemeCategory20);
   var colorFunc = function(d) {
     if (selected.size == 0 || selected.has(d.data.name)) {

@@ -1,7 +1,7 @@
 const catalogCube = require("./cpp/build/Release/catalogCube.node");
 // const catalogCube = require("./cpp/build/Debug/catalogCube.node");
 const ras = require("./rasbook");
-// const analysis = require("./analysis");
+const analysis = require("./analysis");
 
 const volumeByMap = {
   "all": 0,
@@ -59,9 +59,9 @@ function translateResults(r, fullResult) {
   delete r["timeVolumesRecID"];
 
   r.arcs = translateTimeVolumesMsgID(r.timeVolumesMsgID);
-  // analysis.temporalCorrelation(r.timeVolumesMsgID);
-  // analysis.temporalMsgIdDistance(r.timeVolumesMsgID);
   r.msgIDVolumes = reduceTimeVolumesMsgID(r.timeVolumesMsgID).data;
+  // console.log(analysis.temporalMsgIdCorrelation(r.msgIDVolumes));
+  // analysis.temporalMsgIdDistance(r.timeVolumesMsgID);
   delete r["timeVolumesMsgID"];
 
   return r;

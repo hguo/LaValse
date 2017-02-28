@@ -181,6 +181,7 @@ function init() {
       categoryChart = new barChart("category", "#categoryChart", Object.keys(d.category), categories);
       locationTypeChart = new barChart("locationType", "#locationTypeChart", Object.keys(d.locationType), locationTypes);
       matrixChart = new matrixChart();
+      graphView = new graphView();
 
       severityChart.resize({L: 0, T: 0, W: 120, H: 90});
       maintenanceChart.resize({L: 0, T: 90, W: 120, H: 65});
