@@ -12,6 +12,7 @@ var query = {
 var severityChart, componentChart, categoryChart, locationTypeChart, maintenanceChart,
     controlActionChart, timeVolumeChart, treeMapView;
 var machineView;
+var matrixChart; 
 
 // init mira partition parser
 d3.csv("/partitionInfo.csv", function(err, data) {
@@ -179,6 +180,7 @@ function init() {
       componentChart = new barChart("component", "#componentChart", Object.keys(d.component), components);
       categoryChart = new barChart("category", "#categoryChart", Object.keys(d.category), categories);
       locationTypeChart = new barChart("locationType", "#locationTypeChart", Object.keys(d.locationType), locationTypes);
+      matrixChart = new matrixChart();
 
       severityChart.resize({L: 0, T: 0, W: 120, H: 90});
       maintenanceChart.resize({L: 0, T: 90, W: 120, H: 65});
@@ -186,6 +188,7 @@ function init() {
       componentChart.resize({L: 120, T: 0, W: 120, H: 290});
       categoryChart.resize({L: 0, T: 290, W: 120, H: 290});
       locationTypeChart.resize({L: 120, T: 290, W: 120, H: 290});
+      matrixChart.resize({L: 960, T: 0, W: 200, H: 200});
 
       severityChart.updateData(histogramToArray(d.severity));
       maintenanceChart.updateData(histogramToArray(d.maintenance));
@@ -193,6 +196,7 @@ function init() {
       componentChart.updateData(histogramToArray(d.component));
       categoryChart.updateData(histogramToArray(d.category));
       locationTypeChart.updateData(histogramToArray(d.locationType));
+      matrixChart.updateData(d.msgIDVolumes);
       
       treeMapView = new treeMapView(
           "#messageIdChart");
@@ -209,7 +213,7 @@ function init() {
       machineView.updateData(d.location, histogramToArray(d.location));
       $("#controlPanel").css("display", "block");
       $("#cobaltTableView").css("display", "block");
-      $("#tabs").css("display", "block");
+      // $("#tabs").css("display", "block");
     
       torusView = new torusView("#tabs-0", {L: 0, T: 0, W: 360, H: 360});
       
@@ -217,7 +221,7 @@ function init() {
       treeMapView.updateData(d.msgID, buildMessageIdHierarchy(query.volumeBy, d.msgID));
 
       updateQueryInfo(d);
-     
+
       // load maintenance time
       d3.csv("/maintenance.csv", function(data) {
         data.forEach(function(d) {
@@ -305,6 +309,7 @@ function refresh() {
       machineView.updateData(d.location, histogramToArray(d.location));
       
       treeMapView.updateData(d.msgID, buildMessageIdHierarchy(query.volumeBy, d.msgID));
+      matrixChart.updateData(d.msgIDVolumes);
       
       updateQueryInfo(d);
     });

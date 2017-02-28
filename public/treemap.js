@@ -23,11 +23,11 @@ function treeMapView(id, geom) {
     }
   }
 
-  this.select = function(m) { // m is msgID
-    if (selected.has(m)) selected.delete(m);
-    else selected.add(m);
-    // if (selected.size == data.nnodes) 
-    //   selected.clear();
+  this.select = function(array) { // m is msgID
+    array.forEach(function(m) {
+      if (selected.has(m)) selected.delete(m);
+      else selected.add(m);
+    });
 
     svg.selectAll(".cellBox")
       .style("fill", colorFunc);
@@ -111,7 +111,7 @@ function treeMapView(id, geom) {
 
     var onClickFunc = function(d) {
       var m = d.data.name;
-      select(m);
+      select([m]);
     }
 
     var onMouseOverFunc = function(d) {

@@ -1,7 +1,7 @@
 const catalogCube = require("./cpp/build/Release/catalogCube.node");
 // const catalogCube = require("./cpp/build/Debug/catalogCube.node");
 const ras = require("./rasbook");
-const analysis = require("./analysis");
+// const analysis = require("./analysis");
 
 const volumeByMap = {
   "all": 0,
@@ -60,7 +60,8 @@ function translateResults(r, fullResult) {
 
   r.arcs = translateTimeVolumesMsgID(r.timeVolumesMsgID);
   // analysis.temporalCorrelation(r.timeVolumesMsgID);
-  analysis.temporalMsgIdDistance(r.timeVolumesMsgID);
+  // analysis.temporalMsgIdDistance(r.timeVolumesMsgID);
+  r.msgIDVolumes = reduceTimeVolumesMsgID(r.timeVolumesMsgID).data;
   delete r["timeVolumesMsgID"];
 
   return r;
@@ -102,6 +103,27 @@ function translateResults(r, fullResult) {
       if (results[msgID].length == 0) delete results[msgID];
     }
     return results;
+  }
+  
+  function reduceTimeVolumesMsgID(timeVolumesByMsgID, normalize) { // remove volumes that are all zero; convert arrays to key-value pairs
+    const nslots = timeVolumesByMsgID[0].length;
+   
+    var validMsgIDs = [];
+    var data = {};
+    for (var i=0; i<timeVolumesByMsgID.length; i++) {
+      var volume = timeVolumesByMsgID[i];
+      var sum = volume.reduce(function(acc, val) {return acc + val;});
+      if (sum != 0) {
+        var msgID = ras.eventMap.val(i);
+        validMsgIDs.push(msgID);
+        if (normalize)
+          for (var j=0; j<volume.length; j++) 
+            volume[j] = volume[j] == 0 ? 0 : 1;
+        data[msgID] = volume;
+      }
+    }
+
+    return {msgIDs: validMsgIDs, data: data};
   }
 }
 

@@ -731,7 +731,7 @@ function timeVolumeChart(id) {
     var picked = pickArc(d3.event.x, d3.event.y);
 
     if (picked != undefined) {
-      treeMapView.select(picked);
+      treeMapView.select([picked]);
       // query["msgID"] = [picked];
       // refresh();
     }
