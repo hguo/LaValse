@@ -16,7 +16,7 @@ function matrixChart(id) {
     .domain([-1, 0, 1])
     .range(["darkblue", "white", "red"]);
   var colorDistance = d3.scaleLinear()
-    .range(["darkblue", "white"]);
+    .range(["#de2d26", "white"]);
 
   var label0 = svg.append("text")
     .attr("id", "label0")
@@ -41,43 +41,55 @@ function matrixChart(id) {
 
   this.updateData = function(msgIDVolumes) {
     const msgIDs = Object.keys(msgIDVolumes);
-    var matrix, color;
-
-    if (metric === "pearson") {
-      matrix = temporalMsgIdCorrelation(msgIDVolumes);
-      color = colorCorrelation;
-    } else if (metric === "L2quantized") {
-      matrix = temporalMsgIdDistance(msgIDVolumes);
-      color = colorDistance;
-    }
-
     const n = msgIDs.length;
     const cellW = width/n, cellH = height/n;
+    
+    var matrixCorrelation = temporalMsgIdCorrelation(msgIDVolumes);
+    var matrixSimilarity = temporalMsgIdDistance(msgIDVolumes);
 
-    var data = [];
+    var correlations = [];
     for (var i=0; i<n; i++) {
-      for (var j=0; j<n; j++) {
-        data.push([i, j, matrix[i][j]]);
+      for (var j=0; j<i; j++) {
+        correlations.push([i, j, matrixCorrelation[i][j]]);
+      }
+    }
+    
+    var similarities = [];
+    for (var i=0; i<n; i++) {
+      for (var j=0; j<i; j++) {
+        similarities.push([i, j, matrixSimilarity[i][j]]);
       }
     }
 
-    colorDistance.domain([0, d3.max(data, function(d) {return d[2];})]);
+    colorDistance.domain([0, d3.max(matrixSimilarity, function(d) {return d[2];})]);
 
     var formatFloat = d3.format(".3f");
 
     svg.selectAll(".cell").remove();
-    svg.selectAll(".cell")
-      .data(data).enter()
+    
+    // upper part
+    svg.selectAll(".cellU")
+      .data(correlations).enter()
       .append("rect")
-      .attr("class", "cell")
+      .attr("class", "cellU cell")
+      .attr("fill", function(d) {return colorCorrelation(d[2]);})
+      .attr("x", function(d) {return d[0] * cellW;})
+      .attr("y", function(d) {return d[1] * cellH;});
+
+    svg.selectAll(".cellL")
+      .data(similarities).enter()
+      .append("rect")
+      .attr("class", "cellL cell")
+      .attr("fill", function(d) {return colorDistance(d[2]);})
+      .attr("x", function(d) {return d[1] * cellW;})
+      .attr("y", function(d) {return d[0] * cellH;});
+
+    svg.selectAll(".cell")
       .attr("title", function(d) {
         return formatFloat(d[2]);
       })
-      .attr("x", function(d) {return d[0] * cellW;})
-      .attr("y", function(d) {return d[1] * cellH;})
       .attr("width", cellW)
       .attr("height", cellH)
-      .attr("fill", function(d) {return color(d[2]);})
       .on("mouseover", function(d) {
         const m0 = msgIDs[d[0]], m1 = msgIDs[d[1]];
         label0.text(m0); 

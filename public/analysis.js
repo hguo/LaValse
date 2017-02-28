@@ -23,8 +23,9 @@ function temporalMsgIdDistance(data) {
         var diff = quantizedFreq(volume1[k]) - quantizedFreq(volume[k]);
         dist2 += diff * diff;
       }
-      mat[i][j] = dist2;
-      mat[j][i] = dist2;
+      var dist = Math.sqrt(dist2);
+      mat[i][j] = dist; 
+      mat[j][i] = dist;
     }
   }
 
