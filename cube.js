@@ -60,8 +60,7 @@ function translateResults(r, fullResult) {
 
   r.arcs = translateTimeVolumesMsgID(r.timeVolumesMsgID);
   r.msgIDVolumes = reduceTimeVolumesMsgID(r.timeVolumesMsgID).data;
-  // console.log(analysis.temporalMsgIdCorrelation(r.msgIDVolumes));
-  // analysis.temporalMsgIdDistance(r.timeVolumesMsgID);
+  // console.log(analysis.temporalMsgIdDTW(r.msgIDVolumes));
   delete r["timeVolumesMsgID"];
 
   return r;
