@@ -1,5 +1,6 @@
 const ras = require("./rasbook");
 const jstat = require("jstat").jStat;
+const dtw = require("dtw");
 
 function createMatrix(m, n) {
   var array = new Array(m);
@@ -54,6 +55,29 @@ function temporalMsgIdCorrelation(data) {
      
       var coef = jstat.corrcoeff(volume, volume1);
       mat[i][j] = coef;
+    }
+  }
+
+  return mat;
+}
+
+function temporalMsgIdDynamicTimeWarping(data) {
+  const msgIDs = Object.keys(data);
+  const n = msgIDs.length;
+
+  var mat = createTriangularMatrix(n);
+  for (var i=0; i<n; i++) {
+    const volume = data[msgIDs[i]];
+    for (var j=0; j<i; j++) {
+      const volume1 = data[msgIDs[j]];
+      
+      var dist2 = 0;
+      for (var k=0; k<volume.length; k++) {
+        var diff = quantizedFreq(volume1[k]) - quantizedFreq(volume[k]);
+        dist2 += diff * diff;
+      }
+      var dist = Math.sqrt(dist2);
+      mat[i][j] = dist; 
     }
   }
 
