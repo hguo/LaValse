@@ -31,21 +31,26 @@ struct Query;
 
 enum {
   MAX_NUM_LOC = 127603, 
-  MAX_EVENTS_PER_SLOT = 20
+  MAX_REC_PER_SLOT = 8
 };
 
 struct QueryResults {
-  uint32_t nVolumes;
+  // uint32_t nVolumes;
   uint32_t nTimeSlots, nOverviewSlots; // time slots
   uint32_t nmatched = 0;
 
   uint32_t msgID[NUM_MSGID], component[NUM_COMP], locationType[NUM_LOCTYPE], 
            category[NUM_CAT], severity[NUM_SEV], controlAction[NUM_CTLACT], 
            maintenance[2];
-  uint32_t *location, *locationRecID; 
-  uint32_t *timeVolumes, *timeVolumesRecID;
-  uint32_t *msgIdVolumes;
+  uint32_t *location; 
+
+  uint32_t *msgIdVolumes = NULL, *componentVolumes = NULL, *locationTypeVolumes = NULL, 
+           *categoryVolumes = NULL, *severityVolumes = NULL;
+  uint32_t *msgIdVolumesRecID = NULL, *componentVolumesRecID = NULL, *locationTypeVolumesRecID = NULL,
+           *categoryVolumesRecID = NULL, *severityVolumesRecID = NULL;
+
   uint32_t *midplaneVolumes; // heat maps
+  
   uint32_t *overviewVolume;  // the second time volume for overview
 
   std::vector<uint32_t> topRecIDs;
@@ -59,7 +64,7 @@ struct Query {
   uint64_t t0 = 1420070400000, t1 = 1451606400000, tg = TIME_HOUR; // tg is time granularity
   uint64_t O0 = 1420070400000, O1 = 1451606400000, og = TIME_DAY; // overview time scope and granularity
 
-  uint8_t volumeBy = VAR_NONE;
+  uint64_t volumeBy = 0;
   int LOD = 1;
   int top = 100; // return top n recIDs
   int nthreads = 1;
@@ -110,8 +115,8 @@ struct Query {
   }
   
   inline void add1(uint32_t& a, uint32_t slot, uint32_t* recIDs, uint32_t recID) {
-    if (a<MAX_EVENTS_PER_SLOT)
-      recIDs[slot*MAX_EVENTS_PER_SLOT + a] = recID;
+    if (a<MAX_REC_PER_SLOT)
+      recIDs[slot*MAX_REC_PER_SLOT + a] = recID;
     add1(a);
   }
 
@@ -121,7 +126,7 @@ struct Query {
   
   inline void add1(uint32_t* timeVolumes, uint32_t* timeVolumesRecID, int nslots, int index, int t, int recID) {
     uint32_t &i = timeVolumes[nslots*index+t];
-    if (i<MAX_EVENTS_PER_SLOT) timeVolumesRecID[(nslots*index+t)*MAX_EVENTS_PER_SLOT + i] = recID;
+    if (i<MAX_REC_PER_SLOT) timeVolumesRecID[(nslots*index+t)*MAX_REC_PER_SLOT + i] = recID;
     add1(i);
   }
 
@@ -143,34 +148,28 @@ struct Query {
       if (c[0]) {
         if (/*t>=0 &&*/ t<results.nTimeSlots) {
           if (e.midplane < nMidplanes) add1(results.midplaneVolumes[e.midplane*results.nTimeSlots+t]); // midplane volume
-          switch (volumeBy) {
-#if 0
-          case VAR_NONE: add1(results.timeVolumes[t]); break;
-          case VAR_MSGID: add1(results.timeVolumes, nslots, e.msgID, t); break;
-          case VAR_COMP: add1(results.timeVolumes, nslots, e.component(), t); break;
-          case VAR_LOC: add1(results.timeVolumes, nslots, e.locationType, t); break;
-          case VAR_CAT: add1(results.timeVolumes, nslots, e.category(), t); break;
-          case VAR_SEV: add1(results.timeVolumes, nslots, e.severity(), t); break;
-#else
-          case VAR_NONE: add1(results.timeVolumes[t], t, results.timeVolumesRecID, e.recID); break;
-          case VAR_MSGID: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.msgID, t, e.recID); break;
-          case VAR_COMP: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.component(), t, e.recID); break;
-          case VAR_LOC: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.locationType, t, e.recID); break;
-          case VAR_CAT: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.category(), t, e.recID); break;
-          case VAR_SEV: add1(results.timeVolumes, results.timeVolumesRecID, nslots, e.severity(), t, e.recID); break;
-#endif
-          default: break;
-          }
         }
       }
       if (c[1]) {
         add1(results.msgID[e.msgID]);
-        add1(results.msgIdVolumes[e.msgID*nslots+t]); // volume per msgID
+        if (volumeBy & VAR_MSGID) add1(results.msgIdVolumes, results.msgIdVolumesRecID, nslots, e.msgID, t, e.recID);
       }
-      if (c[2]) add1(results.component[e.component()]);
-      if (c[3]) add1(results.locationType[e.locationType]);
-      if (c[4]) add1(results.category[e.category()]);
-      if (c[5]) add1(results.severity[e.severity()]);
+      if (c[2]) {
+        add1(results.component[e.component()]);
+        if (volumeBy & VAR_COMP) add1(results.componentVolumes, results.componentVolumesRecID, nslots, e.component(), t, e.recID);
+      }
+      if (c[3]) {
+        add1(results.locationType[e.locationType]);
+        if (volumeBy & VAR_LOCTYPE) add1(results.locationTypeVolumes, results.locationTypeVolumesRecID, nslots, e.locationType, t, e.recID);
+      }
+      if (c[4]) {
+        add1(results.category[e.category()]);
+        if (volumeBy & VAR_CAT) add1(results.categoryVolumes, results.categoryVolumesRecID, nslots, e.category(), t, e.recID);
+      }
+      if (c[5]) {
+        add1(results.severity[e.severity()]);
+        if (volumeBy & VAR_SEV) add1(results.severityVolumes, results.severityVolumesRecID, nslots, e.severity(), t, e.recID);
+      }
       if (c[6]) add1(results.location[e.location[LOD]]);
       if (c[7]) {
         uint16_t a = e.controlActions();
@@ -259,18 +258,45 @@ struct Query {
   }
 };
 
+static void mallocVolume(uint32_t **ptr, int nTimeSlots, int nVolumes) {
+  *ptr = (uint32_t*)malloc(nTimeSlots*nVolumes*sizeof(uint32_t));
+  memset(*ptr, 0, nTimeSlots*nVolumes*sizeof(uint32_t));
+}
+
+static void mallocVolume(uint32_t **ptrVolume, uint32_t **ptrRecID, int nTimeSlots, int nVolumes) {
+  *ptrVolume = (uint32_t*)malloc(nTimeSlots*nVolumes*sizeof(uint32_t));
+  *ptrRecID = (uint32_t*)malloc(nTimeSlots*nVolumes*MAX_REC_PER_SLOT*sizeof(uint32_t));
+  memset(*ptrVolume, 0, nTimeSlots*nVolumes*sizeof(uint32_t));
+}
+
+static void freeVolume(uint32_t *ptrVolume, uint32_t *ptrRecID) {
+  free(ptrVolume);
+  free(ptrRecID);
+}
+
 QueryResults::QueryResults(const Query& q)
 {
-  nTimeSlots = (q.T1 - q.T0) / q.tg;
-  nVolumes = ras::nvolumes[q.volumeBy];
+  nTimeSlots = (q.T1 - q.T0) / q.tg; // TODO
   
-  timeVolumes = (uint32_t*)malloc(nTimeSlots*nVolumes*4);
-  timeVolumesRecID = (uint32_t*)malloc(nTimeSlots*nVolumes*MAX_EVENTS_PER_SLOT*4);
-  memset(timeVolumes, 0, nTimeSlots*nVolumes*4);
-  // memset(timeVolumesRecID, 0, nslots*nvolumes*MAX_EVENTS_PER_SLOT*4);
+  // timeVolumes = (uint32_t*)malloc(nTimeSlots*nVolumes*4);
+  // timeVolumesRecID = (uint32_t*)malloc(nTimeSlots*nVolumes*MAX_REC_PER_SLOT*4);
+  // memset(timeVolumes, 0, nTimeSlots*nVolumes*4);
+  // memset(timeVolumesRecID, 0, nslots*nvolumes*MAX_REC_PER_SLOT*4);
 
-  msgIdVolumes = (uint32_t*)malloc(nTimeSlots*NUM_MSGID*4);
-  memset(msgIdVolumes, 0, nTimeSlots*NUM_MSGID*4);
+  if (q.volumeBy & VAR_MSGID) 
+    mallocVolume(&msgIdVolumes, &msgIdVolumesRecID, nTimeSlots, NUM_MSGID);
+
+  if (q.volumeBy & VAR_COMP)
+    mallocVolume(&componentVolumes, &componentVolumesRecID, nTimeSlots, NUM_COMP);
+
+  if (q.volumeBy & VAR_LOCTYPE)
+    mallocVolume(&locationTypeVolumes, &locationTypeVolumesRecID, nTimeSlots, NUM_LOCTYPE);
+
+  if (q.volumeBy & VAR_CAT)
+    mallocVolume(&categoryVolumes, &categoryVolumesRecID, nTimeSlots, NUM_CAT);
+
+  if (q.volumeBy & VAR_SEV)
+    mallocVolume(&severityVolumes, &severityVolumesRecID, nTimeSlots, NUM_SEV);
 
   midplaneVolumes = (uint32_t*)malloc(nTimeSlots*nMidplanes*4);
   memset(midplaneVolumes, 0, nTimeSlots*nMidplanes*4);
@@ -280,7 +306,6 @@ QueryResults::QueryResults(const Query& q)
   memset(overviewVolume, 0, nOverviewSlots*4);
 
   location = (uint32_t*)malloc(nlocations[q.LOD]*4);
-  locationRecID = (uint32_t*)malloc(nlocations[q.LOD]*MAX_EVENTS_PER_SLOT*4);
   memset(location, 0, nlocations[q.LOD]*4);
 
   memset(msgID, 0, NUM_MSGID*4);
@@ -296,13 +321,24 @@ QueryResults::QueryResults(const Query& q)
 
 QueryResults::~QueryResults()
 {
-  free(timeVolumes);
-  free(timeVolumesRecID);
-  free(msgIdVolumes);
+  if (msgIdVolumes != NULL) 
+    freeVolume(msgIdVolumes, msgIdVolumesRecID);
+
+  if (componentVolumes != NULL)
+    freeVolume(componentVolumes, componentVolumesRecID);
+
+  if (locationTypeVolumes != NULL)
+    freeVolume(locationTypeVolumes, locationTypeVolumesRecID);
+
+  if (categoryVolumes != NULL)
+    freeVolume(categoryVolumes, categoryVolumesRecID);
+
+  if (severityVolumes != NULL)
+    freeVolume(severityVolumes, severityVolumesRecID);
+  
   free(overviewVolume);
   free(midplaneVolumes);
   free(location);
-  free(locationRecID);
 }
 
 }

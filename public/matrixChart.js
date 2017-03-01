@@ -40,8 +40,7 @@ function matrixChart(id) {
   }
 
   this.updateData = function(msgIdVolumes) {
-    const msgIDs = Object.keys(msgIdVolumes);
-    const n = msgIDs.length;
+    const n = msgIdVolumes.length;
     const cellW = width/n, cellH = height/n;
     
     var matrixCorrelation = temporalMsgIdCorrelation(msgIdVolumes);
@@ -91,7 +90,7 @@ function matrixChart(id) {
       .attr("width", cellW)
       .attr("height", cellH)
       .on("mouseover", function(d) {
-        const m0 = msgIDs[d[0]], m1 = msgIDs[d[1]];
+        const m0 = msgIdVolumes[d[0]].key, m1 = msgIdVolumes[d[1]].key; 
         label0.text(m0); 
         label1.text(m1);
         treeMapView.highlight([m0, m1]);
@@ -104,7 +103,7 @@ function matrixChart(id) {
         timeVolumeChart.dehighlightArcs();
       })
       .on("click", function(d) {
-        const m0 = msgIDs[d[0]], m1 = msgIDs[d[1]];
+        const m0 = msgIdVolumes[d[0]].key, m1 = msgIdVolumes[d[1]].key; 
         if (m0 == m1) treeMapView.select([m0]);
         else treeMapView.select([m0, m1]);
       });

@@ -17,14 +17,13 @@ function createTriangularMatrix(n) {
 }
 
 function temporalMsgIdDistance(data) {
-  const msgIDs = Object.keys(data);
-  const n = msgIDs.length;
+  const n = data.length;
 
   var mat = createTriangularMatrix(n);
   for (var i=0; i<n; i++) {
-    const volume = data[msgIDs[i]];
+    const volume = data[i].volumes;
     for (var j=0; j<i; j++) {
-      const volume1 = data[msgIDs[j]];
+      const volume1 = data[j].volumes;
       
       var dist2 = 0;
       for (var k=0; k<volume.length; k++) {
@@ -40,16 +39,14 @@ function temporalMsgIdDistance(data) {
 }
 
 function temporalMsgIdCorrelation(data) {
-  const msgIDs = Object.keys(data);
-  const n = msgIDs.length;
-
+  const n = data.length;
   var jstat = this.jStat;
 
   var mat = createTriangularMatrix(n);
   for (var i=0; i<n; i++) {
-    const volume = data[msgIDs[i]];
+    const volume = data[i].volumes;
     for (var j=0; j<i; j++) {
-      const volume1 = data[msgIDs[j]];
+      const volume1 = data[j].volumes;
      
       var coef = jstat.corrcoeff(volume, volume1);
       mat[i][j] = coef;

@@ -15,7 +15,7 @@ const volumeByMap = {
 function translateQuery(q0) {
   var q = q0;
 
-  if ("volumeBy" in q) q.volumeBy = volumeByMap[q.volumeBy];
+  if ("volumeBy" in q) q.volumeBy = volumeByMap[q.volumeBy]; // FIXME
   if ("msgID" in q) q.msgID = translateNamesToIndices(q.msgID, ras.eventMap);
   if ("component" in q) q.component = translateNamesToIndices(q.component, ras.componentMap);
   if ("locationType" in q) q.locationType = translateNamesToIndices(q.locationType, ras.locationTypeMap);
@@ -55,11 +55,14 @@ function translateResults(r, fullResult) {
     r.controlAction = completeMissingResults(r.controlAction, fullResult.controlAction);
   }
 
-  r.recIDs = filterRecIDs(r.timeVolumes, r.timeVolumesRecID);
-  delete r["timeVolumesRecID"];
+  translateVolumes(r.severityVolumes, r.severity, ras.severityMap);
+  translateVolumes(r.categoryVolumes, r.category, ras.categoryMap);
+  translateVolumes(r.componentVolumes, r.component, ras.componentMap);
+  translateVolumes(r.locationTypeVolumes, r.locationType, ras.locationTypeMap);
+  translateVolumes(r.msgIdVolumes, r.msgID, ras.eventMap);
 
-  r.arcs = translateTimeVolumesMsgID(r.msgIdVolumes);
-  r.msgIdVolumes = reduceTimeVolumesMsgID(r.msgIdVolumes).data;
+  // TODO
+  // r.msgIdVolumes = reduceTimeVolumesMsgID(r.msgIdVolumes).data;
   // console.log(analysis.temporalMsgIdDTW(r.msgIDVolumes));
 
   return r;
@@ -83,45 +86,16 @@ function translateResults(r, fullResult) {
     return dst;
   }
 
-  function translateTimeVolumesMsgID(volumes) {
-    const nMsgIDs = volumes.length;
-    const nSlots = volumes[0].length;
-    var results = {};
-
-    for (var i=0; i<nMsgIDs; i++) {
-      var msgID = ras.eventMap.val(i);
-      if (!(msgID in results)) results[msgID] = [];
-
-      for (var j=0; j<nSlots; j++) {
-        if (volumes[i][j] != 0) {
-          results[msgID].push(j);
-        }
-      }
-
-      if (results[msgID].length == 0) delete results[msgID];
+  function translateVolumes(volumes, count, bimap) {
+    if (volumes === undefined) return;
+    var to_remove = [];
+    for (var i=0; i<volumes.length; i++) {
+      var key = bimap.val(i);
+      if (!(key in count)) to_remove.push(i);
+      else volumes[i].key = bimap.val(i);
     }
-    return results;
-  }
-  
-  function reduceTimeVolumesMsgID(timeVolumesByMsgID, normalize) { // remove volumes that are all zero; convert arrays to key-value pairs
-    const nslots = timeVolumesByMsgID[0].length;
-   
-    var validMsgIDs = [];
-    var data = {};
-    for (var i=0; i<timeVolumesByMsgID.length; i++) {
-      var volume = timeVolumesByMsgID[i];
-      var sum = volume.reduce(function(acc, val) {return acc + val;});
-      if (sum != 0) {
-        var msgID = ras.eventMap.val(i);
-        validMsgIDs.push(msgID);
-        if (normalize)
-          for (var j=0; j<volume.length; j++) 
-            volume[j] = volume[j] == 0 ? 0 : 1;
-        data[msgID] = volume;
-      }
-    }
-
-    return {msgIDs: validMsgIDs, data: data};
+    for (var i=to_remove.length-1; i>=0; i--) 
+      volumes.splice(to_remove[i], 1);
   }
 }
 

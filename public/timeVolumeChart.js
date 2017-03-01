@@ -363,7 +363,7 @@ function timeVolumeChart(id) {
 
     var line = useLogScale ? lineLog : lineLinear;
     svgVolume.selectAll(".line")
-      .attr("d", function(d) {return line(d);});
+      .attr("d", function(d) {return line(d.volumes);});
 
     /*
     svgOverview.selectAll(".line")
@@ -387,22 +387,22 @@ function timeVolumeChart(id) {
   }
 
   function buildStackData(data) {
-    // TODO: build keys
-    const volumeBy = query.volumeBy;
-    const nKeys = data.length;
-    var keys = [];
-    for (var i=0; i<data.length; i++) keys.push(i); 
-
     var stackData = [];
     var sums = [];
-    const n = data[0].length; // number of time slots
-    for (var i=0; i<n; i++) {
+
+    const nVolumes = data.length;
+    const nTimeSlots = data[0].volumes.length; // number of time slots
+    
+    var keys = [];
+    for (var i=0; i<data.length; i++) keys.push(data[i].key); 
+    
+    for (var i=0; i<nTimeSlots; i++) {
       var obj = {};
       var sum = 0;
-      for (var j=0; j<keys.length; j++) {
+      for (var j=0; j<nVolumes; j++) {
         const key = keys[j];
-        var val = warpedFreq(data[j][i]);
-        // var val = quantizedFreq(data[j][i]);
+        var val = warpedFreq(data[j].volumes[i]);
+        // var val = quantizedFreq(data[j].volumes[i]);
         obj[key] = val;
         sum += val;
       }
@@ -418,6 +418,7 @@ function timeVolumeChart(id) {
   }
 
   this.updateVolume = function(data) {
+    /* 
     yMax = d3.max(data, function(d) {return d3.max(d, function(dd) {return dd;});});
     if (yMax <= 1000 && useLogScale) toggleLogScale();
     if (yMax >= 10000 && !useLogScale) toggleLogScale();
@@ -429,6 +430,7 @@ function timeVolumeChart(id) {
     yLog.domain(yDomainLog);
     yLinear.domain(yDomainLinear);
     // yWarp.domain([0, d3.max(data, function(d) {return d3.max(d, function(dd) {return quantizedFreq(dd);});})]);
+    */
 
     svgVolume.select(".axis-x")
       .transition()
@@ -452,7 +454,7 @@ function timeVolumeChart(id) {
       .style("stroke", function(d, i) {
         return globalCategoryColor(query.volumeBy, i);
       })
-      .attr("d", function(d) {return line(d);});
+      .attr("d", function(d) {return line(d.volumes);});
 
     var stackData = buildStackData(data);
     stack.keys(stackData.keys);
@@ -797,8 +799,28 @@ function timeVolumeChart(id) {
   }
 
   this.updateArcDiagram = function(_) {
-    arcs = _;
+    arcs = buildArcs(_);
     drawArcDiagram();
+
+    function buildArcs(data) {
+      const nMsgIDs = data.length;
+      const nSlots = data[0].volumes.length;
+      var results = {};
+
+      for (var i=0; i<nMsgIDs; i++) {
+        var msgID = data[i].key;
+        if (!(msgID in results)) results[msgID] = [];
+
+        for (var j=0; j<nSlots; j++) {
+          if (data[i].volumes[j] != 0) {
+            results[msgID].push(j);
+          }
+        }
+
+        if (results[msgID].length == 0) delete results[msgID];
+      }
+      return results;
+    }
   }
 
   this.updateMidplaneVolumes = function(volumes) {
@@ -942,7 +964,7 @@ function timeVolumeChart(id) {
 
     svgVolume.selectAll(".line")
       .transition()
-      .attr("d", function(d) {return line(d);});
+      .attr("d", function(d) {return line(d.volumes);});
     svgVolume.select(".axis-y")
       .transition()
       .call(yAxis.scale(y));
@@ -1114,7 +1136,8 @@ function timeVolumeChart(id) {
 
     svgVolume.select(".axis-x")
       .call(xAxis);
-    svgVolume.selectAll(".line").attr("d", line);
+    svgVolume.selectAll(".line")
+      .attr("d", function(d) {return line(d.volumes);});
     
     svgVolume.selectAll(".glyph")
       .attr("cx", function(d) {return x(d.eventTime);});

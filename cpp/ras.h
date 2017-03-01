@@ -9,7 +9,13 @@
 namespace ras {
 
 enum {NUM_MSGID = 822, NUM_CTLACT = 10, NUM_MP};
-enum {VAR_NONE = 0, VAR_MSGID, VAR_COMP, VAR_LOC, VAR_CAT, VAR_SEV};
+enum {
+  VAR_MSGID = 1, 
+  VAR_COMP = 2, 
+  VAR_LOCTYPE = 4, 
+  VAR_CAT = 8, 
+  VAR_SEV = 16
+};
 enum {CAT_BQC = 0, CAT_BQL, CAT_DDR, CAT_PCI, CAT_Ethernet, CAT_Infiniband, CAT_AC_TO_DC_PWR, CAT_DC_TO_DC_PWR, CAT_Cable, CAT_Message_Unit, CAT_Card, CAT_Clocks, CAT_Clock_FPGA, CAT_Service_Card, CAT_IO_Board, CAT_Node_Board, CAT_Icon, CAT_Palomino, CAT_DCA, CAT_Fan, CAT_Fan_Assembly, CAT_Optical_Module, CAT_Temp_Sensor, CAT_Job, CAT_Block, CAT_Process, CAT_Coolant_Monitor, CAT_Software_Error, CAT_ELF_Image, CAT_UPC, NUM_CAT};
 enum {COMP_CNK = 0, COMP_DIAGS, COMP_BGMASTER, COMP_MC, COMP_MCSERVER, COMP_MMCS, COMP_BAREMETAL, COMP_FIRMWARE, COMP_CTRLNET, COMP_LINUX, COMP_CIOS, COMP_MUDM, COMP_SPI, COMP_BGPM, COMP_TEST, NUM_COMP};
 enum {SEV_INFO = 0, SEV_WARN, SEV_FATAL, NUM_SEV};

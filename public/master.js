@@ -204,10 +204,11 @@ function init() {
 
       timeVolumeChart = new timeVolumeChart("#timeVolumeChart");
       timeVolumeChart.resize({left: 240, top: 315, width: 720, height: 300});
-      timeVolumeChart.updateVolume(d.timeVolumes);
+      // timeVolumeChart.updateVolume(d.timeVolumes);
+      timeVolumeChart.updateVolume(d.severityVolumes); // TODO
       timeVolumeChart.updateOverviewVolume(d.overviewVolume);
       timeVolumeChart.updateMidplaneVolumes(d.midplaneVolumes);
-      timeVolumeChart.updateArcDiagram(d.arcs);
+      timeVolumeChart.updateArcDiagram(d.msgIdVolumes);
       
       machineView = new machineView("#machineView");
       machineView.resize({left: 270, top: 5, width: 725, height: 306});
@@ -303,10 +304,16 @@ function refresh() {
       componentChart.updateData(histogramToArray(d.component));
       categoryChart.updateData(histogramToArray(d.category));
       locationTypeChart.updateData(histogramToArray(d.locationType));
-      timeVolumeChart.updateVolume(d.timeVolumes);
+      // timeVolumeChart.updateVolume(d.timeVolumes);
+      switch (query.volumeBy) {
+        case "component": timeVolumeChart.updateVolume(d.componentVolumes); break;
+        case "category": timeVolumeChart.updateVolume(d.categoryVolumes); break;
+        case "locationType": timeVolumeChart.updateVolume(d.locationTypeVolumes); break;
+        default: timeVolumeChart.updateVolume(d.severityVolumes); break;
+      }
       timeVolumeChart.updateOverviewVolume(d.overviewVolume);
       timeVolumeChart.updateMidplaneVolumes(d.midplaneVolumes);
-      timeVolumeChart.updateArcDiagram(d.arcs);
+      timeVolumeChart.updateArcDiagram(d.msgIdVolumes);
       machineView.updateData(d.location, histogramToArray(d.location));
       
       treeMapView.updateData(d.msgID, buildMessageIdHierarchy(query.volumeBy, d.msgID));
