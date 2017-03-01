@@ -197,7 +197,7 @@ function init() {
       componentChart.updateData(histogramToArray(d.component));
       categoryChart.updateData(histogramToArray(d.category));
       locationTypeChart.updateData(histogramToArray(d.locationType));
-      matrixChart.updateData(d.msgIDVolumes);
+      matrixChart.updateData(d.msgIdVolumes);
       
       treeMapView = new treeMapView(
           "#messageIdChart");
@@ -310,7 +310,7 @@ function refresh() {
       machineView.updateData(d.location, histogramToArray(d.location));
       
       treeMapView.updateData(d.msgID, buildMessageIdHierarchy(query.volumeBy, d.msgID));
-      matrixChart.updateData(d.msgIDVolumes);
+      matrixChart.updateData(d.msgIdVolumes);
       
       updateQueryInfo(d);
     });

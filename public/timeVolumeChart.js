@@ -402,6 +402,7 @@ function timeVolumeChart(id) {
       for (var j=0; j<keys.length; j++) {
         const key = keys[j];
         var val = warpedFreq(data[j][i]);
+        // var val = quantizedFreq(data[j][i]);
         obj[key] = val;
         sum += val;
       }

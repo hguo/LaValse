@@ -39,13 +39,13 @@ function matrixChart(id) {
     label1.attr("transform", "translate(" + width/2 + "," + (height+10) + ")");
   }
 
-  this.updateData = function(msgIDVolumes) {
-    const msgIDs = Object.keys(msgIDVolumes);
+  this.updateData = function(msgIdVolumes) {
+    const msgIDs = Object.keys(msgIdVolumes);
     const n = msgIDs.length;
     const cellW = width/n, cellH = height/n;
     
-    var matrixCorrelation = temporalMsgIdCorrelation(msgIDVolumes);
-    var matrixSimilarity = temporalMsgIdDistance(msgIDVolumes);
+    var matrixCorrelation = temporalMsgIdCorrelation(msgIdVolumes);
+    var matrixSimilarity = temporalMsgIdDistance(msgIdVolumes);
 
     var correlations = [];
     for (var i=0; i<n; i++) {

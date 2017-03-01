@@ -58,10 +58,9 @@ function translateResults(r, fullResult) {
   r.recIDs = filterRecIDs(r.timeVolumes, r.timeVolumesRecID);
   delete r["timeVolumesRecID"];
 
-  r.arcs = translateTimeVolumesMsgID(r.timeVolumesMsgID);
-  r.msgIDVolumes = reduceTimeVolumesMsgID(r.timeVolumesMsgID).data;
+  r.arcs = translateTimeVolumesMsgID(r.msgIdVolumes);
+  r.msgIdVolumes = reduceTimeVolumesMsgID(r.msgIdVolumes).data;
   // console.log(analysis.temporalMsgIdDTW(r.msgIDVolumes));
-  delete r["timeVolumesMsgID"];
 
   return r;
 

@@ -44,7 +44,7 @@ struct QueryResults {
            maintenance[2];
   uint32_t *location, *locationRecID; 
   uint32_t *timeVolumes, *timeVolumesRecID;
-  uint32_t *timeVolumesMsgID;
+  uint32_t *msgIdVolumes;
   uint32_t *midplaneVolumes; // heat maps
   uint32_t *overviewVolume;  // the second time volume for overview
 
@@ -165,7 +165,7 @@ struct Query {
       }
       if (c[1]) {
         add1(results.msgID[e.msgID]);
-        add1(results.timeVolumesMsgID[e.msgID*nslots+t]); // volume per msgID
+        add1(results.msgIdVolumes[e.msgID*nslots+t]); // volume per msgID
       }
       if (c[2]) add1(results.component[e.component()]);
       if (c[3]) add1(results.locationType[e.locationType]);
@@ -269,8 +269,8 @@ QueryResults::QueryResults(const Query& q)
   memset(timeVolumes, 0, nTimeSlots*nVolumes*4);
   // memset(timeVolumesRecID, 0, nslots*nvolumes*MAX_EVENTS_PER_SLOT*4);
 
-  timeVolumesMsgID = (uint32_t*)malloc(nTimeSlots*NUM_MSGID*4);
-  memset(timeVolumesMsgID, 0, nTimeSlots*NUM_MSGID*4);
+  msgIdVolumes = (uint32_t*)malloc(nTimeSlots*NUM_MSGID*4);
+  memset(msgIdVolumes, 0, nTimeSlots*NUM_MSGID*4);
 
   midplaneVolumes = (uint32_t*)malloc(nTimeSlots*nMidplanes*4);
   memset(midplaneVolumes, 0, nTimeSlots*nMidplanes*4);
@@ -298,7 +298,7 @@ QueryResults::~QueryResults()
 {
   free(timeVolumes);
   free(timeVolumesRecID);
-  free(timeVolumesMsgID);
+  free(msgIdVolumes);
   free(overviewVolume);
   free(midplaneVolumes);
   free(location);
