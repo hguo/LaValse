@@ -542,6 +542,9 @@ function timeVolumeChart(id) {
       svgVolume.selectAll(".line")
         .style("display", "block");
     }
+
+    svgVolume.selectAll(".maintenance")
+      .moveToFront();
   }
 
   this.updateOverviewVolume = function(data) {
