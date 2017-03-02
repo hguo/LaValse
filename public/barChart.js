@@ -96,6 +96,18 @@ function barChart(name, id, categories, categoryText) {
       .attr("y", function(d) {return y(d.k) + y.bandwidth()/2 + 4.5;});
   }
 
+  this.highlightKey = function(key) {
+    svg.selectAll(".bar")
+      .filter(function(d) {return key === d.k;})
+      .style("stroke", "black")
+      .style("stroke-width", 3);
+  }
+
+  this.dehighlightKey = function(key) {
+    svg.selectAll(".bar")
+      .style("stroke", null);
+  }
+
   this.updateData = function(data) {
     var bars = svg.selectAll(".bar").data(data);
     bars.enter().append("rect")

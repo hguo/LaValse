@@ -620,9 +620,17 @@ function timeVolumeChart(id) {
       })
       .on("mouseover", function(d) {
         machineView.highlightLocation(d.location, "red"); // TODO: parent locations
+        severityChart.highlightKey(d.severity);
+        componentChart.highlightKey(d.component);
+        categoryChart.highlightKey(d.category);
+        locationTypeChart.highlightKey(d.locationType);
       })
       .on("mouseleave", function(d) {
         machineView.dehighlightLocation(d.location);
+        severityChart.dehighlightKey();
+        componentChart.dehighlightKey();
+        categoryChart.dehighlightKey();
+        locationTypeChart.dehighlightKey();
       });
 
     if (toggleThemeRiver) {
