@@ -211,7 +211,7 @@ function init() {
       timeVolumeChart.updateArcDiagram(d.msgIdVolumes);
       
       machineView = new machineView("#machineView");
-      machineView.resize({left: 270, top: 20, width: 725, height: 306});
+      machineView.resize({left: 270, top: 25, width: 725, height: 300});
       machineView.updateData(d.location, histogramToArray(d.location));
       $("#controlPanel").css("display", "block");
       $("#cobaltTableView").css("display", "block");

@@ -1,5 +1,5 @@
 function timeVolumeChart(id) {
-  const margin = {top: 5, right: 10, bottom: 20, left: 50};
+  const margin = {top: 0, right: 10, bottom: 20, left: 50};
   const O0 = 1420070400000, // 2015-01-01
         Og = 86400000; // milliseconds in a day
 
@@ -285,7 +285,7 @@ function timeVolumeChart(id) {
 
     volumeCanvas
       .style("left", geom.left + margin.left)
-      .style("top", geom.top + volumeTop + volumeHeight + 5)
+      .style("top", geom.top + volumeTop + volumeHeight)
       .attr("width", width)
       // .attr("height", width/2);
       .attr("height", 120); // FIXME
@@ -378,11 +378,12 @@ function timeVolumeChart(id) {
       .style("transform", jobTransform);
     svgCobaltContent.selectAll(".maintenance")
       .style("transform", jobTransform);
-   
+  
+    /*
     overviewBrush.extent([[0, 0], [width, overviewHeight]]);
     svgOverview.select("#overviewBrush")
       .call(overviewBrush)
-      .call(overviewBrush.move, X0.range());
+      .call(overviewBrush.move, X0.range()); */
 
     drawMidplaneVolumes();
     drawArcDiagram();
@@ -1204,8 +1205,8 @@ function timeVolumeChart(id) {
     x.domain(t.rescaleX(x0).domain());
     xNoClamp.domain(t.rescaleX(x0).domain());
 
-    svgOverview.select("#overviewBrush")
-      .call(overviewBrush.move, x.range().map(t.invertX, t));
+    // svgOverview.select("#overviewBrush")
+    //   .call(overviewBrush.move, x.range().map(t.invertX, t));
 
     svgVolume.select(".axis-x")
       .call(xAxis);

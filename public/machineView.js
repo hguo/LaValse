@@ -58,8 +58,8 @@ function machineView(id) {
     .attr("id", "machineViewSvg")
     .style("position", "absolute")
     .style("z-index", 1);
-  
-  var legendSvg = d3.select(id)
+
+  var legendSvg = d3.select(id) // legacy
     .append("svg")
     .attr("id", "legendSvg")
     .style("position", "absolute")
@@ -518,6 +518,11 @@ function machineView(id) {
     const legendMargin = {top: 20, bottom: 20, right: 20, left: 10};
     const legendWidth = legendW - legendMargin.left - legendMargin.right,
           legendHeight = height - legendMargin.top - legendMargin.bottom;
+
+    d3.select(".machineLegend")
+      .style("position", "absolute")
+      .style("left", geom.left)
+      .style("top", geom.top-20);
 
     zoom.extent([[0, 0], [width, height]]);
       // .translateExtent([[0, 0], [width, height]])

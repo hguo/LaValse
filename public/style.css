@@ -78,6 +78,13 @@ svg text {
   display: none;
 }
 
+.machineLegendBox {
+  stroke-width: 1;
+  stroke: #000;
+  width: 12;
+  height: 12;
+}
+
 #machineView {
   font-size: 9pt;
 }
