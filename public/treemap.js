@@ -117,6 +117,7 @@ function treeMapView(id, geom) {
     var onMouseOverFunc = function(d) {
       var m = d.data.name;
       timeVolumeChart.highlightArcs([m]);
+      matrixChart.highlightKeys([m]);
       highlightKeys([m]);
       mdsView.highlightKeys([m]);
 
@@ -136,6 +137,7 @@ function treeMapView(id, geom) {
       timeVolumeChart.dehighlightArcs();
       dehighlightKeys();
       mdsView.dehighlightKeys();
+      matrixChart.dehighlightKeys();
         
       severityChart.dehighlightKey();
       componentChart.dehighlightKey();
