@@ -624,6 +624,7 @@ function timeVolumeChart(id) {
 
         timeVolumeChart.highlightArcs([d.messageID]);
         treeMapView.highlightKeys([d.messageID]);
+        mdsView.highlightKeys([d.messageID]);
         severityChart.highlightKey(d.severity);
         componentChart.highlightKey(d.component);
         categoryChart.highlightKey(d.category);
@@ -638,6 +639,7 @@ function timeVolumeChart(id) {
         machineView.highlightBlock("");
         timeVolumeChart.highlightArcs([d.messageID]);
         treeMapView.dehighlightKeys();
+        mdsView.dehighlightKeys();
         severityChart.dehighlightKey();
         componentChart.dehighlightKey();
         categoryChart.dehighlightKey();
