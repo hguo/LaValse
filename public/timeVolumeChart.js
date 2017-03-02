@@ -1095,9 +1095,63 @@ function timeVolumeChart(id) {
 
   function volumeBrushed() {
     removeTooltips(); // TODO
+
+    if (!d3.event.sourceEvent) return;
+    if (!d3.event.selection) return;
+
     var s = d3.event.selection || x.range();
+    /*
     query.t0 = x.invert(s[0]).getTime();
     query.t1 = x.invert(s[1]).getTime();
+    refresh();
+    */
+    var domain = [x.invert(s[0]).getTime(), x.invert(s[1]).getTime()];
+    x.domain(domain);
+    xNoClamp.domain(domain);
+    zoomIntoTimeDomain(domain[0], domain[1]);
+    
+    svgVolume.select(".brush")
+      .remove();
+    
+    svgVolume.select(".axis-x")
+      .transition()
+      .call(xAxis);
+    svgVolume.selectAll(".line")
+      .transition()
+      .attr("d", function(d) {return lineWarp(d.volumes);});
+    svgVolume.selectAll(".glyph")
+      .transition()
+      .attr("cx", function(d) {return x(d.eventTime);});
+    svgCobaltContent.selectAll(".cobaltGroup")
+      .transition()
+      .style("transform", jobTransform);
+    svgCobaltContent.selectAll(".backend")
+      .transition()
+      .style("transform", jobTransform);
+    svgCobaltContent.selectAll(".maintenance")
+      .transition()
+      .style("transform", jobTransform);
+    svgVolume.selectAll(".maintenance")
+      .transition()
+      .style("transform", jobTransformX);
+    svgCobaltContent.selectAll(".mpvg")
+      .transition()
+      .style("transform", function(d, i) {
+        var scale = "scale(1," + cobaltYScale*cobaltHeight/96 + ")";
+        var translate = "translate(0px," + yCobalt(i) + "px)";
+        return translate + scale;
+      })
+      .selectAll(".mpv")
+      .attr("x", function(d, i) {return x(query.T0 + query.tg * i);});
+
+    svgVolume.select(".timeLabelLeft")
+      .text(d3.isoFormat(x.domain()[0]));
+    svgVolume.select(".timeLabelRight")
+      .text(d3.isoFormat(x.domain()[1]));
+    svgVolume.selectAll(".layer").select("path")
+      .transition()
+      .attr("d", area);
+    volumeZoomTimedOut();
   }
 
   function overviewBrushed() {
@@ -1190,7 +1244,10 @@ function timeVolumeChart(id) {
   var volumeZoomTimer = d3.timer(function() {volumeZoomTimer.stop()});
 
   function volumeZoomed() {
+    // if (!d3.event.sourceEvent) return;
+    // if (!d3.event.selection) return;
     if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+    
     removeTooltips();
     drawMidplaneVolumes();
     drawArcDiagram();
