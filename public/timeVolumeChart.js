@@ -107,6 +107,9 @@ function timeVolumeChart(id) {
     .style("text-anchor", "end")
     .text(d3.isoFormat(new Date(query.T1)));
 
+  svgVolume.append("g")
+    .attr("class", "cursor")
+
   var xDomain = [query.T0, query.T1];
   var xDomainPrevious = [query.T0, query.T1];
   var xDomainBeforeCobaltJobHiglighted = [query.T0, query.T1];
