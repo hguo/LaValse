@@ -55,7 +55,8 @@ function timeVolumeChart(id) {
   var svgCobaltContent = svgCobalt.append("g")
     .attr("clip-path", "url(#cobaltMask)");
   var svgVolume = svg.append("g");
-  var svgOverview = svg.append("g");
+  var svgOverview = svg.append("g")
+    .attr("display", "none");
  
   var patternDef = d3.select("#timeVolumeChartSvg") // pattern-stripe
     .append("defs");
@@ -261,8 +262,9 @@ function timeVolumeChart(id) {
     width = geom.width - margin.left - margin.right,
     height = geom.height - margin.top - margin.bottom;
 
-    const cobaltRatio = 0.4, volumeRatio = 0.4, overviewRatio = 0.2;
-    const padding = 20;
+    // const cobaltRatio = 0.4, volumeRatio = 0.4, overviewRatio = 0.2;
+    const cobaltRatio = 0.4, volumeRatio = 0.6, overviewRatio = 0;
+    const padding = 35;
 
     overviewTop = 0;
     cobaltTop = overviewRatio * height;
@@ -346,11 +348,11 @@ function timeVolumeChart(id) {
 
     svgVolume.select(".timeLabelLeft")
       .attr("x", 2)
-      .attr("y", -2);
+      .attr("y", -22);
 
     svgVolume.select(".timeLabelRight")
       .attr("x", width)
-      .attr("y", -2);
+      .attr("y", -22);
 
     svgOverview.select(".axis-X")
       .attr("transform", "translate(0," + overviewHeight + ")")

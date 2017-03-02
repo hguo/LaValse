@@ -51,7 +51,7 @@ struct QueryResults {
 
   uint32_t *midplaneVolumes; // heat maps
   
-  uint32_t *overviewVolume;  // the second time volume for overview
+  // uint32_t *overviewVolume;  // the second time volume for overview
 
   std::vector<uint32_t> topRecIDs;
 
@@ -135,20 +135,21 @@ struct Query {
     // auto t0 = clock::now();
     // set_affinity(tid);
     
-    const int ndims = 10;
+    const int ndims = 9;
     const int nslots = results.nTimeSlots;
     bool b[ndims], c[ndims];
     int ntop = 0;
 
     for (size_t i=tid; i<events.size(); i+=nthreads) {
       const Event& e = events[i];
+      uint32_t t = e.aggregateTime(T0, tg);
+      if (t >= results.nTimeSlots) continue;
+      
       crossfilter_kernel(e, b, c);
         
-      uint32_t t = e.aggregateTime(T0, tg);
       if (c[0]) {
-        if (/*t>=0 &&*/ t<results.nTimeSlots) {
-          if (e.midplane < nMidplanes) add1(results.midplaneVolumes[e.midplane*results.nTimeSlots+t]); // midplane volume
-        }
+        // if (/*t>=0 &&*/ t<results.nTimeSlots) {
+        if (e.midplane < nMidplanes) add1(results.midplaneVolumes[e.midplane*results.nTimeSlots+t]); // midplane volume
       }
       if (c[1]) {
         add1(results.msgID[e.msgID]);
@@ -186,11 +187,13 @@ struct Query {
           if (a & 256) add1(results.controlAction[8]);
         }
       }
+#if 0
       if (c[8]) {
         uint32_t o = e.aggregateTime(O0, og);
         add1(results.overviewVolume[o]);
       }
-      if (c[9]) add1(results.maintenance[e.maintenance]);
+#endif
+      if (c[8]) add1(results.maintenance[e.maintenance]);
 
       if (b[0] && c[0]) { // all true
         results.nmatched ++; 
@@ -207,7 +210,7 @@ struct Query {
   }
 
   void crossfilter_kernel(const Event& e, bool b[], bool c[]) {
-    const int ndims = 10; // FIXME
+    const int ndims = 9; // FIXME
     // fprintf(stderr, "%llu, %llu, %llu, %llu\n", t0, t1, T0, T1);
 #if 0
     if (!checkTime(e.eventTime, T0, T1)) {
@@ -227,8 +230,7 @@ struct Query {
     b[5] = check(e.severity(), severity);
     b[6] = check(e.location[LOD], location);
     b[7] = checkBits(e.controlActions(), controlActions);
-    b[8] = true; // the overview volume
-    b[9] = check(e.maintenance, maintenance);
+    b[8] = check(e.maintenance, maintenance);
 
     for (int i=0; i<ndims; i++) {
       bool v = true;
@@ -241,8 +243,6 @@ struct Query {
       }
       c[i] = v;
     }
-
-    c[8] = b[1] && b[2] && b[3] && b[4] && b[5] && b[6] && b[7];
   }
   
   void set_affinity(int processorID) {
@@ -301,9 +301,11 @@ QueryResults::QueryResults(const Query& q)
   midplaneVolumes = (uint32_t*)malloc(nTimeSlots*nMidplanes*4);
   memset(midplaneVolumes, 0, nTimeSlots*nMidplanes*4);
 
+#if 0
   nOverviewSlots = (q.O1 - q.O0) / q.og;
   overviewVolume = (uint32_t*)malloc(nOverviewSlots*4);
   memset(overviewVolume, 0, nOverviewSlots*4);
+#endif
 
   location = (uint32_t*)malloc(nlocations[q.LOD]*4);
   memset(location, 0, nlocations[q.LOD]*4);
@@ -336,7 +338,7 @@ QueryResults::~QueryResults()
   if (severityVolumes != NULL)
     freeVolume(severityVolumes, severityVolumesRecID);
   
-  free(overviewVolume);
+  // free(overviewVolume);
   free(midplaneVolumes);
   free(location);
 }
