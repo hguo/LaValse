@@ -118,11 +118,29 @@ function treeMapView(id, geom) {
       var m = d.data.name;
       timeVolumeChart.highlightArcs([m]);
       highlightKeys([m]);
+
+      var e = events[m];
+      console.log(e);
+        
+      severityChart.highlightKey(e.severity);
+      componentChart.highlightKey(e.component);
+      categoryChart.highlightKey(e.category);
+      // locationTypeChart.highlightKey(d.locationType); // TODO: derive location types for rasbook
+
+      var controlActionStr = e.controlAction;
+      var controlActions = controlActionStr === undefined ? [] : controlActionStr.split(",");
+      controlActionChart.highlightKeys(controlActions);
     }
 
     var onMouseLeaveFunc = function(d) {
       timeVolumeChart.dehighlightArcs();
       dehighlightKeys();
+        
+      severityChart.dehighlightKey();
+      componentChart.dehighlightKey();
+      categoryChart.dehighlightKey();
+      locationTypeChart.dehighlightKey();
+      controlActionChart.dehighlightKey();
     }
 
     var root = d3.hierarchy(data)
