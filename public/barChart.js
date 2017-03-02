@@ -1,7 +1,7 @@
 function barChart(name, id, categories, categoryText) {
   const margin = {top: 20, right: 10, bottom: 20, left: 10};
 
-  var highlighted = new Set;
+  var selectedKeys = new Set;
 
   var svg = d3.select(id)
     .append("svg")
@@ -30,9 +30,9 @@ function barChart(name, id, categories, categoryText) {
   var color = function(i) { // TODO
     if (query.volumeBy == name) {
       return globalCategoryColor(name, i);
-    } else if (highlighted.size == 0) {
+    } else if (selectedKeys.size == 0) {
       return "steelblue";
-    } else if (highlighted.has(i)) {
+    } else if (selectedKeys.has(i)) {
       // return "orange";
       return "steelblue";
     } else {
@@ -119,11 +119,11 @@ function barChart(name, id, categories, categoryText) {
       .merge(labels)
       .attr("class", "mlabel")
       .style("font-weight", function(d) {
-        if (highlighted.has(d.k)) return "bold";
+        if (selectedKeys.has(d.k)) return "bold";
         else return "regular";
       })
       .style("fill", function(d) {
-        if (highlighted.size == 0 || highlighted.has(d.k)) return "black";
+        if (selectedKeys.size == 0 || selectedKeys.has(d.k)) return "black";
         else return "grey";
       })
       .text(function(d) {return d.k;})
@@ -134,9 +134,9 @@ function barChart(name, id, categories, categoryText) {
       .attr("y", function(d) {return y(d.k) + y.bandwidth()/2 + 4.5;});
    
     svg.selectAll(".bar")
-      .on("click", highlight);
+      .on("click", selectKey);
     svg.selectAll(".mlabel")
-      .on("click", highlight);
+      .on("click", selectKey);
   
     svg.select(".axis-x")
       .transition().duration(300).call(xAxis);
@@ -145,30 +145,30 @@ function barChart(name, id, categories, categoryText) {
       .selectAll("text").remove() // remove tick labels
       .transition().duration(300).call(yAxis)
     
-    function highlight(d) {
+    function selectKey(d) {
       if (d == undefined) {
-        highlighted.clear();
+        selectedKeys.clear();
       } else {
-        if (highlighted.has(d.k)) highlighted.delete(d.k); 
-        else highlighted.add(d.k);
-        if (highlighted.size == data.length) highlighted.clear();
+        if (selectedKeys.has(d.k)) selectedKeys.delete(d.k); 
+        else selectedKeys.add(d.k);
+        if (selectedKeys.size == data.length) selectedKeys.clear();
       }
       
       svg.selectAll(".bar")
         .style("fill", function(d) {return color(d.k);});
       svg.selectAll(".mlabel")
         .style("font-weight", function(d) {
-          if (highlighted.has(d.k)) return "bold";
+          if (selectedKeys.has(d.k)) return "bold";
         })
         .style("fill", function(d) {
-          if (highlighted.size == 0 || highlighted.has(d.k)) return "black";
+          if (selectedKeys.size == 0 || selectedKeys.has(d.k)) return "black";
           else return "grey";
         });
 
-      if (highlighted.size == 0) delete query[name];
+      if (selectedKeys.size == 0) delete query[name];
       else {
         query[name] = []; 
-        highlighted.forEach(function(v) {
+        selectedKeys.forEach(function(v) {
           query[name].push(v);
         });
       }
@@ -178,7 +178,7 @@ function barChart(name, id, categories, categoryText) {
   };
 
   this.reset = function() {
-    highlight(undefined);
+    selectKey(undefined);
   }
 }
 
