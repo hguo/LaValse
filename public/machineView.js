@@ -187,7 +187,7 @@ function machineView(id) {
         tooltip.html(html);
         
         var neighbors = []; 
-        const maxDepth = 3;
+        const maxDepth = probeLayers;
         if (L.type === "RMNJ") {
           neighbors = graphTraverse(graphRMNJ, L.str, maxDepth);
         } else if (L.type == "RMN") {
@@ -346,26 +346,6 @@ function machineView(id) {
   }
 
   function selectElements(array) {
-    var sum = 0;
-    array.forEach(function(d) {
-      if (selectedElements.has(d) || (!(d in histogram))) {
-        selectedElements.delete(d);
-      } else {
-        selectedElements.add(d);
-        // sum += d in histogram ? histogram[d] : 0;
-        sum += histogram[d];
-      }
-    });
-    if (sum == 0 || array.length == 0) {
-      selectedElements.clear();
-      zoomTimedOut(); // counter-intuitive. selected all elements in the viewports
-    } else {
-      query["location"] = array;
-      refresh();
-    }
-  }
-
-  function selectElements(array) {
     selectedElements.clear(); // TODO: intersect, union, ...
     var sum = 0;
     array.forEach(function(d) {
@@ -379,6 +359,12 @@ function machineView(id) {
       query["location"] = array;
       refresh();
     }
+  }
+
+  this.selectPartition = function(str) {
+    return; // TODO: cannot select children of midplanes now
+    var array = partitionParser.list(str);
+    selectElements(array);
   }
 
   function brushed() {

@@ -13,7 +13,8 @@ var query = {
 var severityChart, componentChart, categoryChart, locationTypeChart, maintenanceChart,
     controlActionChart, timeVolumeChart, treeMapView;
 var machineView;
-var matrixChart; 
+var matrixChart;
+var probeLayers = 2;
 
 // init mira partition parser
 d3.csv("/partitionInfo.csv", function(err, data) {
@@ -554,7 +555,7 @@ function initControlPanel() {
     }
   });
   f1.add(text, "probeLayers", [0, 1, 2, 3, 4, 5]).onChange(function(val) {
-    // TODO
+    probeLayers = val;
   });
   f1.add(text, "showJobs").onChange(function(val) {
     timeVolumeChart.toggleJobs(val);

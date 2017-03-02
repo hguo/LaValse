@@ -1245,6 +1245,8 @@ function timeVolumeChart(id) {
     zoomOutMidplaneDomain();
 
     cobaltJobHighlighted = false;
+
+    machineView.selectPartition("");
   }
 
   function zoomIntoCobaltJob(cobaltJob) {
@@ -1259,6 +1261,8 @@ function timeVolumeChart(id) {
     // fade context // TODO
 
     cobaltJobHighlighted = true;
+    
+    machineView.selectPartition(cobaltJob.machinePartition);
   }
 
   function cobaltZoomed() {

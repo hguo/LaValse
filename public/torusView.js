@@ -10,6 +10,7 @@ function torusView(id, geom) {
     .attr("top", geom.T)
     .attr("width", geom.W)
     .attr("height", geom.H)
+    .style("display", "none")
     .style("position", "absolute")
     .style("padding", 
       margin.top + "px " + 
