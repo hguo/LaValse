@@ -192,8 +192,9 @@ function timeVolumeChart(id) {
     .y(function(d) {return yLinear(d);});
   var lineWarp = d3.line()
     .x(function(d, i) {return x(query.T0 + query.tg * i);})
-    .y(function(d) {return yWarp(warpedFreq(d));})
-    .curve(d3.curveStep);
+    .y(function(d) {return yWarp(warpedFreq(d));});
+    // .curve(d3.curveStep);
+    // .curve(d3.curveMonotoneX);
 
   var overviewLineLog = d3.line()
     .x(function(d, i) {return X(O0 + Og*i);})
@@ -417,6 +418,50 @@ function timeVolumeChart(id) {
     };
   }
 
+  function updateSampledRecords(data, stackData, stackedData) {
+    var query = [];
+    var map = {}; // key: recID
+
+    for (var i=0; i<data.length; i++) {
+      for (var j=0; j<data[i].recIDs.length; j++) {
+        const count = data[i].volumes[j];
+        const count1 = quantizedFreq(data[i].volumes[j]);
+        for (var k=0; k<count1; k++) {
+          const msgID = data[i].recIDs[j][k];
+          var obj = {
+            unique: count == count1,
+            count: count1,
+            riverId: i,
+            timeSlot: j,
+            k: k
+          };
+
+          query.push(msgID);
+          map[msgID] = obj;
+        }
+      }
+    }
+
+    d3.json("/ras?query=" + JSON.stringify(query), function(data1) {
+      for (var i=0; i<data1.length; i++) {
+        var e = data1[i];
+        e.eventTime = new Date(e.eventTime);
+        e.category = events[e.messageID].category;
+        e.locationType = parseLocationType(e.location);
+
+        var obj = map[e._id];
+        var y0 = stackedData[obj.riverId][obj.timeSlot][0], 
+            y1 = stackedData[obj.riverId][obj.timeSlot][1];
+        var dy = (y1 - y0) / (obj.count + 1);
+        var y = y0 + (obj.k+1) * dy;
+
+        e.unique = obj.unique;
+        e.y = y;
+      }
+      updateRecords(data1);
+    });
+  }
+
   this.updateVolume = function(data) {
     /* 
     yMax = d3.max(data, function(d) {return d3.max(d, function(dd) {return dd;});});
@@ -458,6 +503,9 @@ function timeVolumeChart(id) {
 
     var stackData = buildStackData(data);
     stack.keys(stackData.keys);
+    var stackedData = stack(stackData.data);
+    
+    setTimeout(updateSampledRecords(data, stackData, stackedData), 0); // TODO
     
     const nkeys = stackData.keys.length;
     // yRiver.domain([-nkeys*3.5, nkeys*3.5]);
@@ -465,15 +513,16 @@ function timeVolumeChart(id) {
 
     svgVolume.selectAll(".layer").remove();
     var layer = svgVolume.selectAll(".layer")
-      .data(stack(stackData.data))
+      // .data(stack(stackData.data))
+      .data(stackedData)
       .enter().append("g")
       .attr("class", "layer");
 
     layer.append("path")
       .attr("class", "area")
-      .style("fill", "red") // TODO
       .attr("d", area)
-      .style("fill", function(d) {return globalCategoryColor(query.volumeBy, d.key);});
+      .style("fill", function(d) {return globalCategoryColor(query.volumeBy, d.key);})
+      .style("opacity", 0.4);
     
     if (toggleThemeRiver) {
       svgVolume.selectAll(".layer")
@@ -530,12 +579,21 @@ function timeVolumeChart(id) {
       .data(data).enter()
       .append("circle")
       .attr("class", "glyph")
-      .attr("r", "3")
-      .style("stroke", "steelblue")
-      .style("fill", "white")
+      .attr("r", "2")
+      .style("opacity", 1)
+      .style("stroke", function(d) {
+        return globalCategoryColor(query.volumeBy, d[query.volumeBy]);
+      })
+      // .style("stroke", "steelblue")
+      .style("fill", function(d) {
+        if (d.unique) return globalCategoryColor(query.volumeBy, d[query.volumeBy]);
+        else return "white";
+      })
+      // .style("fill", "white")
       // .attr("cx", function(d) {return (query.t1-query.t0)/query.tg * d.timeSlot;})
       .attr("cx", function(d) {return x(d.eventTime);})
-      .attr("cy", function(d) {return yLinearReverse(d.y);})
+      // .attr("cy", function(d) {return yLinearReverse(d.y);})
+      .attr("cy", function(d) {return yRiver(d.y);})
       .attr("title", function(d) {
         const e = events[d.messageID];
         return "<b>recID:</b> " + d._id
@@ -563,7 +621,16 @@ function timeVolumeChart(id) {
       .on("mouseleave", function(d) {
         machineView.dehighlightLocation(d.location);
       });
+
+    if (toggleThemeRiver) {
+      svgVolume.selectAll(".glyph")
+        .style("display", "block");
+    } else {
+      svgVolume.selectAll(".glyph")
+        .style("display", "none");
+    }
   }
+  var updateRecords = this.updateRecords;
 
   this.updateMaintenanceData = function(data) {
     svgCobaltContent.selectAll(".maintenance").remove();
@@ -1000,6 +1067,8 @@ function timeVolumeChart(id) {
         .style("display", "block");
       svgVolume.selectAll(".line")
         .style("display", "none");
+      svgVolume.selectAll(".glyph")
+        .style("display", "block");
       svgVolume.select(".axis-y")
         .style("display", "none");
     } else {
@@ -1007,6 +1076,8 @@ function timeVolumeChart(id) {
         .style("display", "none");
       svgVolume.selectAll(".line")
         .style("display", "block");
+      svgVolume.selectAll(".glyph")
+        .style("display", "none");
       svgVolume.select(".axis-y")
         .style("display", "block");
     }
@@ -1175,7 +1246,7 @@ function timeVolumeChart(id) {
     query.T0 = query.t0; 
     query.T1 = query.t1;
     // query.tg = Math.max((query.T1 - query.T0) / width, 1000); // the finest resolution is 1 second
-    query.tg = (query.T1 - query.T0) / width * 10;
+    query.tg = (query.T1 - query.T0) / width * 4;
     refresh();
 
     var cobaltQuery = {T0: query.T0, T1: query.T1};

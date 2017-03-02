@@ -6,7 +6,8 @@ var query = {
   T1: 1451520000000, // 2015-12-31
   t0: 1420070400000, // 2015-01-01
   t1: 1451520000000, // 2015-12-31
-  tg: 95301818 // (t1 - t0) / width_of_time_chart // aggregation resolution
+  tg: (1451520000000 - 1420070400000) / 660 * 4
+    // 95301818 // (t1 - t0) / width_of_time_chart // aggregation resolution
 };
 
 var severityChart, componentChart, categoryChart, locationTypeChart, maintenanceChart,
@@ -294,7 +295,7 @@ function refresh() {
     .header("Content-Type", "application/json")
     .post(JSON.stringify(query), function (err, d) {
       removeTooltips();
-
+    
       if ("top" in d) refreshTops(d["top"]);
       if ("recIDs" in d) refreshRecIDs(d["recIDs"]);
 
