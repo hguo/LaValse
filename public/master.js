@@ -330,8 +330,10 @@ function toggleLogScale() {
 function updateQueryInfo(d) {
   formatInt = d3.format(",");
   formatFloat = d3.format(".3f");
+  d3.select("#executionSummary")
+    .text("matched: " + formatInt(d.nMatched) + " | execTime: " + formatFloat(d.queryTime) + " sec");
   $("#eventCount").html(formatInt(d.nMatched));
-  $("#executionTime").html(formatFloat(d.queryTime) + " sec");
+  $("#executionTime").html();
 }
 
 function refreshRecIDs(data) {
