@@ -607,7 +607,7 @@ function timeVolumeChart(id) {
           + "<br><b>category:</b> " + e.category
           + "<br><b>cobaltJobID: </b> " + d.cobaltJobID
           + "<br><b>backendJobID: </b> " + d.backendJobID
-          + "<br><b>machinePartition:</b> " + d.block
+          + "<br><b>machinePartition:</b> " + d.partition
           + "<br><b>location:</b> " + d.location
           + "<br><b>torus:</b> " + (d.location in graphRMNJ ? graphRMNJ[d.location].coords : "") // torusRMNJMap.torus(d.location)
           + "<br><b>CPU:</b> " + d.CPU
@@ -620,6 +620,10 @@ function timeVolumeChart(id) {
       })
       .on("mouseover", function(d) {
         machineView.highlightLocation(d.location, "red"); // TODO: parent locations
+        // machineView.highlightBlock(d.partition, "black");
+
+        timeVolumeChart.highlightArcs([d.messageID]);
+        treeMapView.highlightKeys([d.messageID]);
         severityChart.highlightKey(d.severity);
         componentChart.highlightKey(d.component);
         categoryChart.highlightKey(d.category);
@@ -631,6 +635,9 @@ function timeVolumeChart(id) {
       })
       .on("mouseleave", function(d) {
         machineView.dehighlightLocation(d.location);
+        machineView.highlightBlock("");
+        timeVolumeChart.highlightArcs([d.messageID]);
+        treeMapView.dehighlightKeys();
         severityChart.dehighlightKey();
         componentChart.dehighlightKey();
         categoryChart.dehighlightKey();
