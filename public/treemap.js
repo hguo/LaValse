@@ -117,12 +117,12 @@ function treeMapView(id, geom) {
     var onMouseOverFunc = function(d) {
       var m = d.data.name;
       timeVolumeChart.highlightArcs([m]);
-      highlight([m]);
+      highlightKeys([m]);
     }
 
     var onMouseLeaveFunc = function(d) {
       timeVolumeChart.dehighlightArcs();
-      dehighlight();
+      dehighlightKeys();
     }
 
     var root = d3.hierarchy(data)
