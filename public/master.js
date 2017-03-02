@@ -217,7 +217,7 @@ function init() {
       $("#cobaltTableView").css("display", "block");
       // $("#tabs").css("display", "block");
     
-      torusView = new torusView("#tabs-0", {L: 0, T: 0, W: 360, H: 360});
+      torusView = new torusView("#torusView", {L: 960, T: 400, W: 200, H: 200});
       
       treeMapView.resize({L: 0, T: 580, W: 240, H: 140});
       treeMapView.updateData(d.msgID, buildMessageIdHierarchy(query.volumeBy, d.msgID));

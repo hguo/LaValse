@@ -3,29 +3,28 @@ function torusView(id, geom) {
         width = geom.W - margin.left - margin.right,
         height = geom.H - margin.top - margin.bottom;
 
-  $(id).html("");
-
-  d3.select(id)
+  var bgCanvas = d3.select(id)
     .append("canvas")
     .attr("id", "background")
+    .attr("left", geom.L)
+    .attr("top", geom.T)
     .attr("width", geom.W)
     .attr("height", geom.H)
+    .style("position", "absolute")
     .style("padding", 
       margin.top + "px " + 
       margin.right + "px " + 
       margin.bottom + "px " +
       margin.left + "px");
 
-  var rect = $(id + " #background")[0].getBoundingClientRect();
-
-  d3.select(id)
+  var fgCanvas = d3.select(id)
     .append("canvas")
     .attr("id", "foreground")
-    .style("left", rect.left)
-    .style("top", rect.top)
+    .style("left", geom.L)
+    .style("top", geom.T)
     .attr("width", geom.W)
     .attr("height", geom.H)
-    .style("position", "fixed")
+    .style("position", "absolute")
     .style("padding", 
       margin.top + "px " + 
       margin.right + "px " + 
@@ -34,11 +33,11 @@ function torusView(id, geom) {
 
   var svg = d3.select(id)
     .append("svg")
-    .style("top", rect.top)
-    .style("left", rect.left)
-    .style("position", "fixed")
+    .style("top", geom.T)
+    .style("left", geom.L)
     .attr("width", geom.W)
     .attr("height", geom.H)
+    .style("position", "absolute")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -47,7 +46,10 @@ function torusView(id, geom) {
 
   var foreground = $("#foreground")[0].getContext("2d");
   foreground.strokeStyle = "rgba(0, 100, 160, 1)";
-  foreground.globalAlpha = 0.5;
+  foreground.globalAlpha = 0.02;
+
+  // adjustCanvasResolution(fgCanvas.node(), foreground);
+  // adjustCanvasResolution(bgCanvas.node(), background);
 
   var ndims = 5;
   var dimensions = [0, 1, 2, 3, 4];
