@@ -2,8 +2,8 @@ function treeMapView(id, geom) {
   const margin = {top: 10, right: 10, bottom: 10, left: 10};
   var width, height;
 
-  var selected = new Set;
-  var highlighted = new Set;
+  var selectedKeys = new Set;
+  var highlightedKeys = new Set;
 
   $(id).html("");
   var svg = d3.select(id)
@@ -15,7 +15,7 @@ function treeMapView(id, geom) {
 
   var color = d3.scaleOrdinal(d3.schemeCategory20);
   var colorFunc = function(d) {
-    if (selected.size == 0 || selected.has(d.data.name)) {
+    if (selectedKeys.size == 0 || selectedKeys.has(d.data.name)) {
       // return color(d.parent.data.id);
       return globalCategoryColor(query.volumeBy, d.parent.data.name);
     } else {
@@ -23,26 +23,26 @@ function treeMapView(id, geom) {
     }
   }
 
-  this.select = function(array) { // m is msgID
+  this.selectKeys = function(array) { // m is msgID
     array.forEach(function(m) {
-      if (selected.has(m)) selected.delete(m);
-      else selected.add(m);
+      if (selectedKeys.has(m)) selectedKeys.delete(m);
+      else selectedKeys.add(m);
     });
 
     svg.selectAll(".cellBox")
       .style("fill", colorFunc);
 
-    if (selected.size == 0) delete query["msgID"];
+    if (selectedKeys.size == 0) delete query["msgID"];
     else {
       query["msgID"] = [];
-      selected.forEach(function(v) {
+      selectedKeys.forEach(function(v) {
         query["msgID"].push(v);
       });
     }
 
     refresh();
   }
-  var select = this.select;
+  var selectKeys = this.selectKeys;
 
   this.resize = function(geom) {
     width = geom.W - margin.left - margin.right,
@@ -57,34 +57,34 @@ function treeMapView(id, geom) {
     });
   }
 
-  this.highlight = function(array) {
-    highlighted.clear();
+  this.highlightKeys = function(array) {
+    highlightedKeys.clear();
     array.forEach(function(d) {
-      highlighted.add(d);
+      highlightedKeys.add(d);
     });
     
     svg.selectAll(".cellBox")
       .style("stroke", function(d) {
-        if (highlighted.has(d.data.name)) return "black";
+        if (highlightedKeys.has(d.data.name)) return "black";
       })
       .style("stroke-width", function(d) {
-        if (highlighted.has(d.data.name)) return 3;
+        if (highlightedKeys.has(d.data.name)) return 3;
       });
   }
-  var highlight = this.highlight;
+  var highlightKeys = this.highlightKeys;
 
-  this.dehighlight = function() {
-    highlighted.clear();
+  this.dehighlightKeys = function() {
+    highlightedKeys.clear();
     svg.selectAll(".cellBox")
       .style("stroke", null)
       .style("stroke-width", null);
   }
-  var dehighlight = this.dehighlight;
+  var dehighlightKeys = this.dehighlightKeys;
 
   this.updateData = function(data0, data) {
-    for (let key of highlighted) {
+    for (let key of highlightedKeys) {
       if (!(key in data0)) {
-        highlighted.delete(key); // TODO
+        highlightedKeys.delete(key); // TODO
       }
     }
 
@@ -111,7 +111,7 @@ function treeMapView(id, geom) {
 
     var onClickFunc = function(d) {
       var m = d.data.name;
-      select([m]);
+      selectKeys([m]);
     }
 
     var onMouseOverFunc = function(d) {

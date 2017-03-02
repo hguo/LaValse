@@ -832,15 +832,15 @@ function timeVolumeChart(id) {
       arcTooltip.style("display", "block")
         .html(html);
 
-      treeMapView.highlight([msgID]);
+      treeMapView.highlightKeys([msgID]);
     } else {
-      treeMapView.dehighlight();
+      treeMapView.dehighlightKeys();
     }
   }).on("mouseleave", function() {
     highlightedArcs.clear();
     drawArcDiagram();
     arcTooltip.style("display", "none");
-    treeMapView.dehighlight();
+    treeMapView.dehighlightKeys();
   }).on("click", function() {
     var picked = pickArc(d3.event.x, d3.event.y);
 

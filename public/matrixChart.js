@@ -93,19 +93,19 @@ function matrixChart(id) {
         const m0 = msgIdVolumes[d[0]].key, m1 = msgIdVolumes[d[1]].key; 
         label0.text(m0); 
         label1.text(m1);
-        treeMapView.highlight([m0, m1]);
+        treeMapView.highlightKeys([m0, m1]);
         timeVolumeChart.highlightArcs([m0, m1]);
       })
       .on("mouseleave", function(d) {
         label0.text("");
         label1.text("");
-        treeMapView.dehighlight();
+        treeMapView.dehighlightKeys();
         timeVolumeChart.dehighlightArcs();
       })
       .on("click", function(d) {
         const m0 = msgIdVolumes[d[0]].key, m1 = msgIdVolumes[d[1]].key; 
-        if (m0 == m1) treeMapView.select([m0]);
-        else treeMapView.select([m0, m1]);
+        if (m0 == m1) treeMapView.selectKeys([m0]);
+        else treeMapView.selectKeys([m0, m1]);
       });
   }
 }
