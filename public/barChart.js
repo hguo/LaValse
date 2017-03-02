@@ -96,6 +96,14 @@ function barChart(name, id, categories, categoryText) {
       .attr("y", function(d) {return y(d.k) + y.bandwidth()/2 + 4.5;});
   }
 
+  this.highlightKeys = function(keys_) {
+    var keys = new Set(keys_);
+    svg.selectAll(".bar")
+      .filter(function(d) {return keys.has(d.k);})
+      .style("stroke", "black")
+      .style("stroke-width", 3);
+  }
+
   this.highlightKey = function(key) {
     svg.selectAll(".bar")
       .filter(function(d) {return key === d.k;})

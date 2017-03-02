@@ -624,6 +624,10 @@ function timeVolumeChart(id) {
         componentChart.highlightKey(d.component);
         categoryChart.highlightKey(d.category);
         locationTypeChart.highlightKey(d.locationType);
+
+        var controlActionStr = events[d.messageID].controlAction;
+        var controlActions = controlActionStr === undefined ? [] : controlActionStr.split(",");
+        controlActionChart.highlightKeys(controlActions);
       })
       .on("mouseleave", function(d) {
         machineView.dehighlightLocation(d.location);
@@ -631,6 +635,7 @@ function timeVolumeChart(id) {
         componentChart.dehighlightKey();
         categoryChart.dehighlightKey();
         locationTypeChart.dehighlightKey();
+        controlActionChart.dehighlightKey();
       });
 
     if (toggleThemeRiver) {
