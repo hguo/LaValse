@@ -1152,6 +1152,7 @@ function timeVolumeChart(id) {
       .transition()
       .attr("d", area);
     volumeZoomTimedOut();
+    machineView.toggleBrush(false);
   }
 
   function overviewBrushed() {

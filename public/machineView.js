@@ -403,6 +403,8 @@ function machineView(id) {
     } else {
       selectedElements([]);
     }
+    svg.select(".brush").remove();
+    timeVolumeChart.toggleBrush(false);
   }
   
   function updateColorScale(data) {

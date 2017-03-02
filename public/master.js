@@ -528,7 +528,10 @@ function initControlPanel() {
     this.showHeatMap = true;
     this.showArcs = true;
     this.showTable = false;
-    this.brush = false;
+    this.brush = function() {
+      machineView.toggleBrush(true);
+      timeVolumeChart.toggleBrush(true);
+    }
     this.themeRiver = false;
     this.probeLayers = 2;
   };
@@ -570,10 +573,7 @@ function initControlPanel() {
     if (val) $("#tableView").css("display", "block");
     else $("#tableView").css("display", "none");
   });
-  f1.add(text, "brush").onChange(function(val) {
-    machineView.toggleBrush(val);
-    timeVolumeChart.toggleBrush(val);
-  });
+  f1.add(text, "brush"); 
   f1.open();
 
   /*
