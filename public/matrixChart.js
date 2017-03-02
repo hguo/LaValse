@@ -46,6 +46,9 @@ function matrixChart(id) {
     var matrixCorrelation = temporalMsgIdCorrelation(msgIdVolumes);
     var matrixSimilarity = temporalMsgIdDistance(msgIdVolumes);
 
+    var keys = msgIdVolumes.map(function(d) {return d.key;});
+    mdsView.updateData(keys, matrixSimilarity);
+
     var correlations = [];
     for (var i=0; i<n; i++) {
       for (var j=0; j<i; j++) {
@@ -94,12 +97,14 @@ function matrixChart(id) {
         label0.text(m0); 
         label1.text(m1);
         treeMapView.highlightKeys([m0, m1]);
+        mdsView.highlightKeys([m0, m1]);
         timeVolumeChart.highlightArcs([m0, m1]);
       })
       .on("mouseleave", function(d) {
         label0.text("");
         label1.text("");
         treeMapView.dehighlightKeys();
+        mdsView.dehighlightKeys();
         timeVolumeChart.dehighlightArcs();
       })
       .on("click", function(d) {

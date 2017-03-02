@@ -13,7 +13,7 @@ var query = {
 var severityChart, componentChart, categoryChart, locationTypeChart, maintenanceChart,
     controlActionChart, timeVolumeChart, treeMapView;
 var machineView;
-var matrixChart;
+var matrixChart, mdsView;
 var probeLayers = 2;
 
 // init mira partition parser
@@ -183,7 +183,8 @@ function init() {
       categoryChart = new barChart("category", "#categoryChart", Object.keys(d.category), categories);
       locationTypeChart = new barChart("locationType", "#locationTypeChart", Object.keys(d.locationType), locationTypes);
       matrixChart = new matrixChart();
-      graphView = new graphView();
+      // graphView = new graphView();
+      mdsView = new mdsView();
 
       severityChart.resize({L: 0, T: 0, W: 120, H: 90});
       maintenanceChart.resize({L: 0, T: 90, W: 120, H: 65});
@@ -459,6 +460,14 @@ function removeTooltips() {
   $(".ui-tooltip")
     .not(".customTooltip")
     .remove();
+}
+
+function globalCategoryColor4MsgId(volumeBy, d) {
+  var e = events[d];
+  if (volumeBy === "severity") return globalCategoryColor(volumeBy, e.severity);
+  else if (volumeBy === "component") return globalCategoryColor(volumeBy, e.component);
+  else if (volumeBy === "category") return globalCategoryColor(volumeBy, e.category);
+  else return globalCategoryColor(volumeBy, d);
 }
 
 function globalCategoryColor(volumeBy, d) {
