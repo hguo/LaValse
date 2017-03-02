@@ -538,6 +538,7 @@ function initControlPanel() {
     this.showHeatMap = true;
     this.showArcs = true;
     this.showTable = false;
+    this.showTooltip = true;
     this.brush = function() {
       machineView.toggleBrush(true);
       timeVolumeChart.toggleBrush(true);
@@ -578,6 +579,13 @@ function initControlPanel() {
   f1.add(text, "showArcs").onChange(function(val) {
     if (val) $("#arcDiagram").css("display", "block");
     else $("#arcDiagram").css("display", "none");
+  });
+  f1.add(text, "showTooltip").onChange(function(val) {
+    if (val) {
+      $(document).tooltip("enable");
+    } else {
+      $(document).tooltip("disable");
+    }
   });
   f1.add(text, "showTable").onChange(function(val) {
     if (val) $("#tableView").css("display", "block");
