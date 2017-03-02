@@ -120,7 +120,6 @@ function treeMapView(id, geom) {
       highlightKeys([m]);
 
       var e = events[m];
-      console.log(e);
         
       severityChart.highlightKey(e.severity);
       componentChart.highlightKey(e.component);

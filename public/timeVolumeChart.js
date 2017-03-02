@@ -832,15 +832,40 @@ function timeVolumeChart(id) {
       arcTooltip.style("display", "block")
         .html(html);
 
+      // stupid
+      treeMapView.dehighlightKeys();
+      severityChart.dehighlightKey();
+      componentChart.dehighlightKey();
+      categoryChart.dehighlightKey();
+      locationTypeChart.dehighlightKey();
+      controlActionChart.dehighlightKey();
+
       treeMapView.highlightKeys([msgID]);
+      severityChart.highlightKey(e.severity);
+      componentChart.highlightKey(e.component);
+      categoryChart.highlightKey(e.category);
+      // locationTypeChart.highlightKey(d.locationType); // TODO: derive location types for rasbook
+      var controlActionStr = e.controlAction;
+      var controlActions = controlActionStr === undefined ? [] : controlActionStr.split(",");
+      controlActionChart.highlightKeys(controlActions);
     } else {
       treeMapView.dehighlightKeys();
+      severityChart.dehighlightKey();
+      componentChart.dehighlightKey();
+      categoryChart.dehighlightKey();
+      locationTypeChart.dehighlightKey();
+      controlActionChart.dehighlightKey();
     }
   }).on("mouseleave", function() {
     highlightedArcs.clear();
     drawArcDiagram();
     arcTooltip.style("display", "none");
     treeMapView.dehighlightKeys();
+    severityChart.dehighlightKey();
+    componentChart.dehighlightKey();
+    categoryChart.dehighlightKey();
+    locationTypeChart.dehighlightKey();
+    controlActionChart.dehighlightKey();
   }).on("click", function() {
     var picked = pickArc(d3.event.x, d3.event.y);
 
