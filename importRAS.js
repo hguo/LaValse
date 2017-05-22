@@ -6,7 +6,7 @@ const assert = require("assert");
 const rasbook = require("./rasbook");
 const mira = require("./mira");
 
-const url = "mongodb://localhost:27017/catalog";
+const url = "mongodb://localhost:27017/catalog1";
 
 function ras2cpp(d) { // convert ras log to the format that C++ can read
   var L = mira.parseLocation(d.location);
@@ -39,7 +39,7 @@ MongoClient.connect(url, function(err, db) {
   assert.equal(null, err);
   console.log("connected.");
 
-  var ras = db.collection("ras1"),
+  var ras = db.collection("ras"),
       backend = db.collection("backend"),
       cobalt = db.collection("cobalt");
 
@@ -62,10 +62,8 @@ MongoClient.connect(url, function(err, db) {
         controlActions: d.CTLACTION,
         message: d.MESSAGE,
         diagnosis: d.DIAGS,
-        qualifier: d.QUALIFIER.replace(/\s+/g, '')
+        qualifier: +d.QUALIFIER.replace(/\s+/g, '')
       };
-
-      // console.log(rasData);
 
       backend.find({controlSystemTaskID: rasData.jobID})
         .toArray(function(err, docs) {
@@ -81,13 +79,11 @@ MongoClient.connect(url, function(err, db) {
               assert.equal(null, err);
 
               var v = docs.length > 0;
-              rasData.cobaltProjectName = v ? docs[0].cobaltProjectName : "";
-              rasData.cobaltUserName = v ? docs[0].cobaltUserName : "";
-              rasData.cobaltExitCode = v ? docs[0].exitCode : NaN;
+              rasData.projectName = v ? docs[0].projectName : "";
+              rasData.userName = v ? docs[0].userName : "";
+              rasData.exitStatus = v ? docs[0].exitStatus : NaN;
 
               ras.insertOne(rasData);
-              
-              // console.log(rasData);
               // ras2cpp(rasData);
             });
         });
