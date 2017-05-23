@@ -12,8 +12,6 @@ for (var i=0; i<colors.length; i++) {
   }
 }
 
-console.log(aliases);
-
 MongoClient.connect(uri, function(err, db) {
   buildUserInfo(db, function() {
     db.close();

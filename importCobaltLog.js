@@ -21,12 +21,11 @@ MongoClient.connect(url, function(err, db) {
     .on("data", function(d) {
       var cobaltJob = {
         _id: d.COBALT_JOBID,
-        // allocationType: +d.ALLOCATION_TYPE,
         queuedTimestamp: new Date(d.QUEUED_TIMESTAMP + " GMT"),
         startTimestamp: new Date(d.START_TIMESTAMP + " GMT"),
         endTimestamp: new Date(d.END_TIMESTAMP + " GMT"),
-        userName: +d.USERNAME_GENID,
-        projectName: +d.PROJECT_NAME_GENID,
+        cobaltUserName: d.USERNAME_GENID,
+        cobaltProjectName: d.PROJECT_NAME_GENID,
         queue: d.QUEUE_NAME,
         wallTimeSeconds: +d.WALLTIME_SECONDS,
         runTimeSeconds: +d.RUNTIME_SECONDS,
