@@ -2,7 +2,7 @@ const MongoClient = require("mongodb").MongoClient,
       assert = require("assert");
 const randomColor = require("randomcolor");
 
-var url = "mongodb://localhost:27017/catalog";
+var url = "mongodb://localhost:27017/catalog1";
 
 MongoClient.connect(url, function(err, db) {
   assert.equal(null, err);

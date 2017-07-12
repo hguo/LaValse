@@ -5,7 +5,7 @@ const mira = require("./mira");
 const rasbook = require("./rasbook");
 const profiles = require("./profiles");
 
-var uri = "mongodb://localhost:27017/catalog";
+var uri = "mongodb://localhost:27017/catalog1";
 
 MongoClient.connect(uri, function(err, db) {
   var q = async.queue(function(doc, cb) {
@@ -25,7 +25,12 @@ MongoClient.connect(uri, function(err, db) {
   }
 });
 
+function sanityCheck(array) {
+
+}
+
 function printRAS(ras) {
+  ras.location.replace(/ /g,''); // remove white spaces
   var L = mira.parseLocation(ras.location);
   var L0 = mira.locationToL0Location(L),
       L1 = mira.locationToL1Location(L), 
@@ -44,8 +49,8 @@ function printRAS(ras) {
       ras.eventTime.getTime(),
       +ras.cobaltJobID,
       profiles.checkMaintenanceTime(ras.eventTime),
-      profiles.userMap.key(ras.cobaltUserName),
-      profiles.projectMap.key(ras.cobaltProjectName),
+      profiles.userMap.key(ras.userName),
+      profiles.projectMap.key(ras.projectName),
       // profiles.partitionMap.key(ras.partition),
       rasbook.midplaneMap.key(midplane),
       rasbook.locationTypeMap.key(L.type), // locaitonType

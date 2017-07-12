@@ -5,7 +5,7 @@ const cube = require("./cube").cube;
 const basicAuth = require('basic-auth-connect');
 const MongoClient = require("mongodb").MongoClient;
 
-const uri = "mongodb://localhost:27017/catalog";
+const uri = "mongodb://localhost:27017/catalog1";
 
 var mycube = new cube("raslog");
 

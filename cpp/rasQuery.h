@@ -60,9 +60,15 @@ struct QueryResults {
 };
 
 struct Query {
+#if 0
   uint64_t T0 = 1420070400000, T1 = 1451606400000; // time scope
   uint64_t t0 = 1420070400000, t1 = 1451606400000, tg = TIME_HOUR; // tg is time granularity
   uint64_t O0 = 1420070400000, O1 = 1451606400000, og = TIME_DAY; // overview time scope and granularity
+#else
+  uint64_t T0 = 1364774400000, T1 = 1493596800000; // time scope
+  uint64_t t0 = 1364774400000, t1 = 1493596800000, tg = TIME_HOUR; // tg is time granularity
+  uint64_t O0 = 1364774400000, O1 = 1493596800000, og = TIME_DAY; // overview time scope and granularity
+#endif
 
   uint64_t volumeBy = 0;
   int LOD = 1;

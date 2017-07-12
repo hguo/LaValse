@@ -2,12 +2,19 @@ var query = {
   LOD: 1, // TODO
   top: 5,
   volumeBy: "severity",
+  T0: 1364774400000, // 2013-01-01
+  T1: 1493596800000, // 2017-05-01
+  t0: 1364774400000, // 2013-01-01
+  t1: 1493596800000, // 2017-05-01
+  tg: (1493596800000 - 1364774400000) / 660 * 4
+  /*
   T0: 1420070400000, // 2015-01-01
   T1: 1451520000000, // 2015-12-31
   t0: 1420070400000, // 2015-01-01
   t1: 1451520000000, // 2015-12-31
   tg: (1451520000000 - 1420070400000) / 660 * 4
-    // 95301818 // (t1 - t0) / width_of_time_chart // aggregation resolution
+  */
+  // 95301818 // (t1 - t0) / width_of_time_chart // aggregation resolution
 };
 
 var severityChart, componentChart, categoryChart, locationTypeChart, maintenanceChart,

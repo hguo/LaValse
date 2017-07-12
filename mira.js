@@ -202,6 +202,14 @@ function ioOpticalModule2str(row, col, drawer, o) {
   return ioDrawer2str(row, col, drawer) + "-O" + pad(o, 10, 2);
 }
 
+function ioBulkPowerSupply2str(row, col) {
+  return ioRack2str(row, col) + "-B";
+}
+
+function ioPowerModule2str(row, col, powerModule) {
+  return ioBulkPowerSupply2str(row, col) + "-P" + powerModule;
+}
+
 function parseMidplane(str) { // input: Rxx-Mx
   return {
     row: parseInt(str[1], 16), 
@@ -311,6 +319,10 @@ function locationToL1Location(L) {
 
   case "Q": 
     return ioRack2str(L.row, L.column);
+  case "QBP":
+    // return ioPowerModule2str(L.row, L.column, L.powerModule);
+  case "QB":
+    return ioBulkPowerSupply2str(L.row, L.column);
   case "QI":
   case "QIU":
   case "QID":
@@ -343,6 +355,9 @@ function locationToL2Location(L) {
 
   case "Q":
     return ioRack2str(L.row, L.column);
+  case "QBP":
+  case "QB":
+    return ioBulkPowerSupply2str(L.row, L.column);
   case "QI":
   case "QIJ":
   case "QIU":
@@ -371,6 +386,8 @@ function locationToL3Location(L) {
     return rack2str(L.row, L.column);
 
   case "Q":
+  case "QB":
+  case "QBP":
   case "QI":
   case "QIJ":
   case "QIU":
@@ -469,6 +486,9 @@ function enumerateL0Locations() {
         for (d=0; d<2; d++) locations.push(ioDCA2str(row, col, drawer, d));
         for (o=0; o<24; o++) locations.push(ioOpticalModule2str(row, col, drawer, o));
       }
+        
+      locations.push(ioBulkPowerSupply2str(row, col));
+      for (p=0; p<6; p++) locations.push(ioPowerModule2str(row, col, p));
     }
   }
 
@@ -500,14 +520,6 @@ function enumerateL1Locations() {
     }
   }
   
-  for (row=0; row<3; row++) {
-    for (col=16; col<18; col++) {// G to H
-      locations.push(ioRack2str(row, col));
-      for (drawer=0; drawer<9; drawer++) {
-        locations.push(ioDrawer2str(row, col, drawer));
-      }
-    }
-  }
  
   for (row=0; row<3; row++) {
     for (col=16; col<18; col++) { // G to H
@@ -517,6 +529,8 @@ function enumerateL1Locations() {
         locations.push(ioDrawer);
         for (j=0; j<8; j++) locations.push(ioComputeCard2str(row, col, drawer, j));
       }
+    
+      locations.push(ioBulkPowerSupply2str(row, col));
     }
   }
 
@@ -540,6 +554,8 @@ function enumerateL2Locations() {
       for (drawer=0; drawer<9; drawer++) {
         locations.push(ioDrawer2str(row, col, drawer));
       }
+      
+      locations.push(ioBulkPowerSupply2str(row, col));
     }
   }
 
@@ -746,6 +762,9 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     computeCard2str: computeCard2str
   };
 }
+
+// var locations = enumerateL0Locations();
+// locations.forEach(function(d) {console.log(d);});
 
 /*
 var locations = enumerateL2Locations();

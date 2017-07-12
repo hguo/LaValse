@@ -143,6 +143,7 @@ function cube(filename) {
 cube.prototype.query = function(q0) {
   q = translateQuery(q0);
   q.nthreads = 1;
+  console.log(q);
   var r0 = this.cc.query(q);
   return translateResults(r0, this.fullResult);
 }
