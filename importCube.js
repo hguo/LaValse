@@ -13,7 +13,8 @@ MongoClient.connect(uri, function(err, db) {
     cb();
   });
   
-  var cursor = db.collection("ras").find(); // {severity: "FATAL"});
+  var cursor = db.collection("ras").find({
+  }); // {severity: "FATAL"});
   cursor.forEach(function(doc) {
     q.push(doc);
   });
@@ -30,8 +31,9 @@ function sanityCheck(array) {
 }
 
 function printRAS(ras) {
-  ras.location.replace(/ /g,''); // remove white spaces
-  var L = mira.parseLocation(ras.location);
+  if (ras.messageID == "00050000" || ras.messageID == "00000000") return; // dummy message
+  
+  var L = mira.parseLocation(ras.location.replace(/\s/g,''));
   var L0 = mira.locationToL0Location(L),
       L1 = mira.locationToL1Location(L), 
       L2 = mira.locationToL2Location(L), 

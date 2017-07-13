@@ -14,11 +14,11 @@ var csvStream = csv({headers: true})
     // rasParser.parse(d.MSG_ID, d.MESSAGE);
     var rasData = {
       id: d.RECID,
-      msgID: d.MSG_ID,
+      msgID: d.MSG_ID.replace(/ /g, ''),
       eventTime: new Date(d.EVENT_TIME + " GMT"),
       jobID: d.JOBID,
       block: d.BLOCK,
-      location: d.LOCATION,
+      location: d.LOCATION.replace(/ /g,''),
       CPU: parseInt(d.CPU),
       count: parseInt(d.COUNT),
       message: d.MESSAGE
