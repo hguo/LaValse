@@ -5,7 +5,9 @@ db1
 storage
 *.swp
 a.out
-raslog
 log
+*.tar
 *.old
 *.dSYM/
+raslog
+raslog.txt
