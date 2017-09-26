@@ -41,7 +41,7 @@ MongoClient.connect(uri, function(err, db) {
     const limit = 500; // return no more than this number of jobs
     var query = JSON.parse(req.query.query); // fields in query: T0, T1
     db.collection("cobalt").aggregate([
-        {"$match": {"endTime": {$gte: new Date(query.T0)}, "startTime": {$lte: new Date(query.T1)}}},
+        {"$match": {"endTimestamp": {$gte: new Date(query.T0)}, "startTimestamp": {$lte: new Date(query.T1)}}},
         {"$sort": {"runTimeSeconds": -1}},
         {"$limit": limit}
     ]).toArray(function(err, docs) {

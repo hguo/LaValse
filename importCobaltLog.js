@@ -33,7 +33,8 @@ MongoClient.connect(url, function(err, db) {
         coresUsed: +d.CORES_USED,
         partition: d.MACHINE_PARTITION,
         exitStatus: +d.EXIT_STATUS,
-        mode: d.MODE
+        mode: d.MODE, 
+        color: randomColor()
       };
           
       cobalt.insertOne(cobaltJob);

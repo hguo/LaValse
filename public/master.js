@@ -367,11 +367,11 @@ function refreshRecIDs(data) {
 function refreshCobaltLog(q) {
   d3.json("/cobalt?query=" + JSON.stringify(q), function(data) {
     data.forEach(function(d) {
-      d.queuedTime = new Date(d.queuedTime);
-      d.startTime = new Date(d.startTime);
-      d.endTime = new Date(d.endTime);
-      d.components = partitionParser.components(d.machinePartition);
-      d.contour = partitionParser.contour(d.machinePartition);
+      d.queuedTime = new Date(d.queuedTimestamp);
+      d.startTime = new Date(d.startTimestamp);
+      d.endTime = new Date(d.endTimestamp);
+      d.components = partitionParser.components(d.partition);
+      d.contour = partitionParser.contour(d.partition);
     });
     timeVolumeChart.updateCobaltData(data);
     updateCobaltTable(data);
