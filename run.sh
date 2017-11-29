@@ -1,3 +1,3 @@
 #!/bin/sh
 
-/Users/hguo/local/node-6.11.3/bin/node server.js
+/Users/hguo/local/node-8.9.0/bin/node server.js

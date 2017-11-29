@@ -408,6 +408,7 @@ function timeVolumeChart(id) {
       var sum = 0;
       for (var j=0; j<nVolumes; j++) {
         const key = keys[j];
+        // var val = data[j].volumes[i];
         var val = warpedFreq(data[j].volumes[i]);
         // var val = quantizedFreq(data[j].volumes[i]);
         obj[key] = val;
@@ -985,7 +986,7 @@ function timeVolumeChart(id) {
       .attr("id", function(d, i) {return "cobalt" + d._id;})
       .on("mouseover", function(d) {
         // machineView.highlightBlock(d.machinePartition, d.color);
-        machineView.highlightBlock(d.machinePartition, "black");
+        machineView.highlightBlock(d.partition, "black");
         requestBackendJobs(d._id);
         svgCobaltContent.select("#cobalt" + d._id)
           // .each(function(){ // bring to front
